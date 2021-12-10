@@ -1,0 +1,14 @@
+Package: DGVMBenchmarks
+Title: Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
+Version: 0.0.0.9000
+Authors@R: 
+    person("Matthew", "Forrest", , "matthew.forrest@senckenberg.de", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
+Imports: DGVMTools (>= v0.9)
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
