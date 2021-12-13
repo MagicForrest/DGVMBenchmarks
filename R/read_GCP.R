@@ -43,7 +43,7 @@ read_GCP <- function(data_file,
   }
   
   # read the .xlxs file (nothing to do with DGVMTools here)
-  require(readxl)
+  require(readxl, quietly = TRUE)
   GCP_full_dt <- data.table::as.data.table(read_xlsx(data_file, skip = skip_rows, n_max = nyears_GCP, sheet = sheet))
   
   

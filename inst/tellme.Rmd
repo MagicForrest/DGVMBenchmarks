@@ -17,19 +17,23 @@ Below you can see the setting for this run of the benchmarking script.
 
 ```{r settings}
 
-# define the LPJ-GUESS run to be benchmarked
+#### DEFINE LPJ-GUESS RUNS ####
+# NOTES
+#       1. The paths should obviously be defined as arguments to the script, also perhaps a more useful "run identifier" string.
+#       2. The paths defined in the "dir" argument only point to the overall benchmark directory.  To actually acess one of the benchamrk runs (ie crop_global) you should copy these Source objects and manually append the benchmark directory name to the "dir.  See the GCP code block for an example.
+
+# new
 new_simulation_Source <- defineSource(id = "newrun",
                                       name = "New Run",
                                       format = GUESS,
-                                      dir = "~/")
+                                      dir = "/home/mforrest/GuessRuns/Tellus_dev/outputRelease4.1_r10118full/")
 
 
-# define a reference LPJ-GUESS run 
-# question: is this required?
+# reference run
 old_simulation_Source <- defineSource(id = "oldrun",
                                       name = "Old Run",
                                       format = GUESS,
-                                      dir = "~/")
+                                      dir = "/home/mforrest/GuessRuns/Tellus_dev/output9957full/")
 
 
 doGCP <- TRUE
@@ -38,6 +42,8 @@ doGCP <- TRUE
 
 ## Global Carbon Project
 
+Potential intro text about GCP, links to online description of the data, what to look for in the benchmark, blahblah
+
 ```{r gcp, echo=FALSE}
 
 ### First read the data
@@ -45,18 +51,30 @@ GCP_full_Field <- read_GCP()
 
 
 
-# now read the LPJ-GUESS data
-new_simulation_NEE <- getField(source = new_simulation_Source,
+### Read the LPJ-GUESS data
+
+# make local sources pointing to the crop_global directory
+crop_global_new_Source <- copy(new_simulation_Source)
+crop_global_old_Source<- copy(old_simulation_Source)
+crop_global_new_Source@dir <- file.path(crop_global_new_Source@dir, "crop_global")
+crop_global_old_Source@dir <- file.path(crop_global_old_Source@dir, "crop_global")
+
+# for now hard code the first and last years
+first_GCP_GUESS_year <- 1959
+last_GCP_GUESS_year <- 2015
+
+
+new_simulation_NEE <- getField(source = crop_global_new_Source,
                                "cflux",
-                               first.year = 1959,
-                               last.year = 2015,
+                               first.year = first_GCP_GUESS_year,
+                               last.year = last_GCP_GUESS_year,
                                spatial.aggregate.method = "w.sum",
                                spatial.extent.id = "Global")
 
-old_simulation_NEE <- getField(source = old_simulation_Source,
+old_simulation_NEE <- getField(source = crop_global_old_Source,
                                "cflux",
-                               first.year = 1959,
-                               last.year = 2015,
+                               first.year = first_GCP_GUESS_year,
+                               last.year = last_GCP_GUESS_year,
                                spatial.aggregate.method = "w.sum",
                                spatial.extent.id = "Global")
 
@@ -65,9 +83,11 @@ new_simulation_NEE <- layerOp(x = new_simulation_NEE, operator = "divc", layers 
 old_simulation_NEE <- layerOp(x = old_simulation_NEE, operator = "divc", layers = layers(new_simulation_NEE), new.layer = layers(new_simulation_NEE), constant = -1E12)
 
 # calculate yearly means of all
-new_simulation_NEE_ymean <- aggregateYears(new_simulation_NEE, "mean")
-old_simulation_NEE_ymean <- aggregateYears(old_simulation_NEE, "mean")
-GCP_full_Field_ymean  <- aggregateYears(GCP_full_Field, "mean")
+# supressWarnings is just to stops warnings that there is no spatial or temporal data in the resulting Field
+# (all averaged away to give a single number)
+new_simulation_NEE_ymean <- suppressWarnings(aggregateYears(new_simulation_NEE, "mean"))
+old_simulation_NEE_ymean <- suppressWarnings(aggregateYears(old_simulation_NEE, "mean"))
+GCP_full_Field_ymean  <- suppressWarnings(aggregateYears(GCP_full_Field, "mean"))
 
 # plot all together
 NEE_plot <- plotTemporal(list(new_simulation_NEE,old_simulation_NEE, GCP_full_Field), 
@@ -76,23 +96,35 @@ NEE_plot <- plotTemporal(list(new_simulation_NEE,old_simulation_NEE, GCP_full_Fi
                          title = "Global NEE", 
                          subtitle = NULL, 
                          y.label = "Global NEE (TgC/year)",
-                         text.multiplier = 3, sizes = 2)
-print(NEE_plot)
+                         text.multiplier = 2, 
+                         sizes = 1)
 
 # make a simple data.frame to put numbers on the plot
-global.numbers.df <- data.frame(x= rep(as.Date(paste(first_GCP_year), "%Y")), 
+global.numbers.df <- data.frame(x= rep(as.Date(paste(first_GCP_GUESS_year), "%Y")), 
                                 y = c(6, 5, 4), 
                                 label = c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NEE"]], 3)), 
                                           paste0(old_simulation_NEE_ymean@source@name, ": ", signif(old_simulation_NEE_ymean@data[["NEE"]], 3)),
                                           paste0(new_simulation_NEE_ymean@source@name, ": ", signif(new_simulation_NEE_ymean@data[["NEE"]], 3))))
 
-NEE_plot <-  NEE_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 10, hjust = 0, col = "black")
+NEE_plot <-  NEE_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
 print(NEE_plot)
 
+# Also print all the data used to make the lines on the plot, this is just an example, obviously it can be adjusted
+NEE_table <- plotTemporal(list(new_simulation_NEE,old_simulation_NEE, GCP_full_Field), 
+                         col.by = "Source", 
+                         layers = "NEE", 
+                         title = "Global NEE", 
+                         subtitle = NULL, 
+                         y.label = "Global NEE (TgC/year)",
+                         text.multiplier = 2, 
+                         sizes = 2,
+                         plot = FALSE)
 
+print(NEE_table)
 
-
-plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Also note that the table above it just an example with the default formatting.  I have not yet looked into making prettier tables, but it is definitely psossible, see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
+
+### Next Benchmark...
