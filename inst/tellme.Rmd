@@ -2,7 +2,9 @@
 title: "Tellme Benchmark for LPJ-GUESS"
 author: "Matthew Forrest"
 date: "12/10/2021"
-output: html_document
+output: 
+  html_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +22,7 @@ Below you can see the setting for this run of the benchmarking script.
 #### DEFINE LPJ-GUESS RUNS ####
 # NOTES
 #       1. The paths should obviously be defined as arguments to the script, also perhaps a more useful "run identifier" string.
-#       2. The paths defined in the "dir" argument only point to the overall benchmark directory.  To actually acess one of the benchamrk runs (ie crop_global) you should copy these Source objects and manually append the benchmark directory name to the "dir.  See the GCP code block for an example.
+#       2. The paths defined in the "dir" argument only point to the overall benchmark directory.  To actually access one of the benchmark runs (ie crop_global) you should copy these Source objects and manually append the benchmark directory name to the "dir.  See the GCP code block for an example.
 
 # new
 new_simulation_Source <- defineSource(id = "newrun",
@@ -113,11 +115,6 @@ print(NEE_plot)
 NEE_table <- plotTemporal(list(new_simulation_NEE,old_simulation_NEE, GCP_full_Field), 
                          col.by = "Source", 
                          layers = "NEE", 
-                         title = "Global NEE", 
-                         subtitle = NULL, 
-                         y.label = "Global NEE (TgC/year)",
-                         text.multiplier = 2, 
-                         sizes = 2,
                          plot = FALSE)
 
 print(NEE_table)
@@ -125,6 +122,6 @@ print(NEE_table)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-Also note that the table above it just an example with the default formatting.  I have not yet looked into making prettier tables, but it is definitely psossible, see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
+Also note that the table above it just an example with the default formatting.  I have not yet looked into making prettier tables, but it is definitely possible, see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
 
-### Next Benchmark...
+## Next Benchmark...
