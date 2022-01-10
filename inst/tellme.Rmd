@@ -5,6 +5,15 @@ date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output: 
   html_document:
     toc: true
+params:
+  new_directory:
+    value: "/home/mforrest/GuessRuns/Tellus_dev/outputRelease4.1_r10118full/"
+  new_name:
+    value: "New Run"
+  old_directory:
+    value: "/home/mforrest/GuessRuns/Tellus_dev/output9957full/"
+  old_name:
+    value: "Old Run"
 ---
 
 ```{r setup, include=FALSE}
@@ -20,22 +29,21 @@ Below you can see the setting for this run of the benchmarking script.
 ```{r settings}
 
 #### DEFINE LPJ-GUESS RUNS ####
-# NOTES
-#       1. The paths should obviously be defined as arguments to the script, also perhaps a more useful "run identifier" string.
-#       2. The paths defined in the "dir" argument only point to the overall benchmark directory.  To actually access one of the benchmark runs (ie crop_global) you should copy these Source objects and manually append the benchmark directory name to the "dir".  See the GCP code block for an example.
+# NOTE:
+#  The paths defined in the "dir" argument only point to the overall benchmark directory.  
+#  To actually access one of the benchmark runs (ie crop_global) you should copy these Source objects 
+#  and manually append the benchmark directory name to the "dir".  See the GCP code block for an example.
 
 # new
-new_simulation_Source <- defineSource(id = "newrun",
-                                      name = "New Run",
-                                      format = GUESS,
-                                      dir = "/home/mforrest/GuessRuns/Tellus_dev/outputRelease4.1_r10118full/")
+new_simulation_Source <- defineSource(name = params$new_name,
+                                      dir = params$new_directory,
+                                      format = GUESS)
 
 
 # reference run
-old_simulation_Source <- defineSource(id = "oldrun",
-                                      name = "Old Run",
-                                      format = GUESS,
-                                      dir = "/home/mforrest/GuessRuns/Tellus_dev/output9957full/")
+old_simulation_Source <- defineSource(name = params$old_name,
+                                      dir = params$old_directory,
+                                      format = GUESS)
 
 # combine into a list for looping later
 all_simulation_Sources_list <- list(old_simulation_Source, new_simulation_Source)
