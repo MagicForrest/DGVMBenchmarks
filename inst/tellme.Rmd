@@ -1,7 +1,7 @@
 ---
 title: "Tellme Benchmark for LPJ-GUESS"
 author: "Matthew Forrest"
-date: "12/10/2021"
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output: 
   html_document:
     toc: true
