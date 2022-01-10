@@ -1,5 +1,5 @@
 ---
-title: "Tellme Benchmark for LPJ-GUESS"
+title: "Tellme Benchmark Report for LPJ-GUESS"
 author: "Matthew Forrest"
 date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output: 
@@ -20,6 +20,8 @@ params:
 knitr::opts_chunk$set(echo = TRUE)
 library(DGVMTools)
 library(DGVMBenchmarks)
+library(terra)
+library(viridis)
 ```
 
 ## Settings
@@ -49,7 +51,8 @@ old_simulation_Source <- defineSource(name = params$old_name,
 all_simulation_Sources_list <- list(old_simulation_Source, new_simulation_Source)
 
 # switches for which benchmarks to do
-doGCP <- TRUE
+do_GCP_NEE <- FALSE
+do_GOSIF_GPP <- TRUE
 
 ```
 
@@ -59,89 +62,245 @@ Potential intro text about GCP, links to online description of the data, what to
 
 ```{r gcp, echo=FALSE}
 
-### Read the data and calculate the annual mean over the whole period
-GCP_full_Field <- read_GCP()
-GCP_full_Field_ymean  <- suppressWarnings(aggregateYears(GCP_full_Field, "mean"))
-
-
-# make a list of all Fields to be compared  (this will also include whatever model runs are available)
-all_NEE_Fields_list <- list("GCP" = GCP_full_Field)
-# and the vector of labels to eventual put on the plot
-all_NEE_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NEE"]], 3)))
-
-
-
-### Read the LPJ-GUESS data
-
-# for now hard code the first and last years
-first_GCP_GUESS_year <- 1959
-last_GCP_GUESS_year <- 2015
-
-# loop through model runs to be processed
-for(this_simulation_Source in all_simulation_Sources_list) {
+if(do_GCP_NEE){
   
-  # check if file is present (if not don't include this run)
-  this_benchmark_run_dir <- file.path(this_simulation_Source@dir, "crop_global")
-  if(file.exists(file.path(this_benchmark_run_dir, "cflux.out")) || file.exists(file.path(this_benchmark_run_dir, "cflux.out.gz"))) {
+  ### Read the data and calculate the annual mean over the whole period
+  GCP_full_Field <- read_GCP()
+  GCP_full_Field_ymean  <- suppressWarnings(aggregateYears(GCP_full_Field, "mean"))
+  
+  
+  # make a list of all Fields to be compared  (this will also include whatever model runs are available)
+  all_NEE_Fields_list <- list("GCP" = GCP_full_Field)
+  # and the vector of labels to eventual put on the plot
+  all_NEE_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NEE"]], 3)))
+  
+  
+  
+  ### Read the LPJ-GUESS data
+  
+  # for now hard code the first and last years
+  first_GCP_GUESS_year <- 1959
+  last_GCP_GUESS_year <- 2015
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
     
-    # make local sources pointing to the crop_global directory
-    this_crop_global_Source <- copy(this_simulation_Source)
-    this_crop_global_Source@dir <- this_benchmark_run_dir
-    
-    # read the data and process it into global sums
-    this_simulation_NEE <- getField(source = this_crop_global_Source,
-                                    "cflux",
-                                    first.year = first_GCP_GUESS_year,
-                                    last.year = last_GCP_GUESS_year,
-                                    spatial.aggregate.method = "w.sum",
-                                    spatial.extent.id = "Global")
-    this_simulation_NEE <- layerOp(x = this_simulation_NEE, operator = "divc", layers = layers(this_simulation_NEE), new.layer = layers(this_simulation_NEE), constant = -1E12)
-    
-    # store the Field in the list of all Fields for plotting later
-    all_NEE_Fields_list[[this_simulation_Source@id]] <- this_simulation_NEE
-    
-    # calculate yearly means of whole period
-    # supressWarnings is just to stops warnings that there is no spatial or temporal data in the resulting Field
-    # (all averaged away to give a single number)
-    this_simulation_NEE_ymean <- suppressWarnings(aggregateYears(this_simulation_NEE, "mean"))
-    
-    # make a text label for putting the yearly mean on th plot and aa it to the label vector of labels
-    all_NEE_labels_vector <- append(all_NEE_labels_vector, paste0(this_simulation_NEE_ymean@source@name, ": ", signif(this_simulation_NEE_ymean@data[["NEE"]])))
-    
+    # check if file is present (if not don't include this run)
+    this_benchmark_run_dir <- file.path(this_simulation_Source@dir, "crop_global")
+    if(file.exists(file.path(this_benchmark_run_dir, "cflux.out")) || file.exists(file.path(this_benchmark_run_dir, "cflux.out.gz"))) {
+      
+      # make local sources pointing to the crop_global directory
+      this_crop_global_Source <- copy(this_simulation_Source)
+      this_crop_global_Source@dir <- this_benchmark_run_dir
+      
+      # read the data and process it into global sums
+      this_simulation_NEE <- getField(source = this_crop_global_Source,
+                                      "cflux",
+                                      first.year = first_GCP_GUESS_year,
+                                      last.year = last_GCP_GUESS_year,
+                                      spatial.aggregate.method = "w.sum",
+                                      spatial.extent.id = "Global")
+      this_simulation_NEE <- layerOp(x = this_simulation_NEE, operator = "divc", layers = layers(this_simulation_NEE), new.layer = layers(this_simulation_NEE), constant = -1E12)
+      
+      # store the Field in the list of all Fields for plotting later
+      all_NEE_Fields_list[[this_simulation_Source@id]] <- this_simulation_NEE
+      
+      # calculate yearly means of whole period
+      # supressWarnings is just to stops warnings that there is no spatial or temporal data in the resulting Field
+      # (all averaged away to give a single number)
+      this_simulation_NEE_ymean <- suppressWarnings(aggregateYears(this_simulation_NEE, "mean"))
+      
+      # make a text label for putting the yearly mean on th plot and aa it to the label vector of labels
+      all_NEE_labels_vector <- append(all_NEE_labels_vector, paste0(this_simulation_NEE_ymean@source@name, ": ", signif(this_simulation_NEE_ymean@data[["NEE"]])))
+      
+      
+    }
     
   }
   
+  
+  # plot all together
+  NEE_plot <- plotTemporal(all_NEE_Fields_list, 
+                           col.by = "Source", 
+                           layers = "NEE", 
+                           title = "Global NEE", 
+                           subtitle = NULL, 
+                           y.label = "Global NEE (TgC/year)",
+                           text.multiplier = 2, 
+                           sizes = 1)
+  
+  # make a simple data.frame to put numbers on the plot, and then add it to the plot
+  global.numbers.df <- data.frame(x= rep(as.Date(paste(first_GCP_GUESS_year), "%Y")), 
+                                  y = c(6, 5, 4), 
+                                  label = all_NEE_labels_vector)
+  NEE_plot <-  NEE_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
+  print(NEE_plot)
+  
+  # Also print all the data used to make the lines on the plot, this is just an example, obviously it can be adjusted
+  NEE_table <- plotTemporal(all_NEE_Fields_list, 
+                            col.by = "Source", 
+                            layers = "NEE", 
+                            plot = FALSE)
+  
+  print(NEE_table)
+  
 }
-
-
-# plot all together
-NEE_plot <- plotTemporal(all_NEE_Fields_list, 
-                         col.by = "Source", 
-                         layers = "NEE", 
-                         title = "Global NEE", 
-                         subtitle = NULL, 
-                         y.label = "Global NEE (TgC/year)",
-                         text.multiplier = 2, 
-                         sizes = 1)
-
-# make a simple data.frame to put numbers on the plot, and then add it to the plot
-global.numbers.df <- data.frame(x= rep(as.Date(paste(first_GCP_GUESS_year), "%Y")), 
-                                y = c(6, 5, 4), 
-                                label = all_NEE_labels_vector)
-NEE_plot <-  NEE_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
-print(NEE_plot)
-
-# Also print all the data used to make the lines on the plot, this is just an example, obviously it can be adjusted
-NEE_table <- plotTemporal(all_NEE_Fields_list, 
-                          col.by = "Source", 
-                          layers = "NEE", 
-                          plot = FALSE)
-
-print(NEE_table)
 
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 Also note that the table above it just an example with the default formatting.  I have not yet looked into making prettier tables, but it is definitely possible, see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
 
+## GOSIF Gross Primary Productivity
 
+Blah blah blah
+
+
+### Trend analysis
+
+```{r GOSIF GPP, echo=FALSE}
+
+if(do_GOSIF_GPP) {
+  
+  # some parameters, filenames etc
+  GOSIF_trend_file_name <- "GOSIFGPP_slope_2001-2018.txt"
+  GOSIF_sig_file_name <- "GOSIFGPP_sig_2001-2018.txt"
+  first_year_GOSIF <- 2001
+  last_year_GOSIF <- 2018
+  LPJ_GUESS_variable <- "agpp"
+  
+  ### Read the GOSIF data 
+  input_dir <- system.file("extdata", "GOSIF_GPP", package = "DGVMBenchmarks")
+  
+  # read into a terra::SpatRaster
+  GOSIF_trend_matrix <- as.matrix(read.table(file.path(input_dir, GOSIF_trend_file_name), sep="\t"))
+  GOSIF_sig_matrix <- as.matrix(read.table(file.path(input_dir, GOSIF_sig_file_name), sep="\t"))
+  
+  GOSIF_trend_SpatRaster <- rast(GOSIF_trend_matrix)
+  GOSIF_sig_SpatRaster <- rast(GOSIF_sig_matrix)
+  
+  ext(GOSIF_trend_SpatRaster) <- ext(-180, 180, -90,90)
+  ext(GOSIF_sig_SpatRaster) <- ext(-180, 180, -90,90)
+  
+  GOSIF_trend_SpatRaster[GOSIF_trend_SpatRaster == -9999] <- NA
+  GOSIF_sig_SpatRaster[GOSIF_sig_SpatRaster == -9999] <- NA
+  
+  # melt into data.tables, combine and set names
+  GOSIF_trend_dt<- as.data.table(as.data.frame(GOSIF_trend_SpatRaster, xy = TRUE, cells = FALSE))
+  GOSIF_sig_dt<- as.data.table(as.data.frame(GOSIF_sig_SpatRaster, xy = TRUE, cells = FALSE))
+  GOSIF_dt <- merge.data.table(GOSIF_trend_dt, GOSIF_sig_dt, by =  c("x", "y"))
+  setnames(GOSIF_dt, c("Lon", "Lat", "Slope", "p.value"))
+  
+  #  manually construct a Field object
+  GOSIF_Source <- defineSource(id = "GOSIF",
+                               name = "GOSIF",
+                               dir = input_dir,
+                               format = GUESS)
+  
+  GOSIF_Field <- new("Field",
+                     data = GOSIF_dt,
+                     source = GOSIF_Source,
+                     quant = lookupQuantity(LPJ_GUESS_variable, GUESS),
+                     first.year = first_year_GOSIF,
+                     last.year = last_year_GOSIF,
+                     year.aggregate.method = "linear_trend",
+                     spatial.extent = extent(GOSIF_dt),
+                     spatial.extent.id = "Full",
+                     spatial.aggregate.method = "none",
+                     subannual.resolution = "Year",
+                     subannual.original = "8-day",
+                     subannual.aggregate.method = "sum")
+  
+  GOSIF_Field@id <- makeFieldID(GOSIF_Field)
+  
+  
+  
+  # make a list of all Fields to be compared  (this will also include whatever model runs are available)
+  all_GPP_Fields_list <- list("GOSIF" = GOSIF_Field)
+ 
+  
+  
+  ### Read the LPJ-GUESS data
+  
+  # Comparisons
+  model_data_comparisons_list <- list()
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # check if file is present (if not don't include this run)
+    this_benchmark_run_dir <- file.path(this_simulation_Source@dir, "crop_global")
+    if(file.exists(file.path(this_benchmark_run_dir, paste0(LPJ_GUESS_variable, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(LPJ_GUESS_variable, ".out.gz")))) {
+      
+      # make local sources pointing to the crop_global directory
+      this_crop_global_Source <- this_simulation_Source
+      this_crop_global_Source@dir <- this_benchmark_run_dir
+      
+      # read the data and and select the Total layer only
+      suppressWarnings(
+        this_simulation_GPP <- getField(source = this_crop_global_Source,
+                                        LPJ_GUESS_variable,
+                                        first.year = first_year_GOSIF,
+                                        last.year = last_year_GOSIF)
+      )
+      this_simulation_GPP <- selectLayers(this_simulation_GPP, "Total")
+      
+      
+      
+      # calculate the linear trend and p-value for every gridcell     
+      this_simulation_GPP_dt <- this_simulation_GPP@data
+      # suppress warnings about "essentially perfect fit"
+      suppressWarnings(fitted_trends_dt <- this_simulation_GPP_dt[, as.list(summary(lm(Total~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)])
+      setnames(fitted_trends_dt, c("Estimate", "Pr(>|t|)"), c("Slope", "p.value"))
+      this_simulation_GPP@data <- fitted_trends_dt
+      this_simulation_GPP@year.aggregate.method <- "linear_trend"
+      this_simulation_GPP@id <- makeFieldID(this_simulation_GPP)
+      
+      # store the Field in the list of all Fields for plotting later
+      all_GPP_Fields_list[[this_simulation_Source@id]] <- this_simulation_GPP
+      
+      # make comparison 
+      message(paste("Comparison stats for run", this_simulation_Source@name, "GPP trend vs. GOSIF GPP trend"))
+      suppressWarnings(
+        suppressMessages(
+          model_data_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = this_simulation_GPP,
+                                                                                    field2 = GOSIF_Field,
+                                                                                    layers1 = "Slope",
+                                                                                    layers2 = "Slope")
+        )
+      )
+      
+    }
+    
+  }
+  
+  
+  # plot all slope values together
+  GPP_trend_plot <- plotSpatial(all_GPP_Fields_list, 
+                                layers = "Slope", 
+                                ncol = 1, 
+                                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                                cuts = c(-1.0, -0.5, -0.2, -0.1, -0.05, -0.02, -0.01, 0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0),
+                                drop.cuts = FALSE,
+                                title = "Trend in GPP", 
+                                subtitle = expression(kgC~m^{"-2"}~year^{"-1"}/ year))
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(GPP_trend_plot))
+  
+  # plot differences in model vs data slope values together
+  GPP_trend_diff_plot <-  suppressWarnings(
+    plotSpatialComparison(model_data_comparisons_list, 
+                          ncol = 1, 
+                          cuts = c(-1.0, -0.5, -0.2, -0.1, -0.05, -0.02, -0.01, 0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0),
+                          drop.cuts = FALSE,
+                          title = "Difference Trend in GPP", 
+                          subtitle = expression(kgC~m^{"-2"}~year^{"-1"}/ year))
+  )
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(GPP_trend_diff_plot))
+  
+  
+  
+}
+
+```
