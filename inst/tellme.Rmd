@@ -60,7 +60,7 @@ do_GOSIF_GPP <- TRUE
 
 Potential intro text about GCP, links to online description of the data, what to look for in the benchmark, blahblah
 
-```{r gcp, echo=FALSE}
+```{r gcp, echo=FALSE, out.width = '100%'}
 
 if(do_GCP_NEE){
   
@@ -158,7 +158,7 @@ Blah blah blah
 
 ### Trend analysis
 
-```{r GOSIF GPP, echo=FALSE}
+```{r GOSIF GPP, echo=FALSE, out.width = '100%'}
 
 if(do_GOSIF_GPP) {
   
