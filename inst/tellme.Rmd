@@ -53,12 +53,14 @@ old_simulation_Source <- defineSource(name = params$old_name,
 all_simulation_Sources_list <- list(old_simulation_Source, new_simulation_Source)
 
 # switches for which benchmarks to do
-do_GCP_NEE <- FALSE
+do_GCP_NEE <- TRUE
 do_GOSIF_GPP <- TRUE
 
 ```
 
-## Global Carbon Project
+## Global Carbon Project Net Ecosystem Exchange
+
+I think I remember Almut strongly preferring "Net Biome Productivity" terminology instead of NEE, or perhaps there is difference between the two I don't quite recall.  So if someone can explain with this to me at some point I would be happy...
 
 Potential intro text about GCP, links to online description of the data, what to look for in the benchmark, blahblah
 
@@ -92,7 +94,7 @@ if(do_GCP_NEE){
     if(file.exists(file.path(this_benchmark_run_dir, "cflux.out")) || file.exists(file.path(this_benchmark_run_dir, "cflux.out.gz"))) {
       
       # make local sources pointing to the crop_global directory
-      this_crop_global_Source <- copy(this_simulation_Source)
+      this_crop_global_Source <- this_simulation_Source
       this_crop_global_Source@dir <- this_benchmark_run_dir
       
       # read the data and process it into global sums
@@ -155,131 +157,59 @@ Also note that the table above it just an example with the default formatting.  
 
 ## GOSIF Gross Primary Productivity
 
-Blah blah blah
+Intro blah blah blah
 
+```{r GOSIF GPP data prep, echo=FALSE, out.width = '100%'}
 
-### Trend analysis
-
-```{r GOSIF GPP map, echo=FALSE, out.width = '100%'}
-
-LPJ_GUESS_variable <- "agpp"
-
-first_year_GOSIF <- 2001
-last_year_GOSIF <- 2018
-
-# for the fulle monthly data
-GOSIF_GPP_monthly_dir <- "monthly_gpp/GOSIFGPP"
-GOSIF_GPP_monthly_file.name <- "GOSIF_GPP.txt"
-
-
-
-
-full_file_path <- file.path(params$data_directory, GOSIF_GPP_monthly_dir, GOSIF_GPP_monthly_file.name)
-if(do_GOSIF_GPP && file.exists(full_file_path)) {
+if(do_GOSIF_GPP){
   
-  # Read the GOSIF monthly data via a GUESS formatted Source
-  GOSIF_Source <- defineSource(id = "GOSIF",
-                               name = "GOSIF",
-                               dir = file.path(params$data_directory, GOSIF_GPP_monthly_dir),
-                               format = GUESS)
-  GOSIF_monthly_Field <- getField(source = GOSIF_Source,
-                                  var = LPJ_GUESS_variable,
-                                  file.name = GOSIF_GPP_monthly_file.name)
+  ### Here we read the model and data for both the spatial and trend analyses (which are actually done in the next code blocks)
   
-  # delete values with -9999
-  GOSIF_monthly_Field@data <- GOSIF_monthly_Field@data[agpp != -9999.0,]
-  
-  # convert to kg
-  GOSIF_monthly_Field <- layerOp(GOSIF_monthly_Field, operator = "divc", constant = 1000, layers = "agpp", new.layer = "agpp")
-  
-  # make the annual map for comparison
-  GOSIF_map_Field <- aggregateYears(aggregateSubannual(GOSIF_monthly_Field, method = "sum", target = "Year"), method = "mean")
-  
-  
-  # make a list of all Fields to be compared  (this will also include whatever model runs are available)
-  all_GPP_Map_Fields_list <- list("GOSIF" = GOSIF_map_Field)
-  
-  
-  ### Read the LPJ-GUESS data
-  
-  # Comparisons
-  model_data_comparisons_list <- list()
-  
-  # loop through model runs to be processed
-  for(this_simulation_Source in all_simulation_Sources_list) {
-    
-    # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_simulation_Source@dir, "crop_global")
-    if(file.exists(file.path(this_benchmark_run_dir, paste0(LPJ_GUESS_variable, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(LPJ_GUESS_variable, ".out.gz")))) {
-      
-      # make local sources pointing to the crop_global directory
-      this_crop_global_Source <- this_simulation_Source
-      this_crop_global_Source@dir <- this_benchmark_run_dir
-      
-      # read the data and and select the Total layer only
-      suppressWarnings(
-        this_simulation_GPP <- getField(source = this_crop_global_Source,
-                                        LPJ_GUESS_variable,
-                                        first.year = first_year_GOSIF,
-                                        last.year = last_year_GOSIF)
-      )
-      this_simulation_GPP <- selectLayers(this_simulation_GPP, "Total")
-      renameLayers(this_simulation_GPP, LPJ_GUESS_variable)
-      
-      # take yearly average
-      this_simulation_GPP <- aggregateYears(this_simulation_GPP, "mean")
-      
-      # store the Field in the list of all Fields for plotting later
-      all_GPP_Map_Fields_list[[this_simulation_Source@id]] <- this_simulation_GPP
-      
-      # make comparison 
-      message(paste("Comparison stats for run", this_simulation_Source@name, "GPP values vs. GOSIF GPP values"))
-      suppressWarnings(
-        suppressMessages(
-          model_data_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = this_simulation_GPP,
-                                                                                    field2 = GOSIF_map_Field,
-                                                                                    layers1 =  LPJ_GUESS_variable,
-                                                                                    layers2 =  LPJ_GUESS_variable)
-        )
-      )
-      
-    }
-    
-  }
-  
-  
-  # plot all slope values together
-  GPP_abs_values_plot <- plotSpatial(all_GPP_Map_Fields_list, 
-                                     ncol = 1, 
-                                     legend.title = expression(kgC~m^{"-2"}~year^{"-1"}) )
-  # suppress warnings about uneven horizontal intervals
-  suppressWarnings(print(GPP_abs_values_plot))
-  
-  # also make the difference plots
-  GPP_diff_values_plot <- plotSpatialComparison(model_data_comparisons_list, 
-                                                ncol = 1, 
-                                                legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}) )
-  # suppress warnings about uneven horizontal intervals
-  suppressWarnings(print(GPP_diff_values_plot))
-  
-
-}
-
-```
-
-
-### Trend analysis
-
-```{r GOSIF GPP trend, echo=FALSE, out.width = '100%'}
-
-if(do_GOSIF_GPP) {
-  
-  # some parameters, filenames etc
-  GOSIF_trend_file_name <- "GOSIFGPP_slope_2001-2018.txt"
-  GOSIF_sig_file_name <- "GOSIFGPP_sig_2001-2018.txt"
+  ### some parameters and settings
+  LPJ_GUESS_variable <- "agpp"
   first_year_GOSIF <- 2001
   last_year_GOSIF <- 2018
-  LPJ_GUESS_variable <- "agpp"
+  
+  ### for the full monthly data (stored externally to the package)
+  GOSIF_GPP_monthly_dir <- "monthly_gpp/GOSIFGPP"
+  GOSIF_GPP_monthly_file.name <- "GOSIF_GPP.txt"
+  
+  # file names for the files in the package
+  GOSIF_trend_file_name <- "GOSIFGPP_slope_2001-2018.txt"
+  GOSIF_sig_file_name <- "GOSIFGPP_sig_2001-2018.txt"
+  
+  ### Lists for storing the files
+  all_GPP_Map_Fields_list <- list()
+  all_GPP_Trend_Fields_list <- list()
+  all_GPP_Seasonal_Fields_list <- list()
+  
+  
+  #### READ GOSIF DATA ####
+  
+  ### read the GOSIF full monthly data
+  full_file_path <- file.path(params$data_directory, GOSIF_GPP_monthly_dir, GOSIF_GPP_monthly_file.name)
+  if(file.exists(full_file_path)) {
+    
+    # Read the GOSIF monthly data via a GUESS formatted Source
+    GOSIF_Source <- defineSource(id = "GOSIF_GPP",
+                                 name = "GOSIF GPP",
+                                 dir = file.path(params$data_directory, GOSIF_GPP_monthly_dir),
+                                 format = GUESS)
+    GOSIF_full_Field <- getField(source = GOSIF_Source,
+                                    var = LPJ_GUESS_variable,
+                                    file.name = GOSIF_GPP_monthly_file.name)
+    
+    # delete values with -9999 and covert to kg
+    GOSIF_full_Field@data <- GOSIF_full_Field@data[agpp != -9999.0,]
+    GOSIF_full_Field <- layerOp(GOSIF_full_Field, operator = "divc", constant = 1000, layers = "agpp", new.layer = "agpp")
+    
+    # make the annual map for comparison (leave only spatial)
+    all_GPP_Map_Fields_list[["GOSIF"]] <- aggregateYears(aggregateSubannual(GOSIF_full_Field, method = "sum", target = "Year"), method = "mean")
+    
+    # make the seasonal cycle for comparison (leave months and  spatial)
+    all_GPP_Seasonal_Fields_list[["GOSIF"]] <- aggregateYears(GOSIF_full_Field, method = "mean")
+    
+  }
   
   ### Read the GOSIF data 
   input_dir <- system.file("extdata", "GOSIF_GPP", package = "DGVMBenchmarks")
@@ -304,36 +234,33 @@ if(do_GOSIF_GPP) {
   setnames(GOSIF_dt, c("Lon", "Lat", "Slope", "p.value"))
   
   #  manually construct a Field object
-  GOSIF_Source <- defineSource(id = "GOSIF",
-                               name = "GOSIF",
-                               dir = input_dir,
-                               format = GUESS)
+  GOSIF_Trend_Source <- defineSource(id = "GOSIF_GPP",
+                                     name = "GOSIF GPP",
+                                     dir = input_dir,
+                                     format = GUESS)
   
-  GOSIF_Field <- new("Field",
-                     data = GOSIF_dt,
-                     source = GOSIF_Source,
-                     quant = lookupQuantity(LPJ_GUESS_variable, GUESS),
-                     first.year = first_year_GOSIF,
-                     last.year = last_year_GOSIF,
-                     year.aggregate.method = "linear_trend",
-                     spatial.extent = extent(GOSIF_dt),
-                     spatial.extent.id = "Full",
-                     spatial.aggregate.method = "none",
-                     subannual.resolution = "Year",
-                     subannual.original = "8-day",
-                     subannual.aggregate.method = "sum")
+  GOSIF_Trend_Field <- new("Field",
+                           data = GOSIF_dt,
+                           source = GOSIF_Trend_Source,
+                           quant = lookupQuantity(LPJ_GUESS_variable, GUESS),
+                           first.year = first_year_GOSIF,
+                           last.year = last_year_GOSIF,
+                           year.aggregate.method = "linear_trend",
+                           spatial.extent = extent(GOSIF_dt),
+                           spatial.extent.id = "Full",
+                           spatial.aggregate.method = "none",
+                           subannual.resolution = "Year",
+                           subannual.original = "8-day",
+                           subannual.aggregate.method = "sum")
   
-  GOSIF_Field@id <- makeFieldID(GOSIF_Field)
-  
-  
+  GOSIF_Trend_Field@id <- makeFieldID(GOSIF_Trend_Field)
   
   # make a list of all Fields to be compared  (this will also include whatever model runs are available)
-  all_GPP_Fields_list <- list("GOSIF" = GOSIF_Field)
+  all_GPP_Trend_Fields_list[["GOSIF"]] <- GOSIF_Trend_Field
   
   
   
-  ### Read the LPJ-GUESS data
-  
+  #### READ LPJ-GUESS GPP DATA ####
   # Comparisons
   model_data_comparisons_list <- list()
   
@@ -348,7 +275,7 @@ if(do_GOSIF_GPP) {
       this_crop_global_Source <- this_simulation_Source
       this_crop_global_Source@dir <- this_benchmark_run_dir
       
-      # read the data and and select the Total layer only
+      # read the full data and and select the Total layer only
       suppressWarnings(
         this_simulation_GPP <- getField(source = this_crop_global_Source,
                                         LPJ_GUESS_variable,
@@ -356,13 +283,20 @@ if(do_GOSIF_GPP) {
                                         last.year = last_year_GOSIF)
       )
       this_simulation_GPP <- selectLayers(this_simulation_GPP, "Total")
+      renameLayers(this_simulation_GPP, LPJ_GUESS_variable)
+      
+      ### take yearly average and store for later use - very easy ###
+      all_GPP_Map_Fields_list[[this_simulation_Source@id]] <- aggregateYears(this_simulation_GPP, "mean")
+      
+      ### take yearly average and store for later use - very easy ###
+      all_GPP_Seasonal_Fields_list[[this_simulation_Source@id]] <- aggregateYears(this_simulation_GPP, "mean")
       
       
-      
-      # calculate the linear trend and p-value for every gridcell     
+      ### calculate the linear trend and p-value for every gridcell and store for later use ###     
       this_simulation_GPP_dt <- this_simulation_GPP@data
+      
       # suppress warnings about "essentially perfect fit"
-      suppressWarnings(fitted_trends_dt <- this_simulation_GPP_dt[, as.list(summary(lm(Total~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)])
+      suppressWarnings(fitted_trends_dt <- this_simulation_GPP_dt[, as.list(summary(lm(agpp~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)])
       setnames(fitted_trends_dt, c("Estimate", "Pr(>|t|)"), c("Slope", "p.value"))
       this_simulation_GPP@data <- fitted_trends_dt
       this_simulation_GPP@year.aggregate.method <- "linear_trend"
@@ -372,26 +306,108 @@ if(do_GOSIF_GPP) {
       this_simulation_GPP <- layerOp( this_simulation_GPP, operator = "mulc", constant = 1000/144, layers = "Slope", new.layer = "Slope")
       
       # store the Field in the list of all Fields for plotting later
-      all_GPP_Fields_list[[this_simulation_Source@id]] <- this_simulation_GPP
+      all_GPP_Trend_Fields_list[[this_simulation_Source@id]] <- this_simulation_GPP
       
-      # make comparison 
-      message(paste("Comparison stats for run", this_simulation_Source@name, "GPP trend vs. GOSIF GPP trend"))
-      suppressWarnings(
-        suppressMessages(
-          model_data_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = this_simulation_GPP,
-                                                                                    field2 = GOSIF_Field,
-                                                                                    layers1 = "Slope",
-                                                                                    layers2 = "Slope")
-        )
+      # remove to save memory
+      rm(this_simulation_GPP)
+      
+    } # if file is present 
+    
+  } # for each model run
+  
+} # if do_GOSIF_GPP
+
+
+```
+
+
+
+### Spatial analysis
+
+Here plot maps
+
+
+```{r GOSIF GPP map, echo=FALSE, out.width = '100%'}
+
+if(do_GOSIF_GPP){
+  
+  # Do spatial comparisons for each model run
+  # Comparisons
+  spatial_comparisons_list <- list()
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # make comparison 
+    message(paste("Comparison stats for run", this_simulation_Source@name, "GPP values vs. GOSIF GPP values"))
+    suppressWarnings(
+      suppressMessages(
+        spatial_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_GPP_Map_Fields_list[[this_simulation_Source@id]],
+                                                                               field2 = all_GPP_Map_Fields_list[["GOSIF"]],
+                                                                               layers1 =  LPJ_GUESS_variable,
+                                                                               layers2 =  LPJ_GUESS_variable)
       )
-      
-    }
+    )
+  }
+  
+  
+  # plot all slope values together
+  GPP_abs_values_plot <- plotSpatial(all_GPP_Map_Fields_list, 
+                                     ncol = 1, 
+                                     legend.title = expression(kgC~m^{"-2"}~year^{"-1"}) )
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(GPP_abs_values_plot))
+  
+  # also make the difference plots
+  GPP_diff_values_plot <- plotSpatialComparison(spatial_comparisons_list, 
+                                                ncol = 1, 
+                                                legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}) )
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(GPP_diff_values_plot))
+  
+  
+}
+
+```
+
+
+### Trend analysis
+
+Here plot trends
+
+```{r GOSIF GPP trend, echo=FALSE, out.width = '100%'}
+
+if(do_GOSIF_GPP) {
+  
+  
+  
+  
+  
+  
+  ### Read the LPJ-GUESS data
+  
+  # Comparisons
+  trend_comparisons_list <- list()
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # make comparison 
+    message(paste("Comparison stats for run", this_simulation_Source@name, "GPP trend vs. GOSIF GPP trend"))
+    suppressWarnings(
+      suppressMessages(
+        trend_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_GPP_Trend_Fields_list[[this_simulation_Source@id]],
+                                                                             field2 = all_GPP_Trend_Fields_list[["GOSIF"]],
+                                                                             layers1 = "Slope",
+                                                                             layers2 = "Slope")
+      )
+    )
     
   }
   
   
   # plot all slope values together
-  GPP_trend_plot <- plotSpatial(all_GPP_Fields_list, 
+  GPP_trend_plot <- plotSpatial(all_GPP_Trend_Fields_list, 
                                 layers = "Slope", 
                                 ncol = 1, 
                                 cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
@@ -405,7 +421,7 @@ if(do_GOSIF_GPP) {
   
   # plot differences in model vs data slope values together
   GPP_trend_diff_plot <-  suppressWarnings(
-    plotSpatialComparison(model_data_comparisons_list, 
+    plotSpatialComparison(trend_comparisons_list, 
                           ncol = 1, 
                           #cuts = c(-1.0, -0.5, -0.2, -0.1, -0.05, -0.02, -0.01, 0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0),
                           drop.cuts = FALSE,
@@ -415,8 +431,27 @@ if(do_GOSIF_GPP) {
   # suppress warnings about uneven horizontal intervals
   suppressWarnings(print(GPP_trend_diff_plot))
   
+  # and plot significance
+   GPP_trend_sig_plot <- plotSpatial(all_GPP_Trend_Fields_list, 
+                                layers = "p.value", 
+                                ncol = 1, 
+                                #cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                                cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
+                                drop.cuts = FALSE,
+                                title = "Significance in GPP Trends",
+                                legend.title =  "p value")
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(GPP_trend_sig_plot))
+  
+  
   
   
 }
 
 ```
+
+
+### Seasonal analysis
+
+Awaiting example runs with monthly data...
+
