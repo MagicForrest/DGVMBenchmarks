@@ -7,11 +7,11 @@ output:
     toc: true
 params:
   new_directory:
-    value: "/home/mforrest/GuessRuns/Tellus_dev/outputRelease4.1_r10118full/"
+    value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
   new_name:
     value: "New Run"
   old_directory:
-    value: "/home/mforrest/GuessRuns/Tellus_dev/output9957full/"
+    value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
   old_name:
     value: "Old Run"
   data_directory: 
@@ -166,7 +166,7 @@ if(do_GOSIF_GPP){
   ### Here we read the model and data for both the spatial and trend analyses (which are actually done in the next code blocks)
   
   ### some parameters and settings
-  LPJ_GUESS_variable <- "agpp"
+  LPJ_GUESS_variable <- "mgpp"
   first_year_GOSIF <- 2001
   last_year_GOSIF <- 2018
   
@@ -196,12 +196,12 @@ if(do_GOSIF_GPP){
                                  dir = file.path(params$data_directory, GOSIF_GPP_monthly_dir),
                                  format = GUESS)
     GOSIF_full_Field <- getField(source = GOSIF_Source,
-                                    var = LPJ_GUESS_variable,
-                                    file.name = GOSIF_GPP_monthly_file.name)
+                                 var = LPJ_GUESS_variable,
+                                 file.name = GOSIF_GPP_monthly_file.name)
     
     # delete values with -9999 and covert to kg
-    GOSIF_full_Field@data <- GOSIF_full_Field@data[agpp != -9999.0,]
-    GOSIF_full_Field <- layerOp(GOSIF_full_Field, operator = "divc", constant = 1000, layers = "agpp", new.layer = "agpp")
+    GOSIF_full_Field@data <- GOSIF_full_Field@data[mgpp != -9999.0,]
+    GOSIF_full_Field <- layerOp(GOSIF_full_Field, operator = "divc", constant = 1000, layers = "mgpp", new.layer = "mgpp")
     
     # make the annual map for comparison (leave only spatial)
     all_GPP_Map_Fields_list[["GOSIF"]] <- aggregateYears(aggregateSubannual(GOSIF_full_Field, method = "sum", target = "Year"), method = "mean")
@@ -275,18 +275,16 @@ if(do_GOSIF_GPP){
       this_crop_global_Source <- this_simulation_Source
       this_crop_global_Source@dir <- this_benchmark_run_dir
       
-      # read the full data and and select the Total layer only
+      # read the full data and
       suppressWarnings(
         this_simulation_GPP <- getField(source = this_crop_global_Source,
                                         LPJ_GUESS_variable,
                                         first.year = first_year_GOSIF,
                                         last.year = last_year_GOSIF)
       )
-      this_simulation_GPP <- selectLayers(this_simulation_GPP, "Total")
-      renameLayers(this_simulation_GPP, LPJ_GUESS_variable)
       
-      ### take yearly average and store for later use - very easy ###
-      all_GPP_Map_Fields_list[[this_simulation_Source@id]] <- aggregateYears(this_simulation_GPP, "mean")
+      ### take sum of month and average of years and store for later use - very easy ###
+      all_GPP_Map_Fields_list[[this_simulation_Source@id]] <- aggregateYears(aggregateSubannual(this_simulation_GPP, target = "Year", method = "sum"),  "mean")
       
       ### take yearly average and store for later use - very easy ###
       all_GPP_Seasonal_Fields_list[[this_simulation_Source@id]] <- aggregateYears(this_simulation_GPP, "mean")
@@ -296,7 +294,8 @@ if(do_GOSIF_GPP){
       this_simulation_GPP_dt <- this_simulation_GPP@data
       
       # suppress warnings about "essentially perfect fit"
-      suppressWarnings(fitted_trends_dt <- this_simulation_GPP_dt[, as.list(summary(lm(agpp~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)])
+      #suppressWarnings(fitted_trends_dt <- this_simulation_GPP_dt[, as.list(summary(lm(mgpp~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)])
+      fitted_trends_dt <- this_simulation_GPP_dt[, as.list(summary(lm(mgpp~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)]
       setnames(fitted_trends_dt, c("Estimate", "Pr(>|t|)"), c("Slope", "p.value"))
       this_simulation_GPP@data <- fitted_trends_dt
       this_simulation_GPP@year.aggregate.method <- "linear_trend"
@@ -379,11 +378,6 @@ Here plot trends
 
 if(do_GOSIF_GPP) {
   
-  
-  
-  
-  
-  
   ### Read the LPJ-GUESS data
   
   # Comparisons
@@ -432,14 +426,14 @@ if(do_GOSIF_GPP) {
   suppressWarnings(print(GPP_trend_diff_plot))
   
   # and plot significance
-   GPP_trend_sig_plot <- plotSpatial(all_GPP_Trend_Fields_list, 
-                                layers = "p.value", 
-                                ncol = 1, 
-                                #cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
-                                cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
-                                drop.cuts = FALSE,
-                                title = "Significance in GPP Trends",
-                                legend.title =  "p value")
+  GPP_trend_sig_plot <- plotSpatial(all_GPP_Trend_Fields_list, 
+                                    layers = "p.value", 
+                                    ncol = 1, 
+                                    #cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                                    cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
+                                    drop.cuts = FALSE,
+                                    title = "Significance in GPP Trends",
+                                    legend.title =  "p value")
   # suppress warnings about uneven horizontal intervals
   suppressWarnings(print(GPP_trend_sig_plot))
   
@@ -454,4 +448,74 @@ if(do_GOSIF_GPP) {
 ### Seasonal analysis
 
 Awaiting example runs with monthly data...
+```{r GOSIF GPP seasonality, echo=FALSE, out.width = '100%'}
 
+if(do_GOSIF_GPP) {
+  
+  ### Read the LPJ-GUESS data
+  
+  # Comparisons
+  seasonal_comparisons_list <- list()
+  
+  # before doing comparision, set all (incorrectly) negative GPPs to zero
+  min2zero <- function(x){
+    pmax(x,0)
+  }
+  this_simulation_only_positive <- layerOp(all_GPP_Seasonal_Fields_list[[this_simulation_Source@id]],
+                                           operator = min2zero,
+                                           layers = "mgpp", 
+                                           new.layer = "mgpp")
+  
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # make comparison 
+    message(paste("Comparison stats for run", this_simulation_Source@name, "GPP seasonality vs. GOSIF seasonality trend"))
+    suppressWarnings(
+      suppressMessages(
+        
+        
+        seasonal_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = this_simulation_only_positive,
+                                                                                field2 = all_GPP_Seasonal_Fields_list[["GOSIF"]],
+                                                                                layers1 = LPJ_GUESS_variable,
+                                                                                layers2 = LPJ_GUESS_variable, 
+                                                                                do.seasonality = TRUE)
+      )
+    )
+    
+  }
+  
+  
+  #### PHASE
+  # absolute value
+  GPP_seasonality_vals_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                     do.phase = TRUE,
+                                                     type = "values",
+                                                     cuts = 0:12,
+                                                     ncol = 1)
+  suppressWarnings(print(GPP_seasonality_vals_plot))
+  
+  # difference
+  GPP_seasonality_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                     do.phase = TRUE,
+                                                     cuts = seq(-6,6), 
+                                                     symmetric.scale = FALSE,
+                                                     ncol = 1)
+  suppressWarnings(print(GPP_seasonality_diff_plot))
+  
+  #### CONCENTRATION
+  # absolute value
+  GPP_seasonality_conc_vals_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                          type = "values",
+                                                          ncol = 1)
+  suppressWarnings(print(GPP_seasonality_conc_vals_plot))
+  
+  # difference value
+  GPP_seasonality_conc_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                          ncol = 1)
+  suppressWarnings(print(GPP_seasonality_conc_diff_plot))
+  
+}
+
+```
