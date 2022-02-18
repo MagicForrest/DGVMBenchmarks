@@ -52,9 +52,15 @@ old_simulation_Source <- defineSource(name = params$old_name,
 # combine into a list for looping later
 all_simulation_Sources_list <- list(old_simulation_Source, new_simulation_Source)
 
+# quik read switch and version label (for making quick read files)
+quick_read <- TRUE
+version_label <- "tellus_v1.0" 
+
 # switches for which benchmarks to do
-do_GCP_NEE <- TRUE
-do_GOSIF_GPP <- TRUE
+do_GCP_NEE <- FALSE
+do_GOSIF_GPP <- FALSE
+do_MODIS_LAI <- TRUE
+
 
 ```
 
@@ -103,7 +109,10 @@ if(do_GCP_NEE){
                                       first.year = first_GCP_GUESS_year,
                                       last.year = last_GCP_GUESS_year,
                                       spatial.aggregate.method = "w.sum",
-                                      spatial.extent.id = "Global")
+                                      spatial.extent.id = "Global",
+                                      quick.read = quick_read,
+                                      quick.read.file = paste("cflux", version_label, sep = "_") 
+      )
       this_simulation_NEE <- layerOp(x = this_simulation_NEE, operator = "divc", layers = layers(this_simulation_NEE), new.layer = layers(this_simulation_NEE), constant = -1E12)
       
       # store the Field in the list of all Fields for plotting later
@@ -280,7 +289,9 @@ if(do_GOSIF_GPP){
         this_simulation_GPP <- getField(source = this_crop_global_Source,
                                         LPJ_GUESS_variable,
                                         first.year = first_year_GOSIF,
-                                        last.year = last_year_GOSIF)
+                                        last.year = last_year_GOSIF,
+                                        quick.read = quick_read,
+                                        quick.read.file = paste(LPJ_GUESS_variable, version_label, sep = "_"))
       )
       
       ### take sum of month and average of years and store for later use - very easy ###
@@ -447,7 +458,7 @@ if(do_GOSIF_GPP) {
 
 ### Seasonal analysis
 
-Awaiting example runs with monthly data...
+
 ```{r GOSIF GPP seasonality, echo=FALSE, out.width = '100%'}
 
 if(do_GOSIF_GPP) {
@@ -465,7 +476,7 @@ if(do_GOSIF_GPP) {
                                            operator = min2zero,
                                            layers = "mgpp", 
                                            new.layer = "mgpp")
-  
+
   
   # loop through model runs to be processed
   for(this_simulation_Source in all_simulation_Sources_list) {
@@ -474,6 +485,8 @@ if(do_GOSIF_GPP) {
     message(paste("Comparison stats for run", this_simulation_Source@name, "GPP seasonality vs. GOSIF seasonality trend"))
     suppressWarnings(
       suppressMessages(
+        
+        
         
         
         seasonal_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = this_simulation_only_positive,
@@ -515,6 +528,362 @@ if(do_GOSIF_GPP) {
   GPP_seasonality_conc_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
                                                           ncol = 1)
   suppressWarnings(print(GPP_seasonality_conc_diff_plot))
+  
+}
+
+```
+
+## MODIS Leaf Area Index
+
+
+
+```{r MODIS LAI data prep, echo=FALSE, out.width = '100%'}
+
+if(do_MODIS_LAI){
+  
+  ### Here we read the model and data for both the spatial and trend analyses (which are actually done in the next code blocks)
+  
+  ### some parameters and settings
+  LPJ_GUESS_variable <- "mlai"
+  first_year_MODIS <- 2001
+  last_year_MODIS <- 2020
+  
+  ### for the full monthly data (stored externally to the package)
+  MODIS_LAI_monthly_dir <- "monthly_lai/MODIS"
+  MODIS_LAI_monthly_file.name <- "MODIS_LAI.txt"
+  
+  # file names for the files in the package
+  MODIS_trend_file_name <- "MODIS_LAI_slope_2001-2020.txt"
+  MODIS_sig_file_name <- "MODIS_LAI_sig_2001-2020.txt"
+  
+  ### Lists for storing the files
+  all_LAI_Map_Fields_list <- list()
+  all_LAI_Trend_Fields_list <- list()
+  all_LAI_Seasonal_Fields_list <- list()
+  
+  
+  #### READ MODIS DATA ####
+  
+  ### read the MODIS full monthly data
+  full_file_path <- file.path(params$data_directory, MODIS_LAI_monthly_dir, MODIS_LAI_monthly_file.name)
+  if(file.exists(full_file_path)) {
+
+    # Read the MODIS monthly data via a GUESS formatted Source
+    MODIS_Source <- defineSource(id = "MODIS_LAI",
+                                 name = "MODIS LAI",
+                                 dir = file.path(params$data_directory, MODIS_LAI_monthly_dir),
+                                 format = GUESS)
+    MODIS_full_Field <- getField(source = MODIS_Source,
+                                 var = LPJ_GUESS_variable,
+                                 file.name = MODIS_LAI_monthly_file.name)
+    
+    # delete values with -9999
+    MODIS_full_Field@data <- MODIS_full_Field@data[mlai != -9999.0,]
+
+    # make the annual map for comparison (leave only spatial)
+    all_LAI_Map_Fields_list[["MODIS"]] <- aggregateYears(aggregateSubannual(MODIS_full_Field, method = "max", target = "Year"), method = "mean")
+    
+    # make the seasonal cycle for comparison (leave months and  spatial)
+    all_LAI_Seasonal_Fields_list[["MODIS"]] <- aggregateYears(MODIS_full_Field, method = "mean")
+    
+  }
+  
+  ### Read the MODIS data 
+  input_dir <- system.file("extdata", "MODIS_LAI", package = "DGVMBenchmarks")
+  
+  # read into a terra::SpatRaster
+  MODIS_trend_matrix <- as.matrix(read.table(file.path(input_dir, MODIS_trend_file_name), sep="\t"))
+  MODIS_sig_matrix <- as.matrix(read.table(file.path(input_dir, MODIS_sig_file_name), sep="\t"))
+  
+  MODIS_trend_SpatRaster <- rast(MODIS_trend_matrix)
+  MODIS_sig_SpatRaster <- rast(MODIS_sig_matrix)
+  
+  ext(MODIS_trend_SpatRaster) <- ext(-180, 180, -90,90)
+  ext(MODIS_sig_SpatRaster) <- ext(-180, 180, -90,90)
+  
+  MODIS_trend_SpatRaster[MODIS_trend_SpatRaster == -9999] <- NA
+  MODIS_sig_SpatRaster[MODIS_sig_SpatRaster == -9999] <- NA
+  
+  # melt into data.tables, combine and set names
+  MODIS_trend_dt<- as.data.table(as.data.frame(MODIS_trend_SpatRaster, xy = TRUE, cells = FALSE))
+  MODIS_sig_dt<- as.data.table(as.data.frame(MODIS_sig_SpatRaster, xy = TRUE, cells = FALSE))
+  MODIS_dt <- merge.data.table(MODIS_trend_dt, MODIS_sig_dt, by =  c("x", "y"))
+  setnames(MODIS_dt, c("Lon", "Lat", "Slope", "p.value"))
+  
+  #  manually construct a Field object
+  MODIS_Trend_Source <- defineSource(id = "MODIS_LAI",
+                                     name = "MODIS LAI",
+                                     dir = input_dir,
+                                     format = GUESS)
+  
+  MODIS_Trend_Field <- new("Field",
+                           data = MODIS_dt,
+                           source = MODIS_Trend_Source,
+                           quant = lookupQuantity(LPJ_GUESS_variable, GUESS),
+                           first.year = first_year_MODIS,
+                           last.year = last_year_MODIS,
+                           year.aggregate.method = "linear_trend",
+                           spatial.extent = extent(MODIS_dt),
+                           spatial.extent.id = "Full",
+                           spatial.aggregate.method = "none",
+                           subannual.resolution = "Year",
+                           subannual.original = "8-day",
+                           subannual.aggregate.method = "sum")
+  
+  MODIS_Trend_Field@id <- makeFieldID(MODIS_Trend_Field)
+  
+  # make a list of all Fields to be compared  (this will also include whatever model runs are available)
+  all_LAI_Trend_Fields_list[["MODIS"]] <- MODIS_Trend_Field
+  
+  
+  
+  #### READ LPJ-GUESS LAI DATA ####
+  # Comparisons
+  model_data_comparisons_list <- list()
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # check if file is present (if not don't include this run)
+    this_benchmark_run_dir <- file.path(this_simulation_Source@dir, "crop_global")
+    if(file.exists(file.path(this_benchmark_run_dir, paste0(LPJ_GUESS_variable, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(LPJ_GUESS_variable, ".out.gz")))) {
+      
+      # make local sources pointing to the crop_global directory
+      this_crop_global_Source <- this_simulation_Source
+      this_crop_global_Source@dir <- this_benchmark_run_dir
+      
+      # read the full data and
+      suppressWarnings(
+        this_simulation_LAI <- getField(source = this_crop_global_Source,
+                                        LPJ_GUESS_variable,
+                                        first.year = first_year_MODIS,
+                                        quick.read = quick_read,
+                                        quick.read.file = paste(LPJ_GUESS_variable, version_label, sep = "_"))
+      )
+      
+      ### take sum of month and average of years and store for later use - very easy ###
+      all_LAI_Map_Fields_list[[this_simulation_Source@id]] <- aggregateYears(aggregateSubannual(this_simulation_LAI, target = "Year", method = "max"),  "mean")
+      
+      ### take yearly average and store for later use - very easy ###
+      all_LAI_Seasonal_Fields_list[[this_simulation_Source@id]] <- aggregateYears(this_simulation_LAI, "mean")
+      
+      
+      ### calculate the linear trend and p-value for every gridcell and store for later use ###     
+      this_simulation_LAI_dt <- this_simulation_LAI@data
+      
+      # suppress warnings about "essentially perfect fit"
+      #suppressWarnings(fitted_trends_dt <- this_simulation_LAI_dt[, as.list(summary(lm(mLAI~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)])
+      fitted_trends_dt <- this_simulation_LAI_dt[, as.list(summary(lm(mlai~Year))$coefficients[2,c(1,4)]), by = .(Lon, Lat)]
+      setnames(fitted_trends_dt, c("Estimate", "Pr(>|t|)"), c("Slope", "p.value"))
+      this_simulation_LAI@data <- fitted_trends_dt
+      this_simulation_LAI@year.aggregate.method <- "linear_trend"
+      this_simulation_LAI@id <- makeFieldID(this_simulation_LAI)
+      
+      # change units to gC/m^-2/month^-2
+      this_simulation_LAI <- layerOp( this_simulation_LAI, operator = "mulc", constant = 1000/144, layers = "Slope", new.layer = "Slope")
+      
+      # store the Field in the list of all Fields for plotting later
+      all_LAI_Trend_Fields_list[[this_simulation_Source@id]] <- this_simulation_LAI
+      
+      # remove to save memory
+      rm(this_simulation_LAI)
+      
+    } # if file is present 
+    
+  } # for each model run
+  
+} # if do_MODIS_LAI
+
+
+```
+
+
+### Spatial analysis
+
+Maps show max LAI of the year (averaged across all years).
+
+
+```{r MODIS LAI map, echo=FALSE, out.width = '100%'}
+
+if(do_MODIS_LAI){
+  
+  # Do spatial comparisons for each model run
+  # Comparisons
+  spatial_comparisons_list <- list()
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # make comparison 
+    message(paste("Comparison stats for run", this_simulation_Source@name, "LAI values vs. MODIS LAI values"))
+    suppressWarnings(
+      suppressMessages(
+        spatial_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_LAI_Map_Fields_list[[this_simulation_Source@id]],
+                                                                               field2 = all_LAI_Map_Fields_list[["MODIS"]],
+                                                                               layers1 =  LPJ_GUESS_variable,
+                                                                               layers2 =  LPJ_GUESS_variable)
+      )
+    )
+  }
+  
+  
+  # plot all slope values together
+  LAI_abs_values_plot <- plotSpatial(all_LAI_Map_Fields_list, 
+                                     ncol = 1, 
+                                     legend.title = expression(kgC~m^{"-2"}~year^{"-1"}) )
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(LAI_abs_values_plot))
+  
+  # also make the difference plots
+  LAI_diff_values_plot <- plotSpatialComparison(spatial_comparisons_list, 
+                                                ncol = 1, 
+                                                legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}) )
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(LAI_diff_values_plot))
+  
+  
+}
+
+```
+
+
+
+### Trend analysis
+
+Here plot trends
+
+```{r MODIS LAI trend, echo=FALSE, out.width = '100%'}
+
+if(do_MODIS_LAI) {
+  
+  ### Read the LPJ-GUESS data
+  
+  # Comparisons
+  trend_comparisons_list <- list()
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # make comparison 
+    message(paste("Comparison stats for run", this_simulation_Source@name, "LAI trend vs. MODIS LAI trend"))
+    suppressWarnings(
+      suppressMessages(
+        trend_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_LAI_Trend_Fields_list[[this_simulation_Source@id]],
+                                                                             field2 = all_LAI_Trend_Fields_list[["MODIS"]],
+                                                                             layers1 = "Slope",
+                                                                             layers2 = "Slope")
+      )
+    )
+    
+  }
+  
+  
+  # plot all slope values together
+  LAI_trend_plot <- plotSpatial(all_LAI_Trend_Fields_list, 
+                                layers = "Slope", 
+                                ncol = 1, 
+                                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                                #cuts = c(-1.0, -0.5, -0.2, -0.1, -0.05, -0.02, -0.01, 0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0),
+                                limits = c(-0.5,0.5),
+                                drop.cuts = FALSE,
+                                title = "Trend in LAI"
+                                )
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(LAI_trend_plot))
+  
+  # plot differences in model vs data slope values together
+  LAI_trend_diff_plot <-  suppressWarnings(
+    plotSpatialComparison(trend_comparisons_list, 
+                          ncol = 1, 
+                          #cuts = c(-1.0, -0.5, -0.2, -0.1, -0.05, -0.02, -0.01, 0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0),
+                          drop.cuts = FALSE,
+                          title = "Difference Trend in LAI")
+  )
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(LAI_trend_diff_plot))
+  
+  # and plot significance
+  LAI_trend_sig_plot <- plotSpatial(all_LAI_Trend_Fields_list, 
+                                    layers = "p.value", 
+                                    ncol = 1, 
+                                    #cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                                    cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
+                                    drop.cuts = FALSE,
+                                    title = "Significance in LAI Trends",
+                                    legend.title =  "p value")
+  # suppress warnings about uneven horizontal intervals
+  suppressWarnings(print(LAI_trend_sig_plot))
+  
+  
+  
+  
+}
+
+```
+
+
+
+### Seasonal analysis
+
+```{r MODIS LAI seasonality, echo=FALSE, out.width = '100%'}
+
+if(do_MODIS_LAI) {
+  
+  ### Read the LPJ-GUESS data
+  
+  # Comparisons
+  seasonal_comparisons_list <- list()
+  
+  # loop through model runs to be processed
+  for(this_simulation_Source in all_simulation_Sources_list) {
+    
+    # make comparison 
+    message(paste("Comparison stats for run", this_simulation_Source@name, "LAI seasonality vs. MODIS seasonality trend"))
+    suppressWarnings(
+      suppressMessages(
+        
+        
+        
+        
+        seasonal_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_LAI_Seasonal_Fields_list[[this_simulation_Source@id]],
+                                                                                field2 = all_LAI_Seasonal_Fields_list[["MODIS"]],
+                                                                                layers1 = LPJ_GUESS_variable,
+                                                                                layers2 = LPJ_GUESS_variable, 
+                                                                                do.seasonality = TRUE)
+      )
+    )
+    
+  }
+  
+  
+  #### PHASE
+  # absolute value
+  LAI_seasonality_vals_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                     do.phase = TRUE,
+                                                     type = "values",
+                                                     cuts = 0:12,
+                                                     ncol = 1)
+  suppressWarnings(print(LAI_seasonality_vals_plot))
+  
+  # difference
+  LAI_seasonality_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                     do.phase = TRUE,
+                                                     cuts = seq(-6,6), 
+                                                     symmetric.scale = FALSE,
+                                                     ncol = 1)
+  suppressWarnings(print(LAI_seasonality_diff_plot))
+  
+  #### CONCENTRATION
+  # absolute value
+  LAI_seasonality_conc_vals_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                          type = "values",
+                                                          ncol = 1)
+  suppressWarnings(print(LAI_seasonality_conc_vals_plot))
+  
+  # difference value
+  LAI_seasonality_conc_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
+                                                          ncol = 1)
+  suppressWarnings(print(LAI_seasonality_conc_diff_plot))
   
 }
 
