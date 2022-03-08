@@ -57,8 +57,8 @@ quick_read <- TRUE
 version_label <- "tellus_v1.0" 
 
 # switches for which benchmarks to do
-do_GCP_NEE <- FALSE
-do_GOSIF_GPP <- FALSE
+do_GCP_NEE <- TRUE
+do_GOSIF_GPP <- TRUE
 do_MODIS_LAI <- TRUE
 
 
@@ -205,7 +205,7 @@ if(do_GOSIF_GPP){
                                  dir = file.path(params$data_directory, GOSIF_GPP_monthly_dir),
                                  format = GUESS)
     GOSIF_full_Field <- getField(source = GOSIF_Source,
-                                 var = LPJ_GUESS_variable,
+                                 quant = LPJ_GUESS_variable,
                                  file.name = GOSIF_GPP_monthly_file.name)
     
     # delete values with -9999 and covert to kg
@@ -313,7 +313,7 @@ if(do_GOSIF_GPP){
       this_simulation_GPP@id <- makeFieldID(this_simulation_GPP)
       
       # change units to gC/m^-2/month^-2
-      this_simulation_GPP <- layerOp( this_simulation_GPP, operator = "mulc", constant = 1000/144, layers = "Slope", new.layer = "Slope")
+      this_simulation_GPP <- layerOp( this_simulation_GPP, operator = "mulc", constant = 1000, layers = "Slope", new.layer = "Slope")
       
       # store the Field in the list of all Fields for plotting later
       all_GPP_Trend_Fields_list[[this_simulation_Source@id]] <- this_simulation_GPP
@@ -574,7 +574,7 @@ if(do_MODIS_LAI){
                                  dir = file.path(params$data_directory, MODIS_LAI_monthly_dir),
                                  format = GUESS)
     MODIS_full_Field <- getField(source = MODIS_Source,
-                                 var = LPJ_GUESS_variable,
+                                 quant = LPJ_GUESS_variable,
                                  file.name = MODIS_LAI_monthly_file.name)
     
     # delete values with -9999
@@ -628,7 +628,7 @@ if(do_MODIS_LAI){
                            spatial.aggregate.method = "none",
                            subannual.resolution = "Year",
                            subannual.original = "8-day",
-                           subannual.aggregate.method = "sum")
+                           subannual.aggregate.method = "max")
   
   MODIS_Trend_Field@id <- makeFieldID(MODIS_Trend_Field)
   
