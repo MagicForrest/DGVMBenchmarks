@@ -2,6 +2,8 @@
 
 export(calcLinearTrend)
 export(read_GCP)
+export(read_site_metadata)
 import(DGVMTools)
 import(data.table)
+import(dplyr)
 import(readxl)
