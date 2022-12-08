@@ -56,18 +56,22 @@ getField_ICOS <- function(source,
   
   # read each individual ICOS text files, and compile everything into one big table
   
+  
   # determine which sites are available
+  
   
   # loop over each side 
   for (s in 1:length(sites_input)) {
-    
     
     # read the table
     
     # select the columns that we want
     
-    # preselect
+    # preselect years 
     
+    # look up lon and lat
+    
+    # add to list data.tables
     
     # sets some commonly used input
     variables_fluxes <-
@@ -131,6 +135,9 @@ getField_ICOS <- function(source,
     obs_tbl$Day <- yday(ymd(obs_tbl$ymd))
   
   }
+  
+  # combine list of data.tables
+  
   
   if (quant@id %in% variables_fluxes) {
     ICOS_cfluxes %>% select(Year, Day, Lon, Lat, quant@id) -> quant_data
