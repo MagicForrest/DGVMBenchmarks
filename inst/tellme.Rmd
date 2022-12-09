@@ -30,9 +30,10 @@ library(ggplot2)
 library(mapproj)
 library(pals)
 library(knitr)
+library(dplyr)
 ```
 
-## Settings
+# Settings
 
 Below you can see the setting for this run of the benchmarking script.
 
@@ -66,8 +67,8 @@ version_label <- "tellus_v1.1"
 doPublicationPlots <- FALSE
 
 # switches for which benchmarks to do
-do_GCP_NBP <- TRUE
-do_Biomes <- TRUE
+do_GCP_NBP <- FALSE
+do_Biomes <- FALSE
 do_GOSIF_GPP <- TRUE
 do_MODIS_LAI <- FALSE
 do_GFED4_BA <- FALSE
@@ -89,7 +90,9 @@ summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 
 ---
 
-## Global Carbon Project Net Biome Poductivity
+
+
+# Global Carbon Project Net Biome Poductivity
 
 Potential intro text about GCP, links to online description of the data, what to look for in the benchmark, etc.
 
@@ -188,13 +191,13 @@ if(do_GCP_NBP){
 
 ---
 
-## PNV Biomes
+# PNV Biomes
 
-###  Dinerstein 2017 ecoregions, no model output classification yet done
+##  Dinerstein 2017 ecoregions, no model output classification yet done
 
 Any volunteers for performing such a classification?  If you do, Stefan will buy you a beer.
 
-### Haxeltine and Prentice 1992 biomes, classification following Smith et al 2014.
+## Haxeltine and Prentice 1992 biomes, classification following Smith et al 2014.
 
 
 ```{r Global PNV biomes}
@@ -294,7 +297,7 @@ if(do_Biomes){
   biome_plot <- biome_plot + theme(legend.position = "bottom",
                                    legend.text=element_text(size=rel(0.9)),
                                    legend.key.size = unit(0.5, "lines"))
-                                   
+  
   biome_plot <- biome_plot+ guides(fill = guide_legend(ncol = 2))
   suppressWarnings(plot(biome_plot))
   
@@ -310,20 +313,13 @@ if(do_Biomes){
 ---
 
 
-
-
-
-
-
-## GOSIF Gross Primary Productivity
+# GOSIF Gross Primary Productivity
 
 Intro, data links, etc.
 
 ```{r GOSIF GPP data prep, echo=FALSE, out.width = '100%'}
 
 if(do_GOSIF_GPP){
-  
-  ### Here we read the model and data for both the spatial and trend analyses (which are actually done in the next code blocks)
   
   ### some parameters and settings
   guess_var <- "mgpp"
@@ -441,51 +437,80 @@ if(do_GOSIF_GPP){
     
   } # for each model run
   
-} # if do_GOSIF_GPP
-
-
-```
-
-### Spatial patterns analysis
-
-
-```{r GOSIF GPP map, echo=FALSE, out.width = '100%', fig.height = 9}
-
-if(do_GOSIF_GPP){
   
-  # Do spatial comparisons for each model run and calculated global GPP
+  #### Now that we have read all the data, make all the comparisons
+  
+  # Lists for all comparisons
   spatial_comparisons_list <- list()
   nme_scores_list <- list()
+  trend_comparisons_list <- list()
+  seasonal_comparisons_list <- list()
+  
   
   # loop through model runs to be processed
   for(this_simulation_Source in all_simulation_Sources_list) {
     
-    # make comparison 
-    # message(paste("Comparison stats for run", this_simulation_Source@name, "GPP values vs. GOSIF GPP values"))
-    suppressWarnings(
-      suppressMessages(
-        spatial_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_GPP_Map_Fields_list[[this_simulation_Source@id]],
-                                                                               field2 = all_GPP_Map_Fields_list[[this_data_Source@name]],
-                                                                               layers1 =  guess_var,
-                                                                               layers2 =  guess_var, 
-                                                                               show.stats = FALSE)
-      )
-    )
-    
+    #### GOSIF SPATIAL VALUES COMPARISONS ####
+    suppressWarnings(suppressMessages(
+      spatial_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_GPP_Map_Fields_list[[this_simulation_Source@id]],
+                                                                             field2 = all_GPP_Map_Fields_list[[this_data_Source@name]],
+                                                                             layers1 =  guess_var, layers2 =  guess_var, show.stats = FALSE)))
     # store the NME 
     nme_scores_list[[this_simulation_Source@name]] <- spatial_comparisons_list[[this_simulation_Source@id]]@stats$NME
     
-    # also calculate global total GPP and put into a data.frame for the labels
-    suppressMessages(temp_fld <- addArea(all_GPP_Map_Fields_list[[this_simulation_Source@id]], "m^2"))
-    temp_fld <- layerOp(temp_fld, "*", c(guess_var, "Area"), "Area_summed")
-    suppressWarnings( total_GPP_PgC <- aggregateSpatial(selectLayers(temp_fld, "Area_summed"), method = "sum")@data/1e+12)
+    #### GOSIF TRENDS COMPARISONS ####
+    suppressWarnings(suppressMessages(
+      trend_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_GPP_Trend_Fields_list[[this_simulation_Source@id]],
+                                                                           field2 = all_GPP_Trend_Fields_list[[this_data_Source@name]],
+                                                                           layers1 = "Trend",
+                                                                           layers2 = "Trend", 
+                                                                           show.stats = FALSE)))
+    
+    
+    #### GOSIF SEASONAL COMPARISONS ####
+    
+    # before doing comparison, set all (incorrectly) negative GPPs to zero
+    this_simulation_only_positive <- layerOp(all_GPP_Seasonal_Fields_list[[this_simulation_Source@id]],
+                                             operator = function(x){pmax(x,0)},
+                                             layers = guess_var, 
+                                             new.layer = guess_var)
+    suppressWarnings(suppressMessages(
+      seasonal_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = this_simulation_only_positive,
+                                                                              field2 = all_GPP_Seasonal_Fields_list[[this_data_Source@name]],
+                                                                              layers1 = guess_var,
+                                                                              layers2 = guess_var, 
+                                                                              do.seasonality = TRUE, 
+                                                                              show.stats = FALSE)))
+    
+    
+    
+    
+    
+    #### GLOBAL SUMS FOR GPP ####
+    suppressMessages(suppressWarnings(
+      addArea(all_GPP_Map_Fields_list[[this_simulation_Source@id]], "m^2") %>%
+        layerOp("*", c(guess_var, "Area"), "Area_summed") %>%
+        selectLayers("Area_summed") %>%
+        aggregateSpatial(method = "sum") -> total_GPP_PgC_Field
+    ))
+    
+    total_GPP_PgC <- total_GPP_PgC_Field@data/1e+12
     all_GPP_totals[[this_simulation_Source@name]] <- total_GPP_PgC
     summary_table_lines$Data <- signif(as.numeric(total_GPP_PgC),4)
-    rm(temp_fld)
+
   }
-  
-  
-  # plot all slope values together
+
+}
+
+```
+
+## Spatial patterns analysis {.tabset}
+
+### Absolute values
+
+```{r fig.height = 8}
+if(do_GOSIF_GPP){  
+  # plot all absolute values together
   GPP_abs_values_plot <- plotSpatial(all_GPP_Map_Fields_list, 
                                      ncol = 1, 
                                      legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
@@ -498,16 +523,17 @@ if(do_GOSIF_GPP){
   for(this_panel  in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
                                                                      list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
                                                                           Facet = this_panel, 
-                                                                          x = -130, 
-                                                                          y = -40),
+                                                                          x = -130, y = -40),
                                                                      stringsAsFactors = FALSE)
   GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
-  
-  
-  # suppress warnings about uneven horizontal intervals
   suppressWarnings(print(GPP_abs_values_plot))
-  
-  # also make the difference plots
+}
+```
+
+### Differences
+
+```{r, fig.height = 6}
+if(do_GOSIF_GPP){  
   GPP_diff_values_plot <- plotSpatialComparison(spatial_comparisons_list, 
                                                 ncol = 1, 
                                                 legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
@@ -519,46 +545,22 @@ if(do_GOSIF_GPP){
   for(this_panel  in names(nme_scores_list))  metric_label_df <- rbind(metric_label_df,
                                                                        list(label = paste("NME =", round(nme_scores_list[[this_panel]], 2)), 
                                                                             Facet = paste(this_panel, "-", this_data_Source@name), 
-                                                                            x = -130, 
-                                                                            y = -40),
+                                                                            x = -130, y = -40),
                                                                        stringsAsFactors = FALSE)
   GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
   
-  # suppress warnings about uneven horizontal intervals
   suppressWarnings(print(GPP_diff_values_plot))
-  
 }
-
 ```
 
 
-### Trend analysis
+
+## Trend analysis
 
 ```{r GOSIF GPP trend, echo=FALSE, out.width = '100%', fig.height = 9}
 
 if(do_GOSIF_GPP) {
   
-  ### Read the LPJ-GUESS data
-  
-  # Comparisons
-  trend_comparisons_list <- list()
-  
-  # loop through model runs to be processed
-  for(this_simulation_Source in all_simulation_Sources_list) {
-    
-    # make comparison vs data
-    # message(paste("Comparison stats for run", this_simulation_Source@name, "GPP trend vs. GOSIF GPP trend"))
-    suppressWarnings(
-      suppressMessages(
-        trend_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = all_GPP_Trend_Fields_list[[this_simulation_Source@id]],
-                                                                             field2 = all_GPP_Trend_Fields_list[[this_data_Source@name]],
-                                                                             layers1 = "Trend",
-                                                                             layers2 = "Trend", 
-                                                                             show.stats = FALSE)
-      )
-    )
-    
-  }
   
   # plot all slope values together
   GPP_trend_plot <- plotSpatial(all_GPP_Trend_Fields_list, 
@@ -618,44 +620,6 @@ if(do_GOSIF_GPP) {
 
 if(do_GOSIF_GPP) {
   
-  ### Read the LPJ-GUESS data
-  
-  # Comparisons
-  seasonal_comparisons_list <- list()
-  
-  # loop through model runs to be processed
-  for(this_simulation_Source in all_simulation_Sources_list) {
-    
-    # before doing comparision, set all (incorrectly) negative GPPs to zero
-    min2zero <- function(x){
-      pmax(x,0)
-    }
-    
-    this_simulation_only_positive <- layerOp(all_GPP_Seasonal_Fields_list[[this_simulation_Source@id]],
-                                             operator = min2zero,
-                                             layers = guess_var, 
-                                             new.layer = guess_var)
-    
-    # make comparison 
-    # message(paste("Comparison stats for run", this_simulation_Source@name, "GPP seasonality vs. GOSIF seasonality trend"))
-    suppressWarnings(
-      suppressMessages(
-        
-        
-        
-        
-        seasonal_comparisons_list[[this_simulation_Source@id]] <- compareLayers(field1 = this_simulation_only_positive,
-                                                                                field2 = all_GPP_Seasonal_Fields_list[[this_data_Source@name]],
-                                                                                layers1 = guess_var,
-                                                                                layers2 = guess_var, 
-                                                                                do.seasonality = TRUE, 
-                                                                                show.stats = FALSE)
-      )
-    )
-    
-  }
-  
-  
   #### PHASE
   # absolute value
   suppressWarnings(GPP_seasonality_vals_plot <- plotSpatialComparison(seasonal_comparisons_list, 
@@ -703,7 +667,7 @@ if(do_GOSIF_GPP) {
 
 ---
 
-## MODIS Leaf Area Index
+# MODIS Leaf Area Index
 
 
 ```{r MODIS LAI data prep, echo=FALSE, out.width = '100%'}
@@ -807,7 +771,7 @@ if(do_MODIS_LAI){
 ```
 
 
-### Spatial analysis
+## Spatial analysis
 
 Maps show max LAI of the year (averaged across all years).
 
@@ -860,7 +824,7 @@ if(do_MODIS_LAI){
 
 
 
-### Trend analysis
+## Trend analysis
 
 ```{r MODIS LAI trend, echo=FALSE, out.width = '100%'}
 
@@ -932,7 +896,7 @@ if(do_MODIS_LAI) {
 
 
 
-### Seasonal analysis
+## Seasonal analysis
 
 ```{r MODIS LAI seasonality, echo=FALSE, out.width = '100%'}
 
@@ -1024,7 +988,7 @@ if(do_MODIS_LAI) {
 
 ---
 
-## GFED4 burnt area
+# GFED4 burnt area
 
 
 
