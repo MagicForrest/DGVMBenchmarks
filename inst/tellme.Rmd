@@ -94,7 +94,7 @@ summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 Potential intro text about GCP, links to online description of the data, what to look for in the benchmark, etc.
 
 
-```{r gcp, echo=FALSE, out.width = '100%'}
+```{r gcp, fig.height=5}
 
 if(do_GCP_NBP){
   
@@ -190,10 +190,14 @@ if(do_GCP_NBP){
 
 ## PNV Biomes
 
+###  Dinerstein 2017 ecoregions, no model output classification yet done
+
+Any volunteers for performing such a classification?  If you do, Stefan will buy you a beer.
+
 ### Haxeltine and Prentice 1992 biomes, classification following Smith et al 2014.
 
 
-```{r Global PNV biomes, echo=FALSE, out.width = '100%', fig.height = 9}
+```{r Global PNV biomes}
 
 #### H&P Biomes ####
 if(do_Biomes){
@@ -382,7 +386,7 @@ if(do_GOSIF_GPP){
     suppressWarnings( total_GPP_PgC <- aggregateSpatial(selectLayers(temp_fld, "Area_summed"), method = "sum")@data/1e+12)
     all_GPP_totals[[this_data_Source@name]] <- total_GPP_PgC
     summary_table_lines$Data <- signif(as.numeric(total_GPP_PgC),4)
-    
+    rm(temp_fld)
   }
   else {
     do_GOSIF_GPP <- FALSE
@@ -477,7 +481,6 @@ if(do_GOSIF_GPP){
     suppressWarnings( total_GPP_PgC <- aggregateSpatial(selectLayers(temp_fld, "Area_summed"), method = "sum")@data/1e+12)
     all_GPP_totals[[this_simulation_Source@name]] <- total_GPP_PgC
     summary_table_lines$Data <- signif(as.numeric(total_GPP_PgC),4)
-    rm(temp_fld)
     rm(temp_fld)
   }
   
