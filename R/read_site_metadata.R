@@ -36,12 +36,12 @@ read_site_metadata <- function(file_name) {
   anc_var_names <-
     as.list(trimws(strsplit(input$Value[input$Variable == 
                                           "variables_ancillary"], ",")[[1]]))
-  ancillary_slots <-
-    lapply(anc_var_names, function(x) {
-      x <- "numeric"
-    }) %>% setNames(anc_var_names)
-  ancillary <- setClass("ancillary", slots = ancillary_slots)
-  
+  # ancillary_slots <-
+  #   lapply(anc_var_names, function(x) {
+  #     x <- "numeric"
+  #   }) %>% setNames(anc_var_names)
+  # ancillary <- setClass("ancillary", slots = ancillary_slots)
+  # 
   variables_var_names <-
     c("variables_fluxes", "UT_method", "suffix")
   variables_slots <-
