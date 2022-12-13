@@ -64,6 +64,7 @@ getField_ICOS <- function(source,
     
     # declaring a new data table with metadata that will be used to append the daily fluxes to
     site.data.selected <- data.table(Site = site,
+                                     Site_name = site.name,
                                      Year = stringr::str_sub(site.data$TIMESTAMP, 1, 4),
                                      Day = stringr::str_sub(site.data$TIMESTAMP, 7, 8),
                                      ymd = site.data$TIMESTAMP,
@@ -118,7 +119,8 @@ getField_ICOS <- function(source,
   # creating a data table with the lon/lat
   gridcells <- data.table(Lat = unique(ICOS.cfluxes$Lat),
                           Lon = unique(ICOS.cfluxes$Lon),
-                          Site = unique(ICOS.cfluxes$Site))
+                          Site = unique(ICOS.cfluxes$Site),
+                          Site_name = unique(ICOS.cfluxes$Site_name))
   
   field.id <-
     makeFieldID(
