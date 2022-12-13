@@ -4,10 +4,12 @@
 \alias{calcLinearTrend}
 \title{Calculate linear trend}
 \usage{
-calcLinearTrend(field)
+calcLinearTrend(field, signif_level = 0.05)
 }
 \arguments{
 \item{field}{The Field for which the trend is to be calculated.  Should be spatial, and have a least a "Year" time dimension.}
+
+\item{signif_level}{Numeric, if not NULL or NA then the significance level for "Significant_Trend" layer (default is 0.05)}
 }
 \value{
 A DGVMTools::Field object containing the trend and the associated p-value.

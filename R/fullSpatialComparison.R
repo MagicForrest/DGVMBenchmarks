@@ -106,7 +106,7 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends, all_seasonal,
                                              layers = benchmark@guess_var, 
                                              new.layer = benchmark@guess_var)
     
-    this_simulation2_only_positive <- layerOp(all_seasonal[[new_model]],
+    this_simulation2_only_positive <- layerOp(all_seasonal[[old_model]],
                                               operator = function(x){pmax(x,0)},
                                               layers = benchmark@guess_var, 
                                               new.layer = benchmark@guess_var)

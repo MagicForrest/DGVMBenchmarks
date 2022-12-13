@@ -8,7 +8,6 @@ getField_ICOS(
   source,
   quant,
   layers = NULL,
-  path.ICOS,
   UT.threshold = "VUT",
   partition.method = "REF",
   first.year = "",
@@ -22,8 +21,6 @@ getField_ICOS(
 \item{quant}{A Quantity object to define what quantity from the ICOS observations to extract}
 
 \item{layers}{Ignored for ICOS}
-
-\item{path.ICOS}{Path to where the ICOS files are stored}
 
 \item{UT.threshold}{USTAR threshold, variable (VUT) or constant (CUT). VUT is default}
 
