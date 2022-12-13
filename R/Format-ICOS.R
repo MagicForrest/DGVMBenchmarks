@@ -11,11 +11,17 @@
 #' @param source A  \code{\linkS4class{Source}} containing the meta-data about the ICOS observations
 #' @param quant A Quantity object to define what quantity from the ICOS observations to extract
 #' @param layers Ignored for ICOS
+#' @param target.STAInfo The spatial-temporal target domain
+#' @param file.name Character string holding the name of the file.  This can be left blank, in which case the file name is just taken to be 
+#' "<quant@id>.out" (also "<quant@id>.out.gz")
+#' @param verbose A logical, set to true to give progress/debug information
 #' @param UT.threshold USTAR threshold, variable (VUT) or constant (CUT). VUT is default
 #' @param partition.method Partition method, e.g. REF, USTAR50, MEAN. REF is default
 #' @param first.year Optional, will exclude data before this year
 #' @param last.year Optional, will exclude data beyond this year
-#' @param verbose A logical, set to true to give progress/debug information
+#' @import stringr
+#' @import dplyr
+#' @import lubridate
 #' @return A list containing firstly the data.table containing the data, and secondly the STA.info 
 #' @author Margot Knapen \email{margot.knapen@@nateko.lu.se}
 #' @keywords internal
@@ -24,11 +30,20 @@
 getField_ICOS <- function(source,
                           quant,
                           layers = NULL,
+                          target.STAInfo,
+                          file.name,
+                          verbose,
                           UT.threshold = "VUT",
                           partition.method = "REF",
-                          first.year = "",
-                          last.year = "",
-                          verbose = F) {
+                          first.year,
+                          last.year,
+                          ...) {
+  
+  ### CHECK ARGUEMENTS
+  if(!missing(first.year) & !missing(last.year) ) {
+    if(first.year > last.year) stop("first.year cannot be greater than last.year!")
+  }
+  
   
   # variables that are currently supported
   variables.cfluxes = c("GPP", "NEE", "Reco")
@@ -89,12 +104,16 @@ getField_ICOS <- function(source,
     # convert day to day of year (doy)
     site.data.selected$Day <- lubridate::yday(lubridate::ymd(site.data.selected$ymd))
     
-    if (length("first.year") > 0) {
+    if (!missing(first.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) < first.year,]
-    } 
+    } else {
+      first.year <- min(as.numeric(site.data.selected$Year))
+    }
     
-    if (length("last.year") > 0) {
+    if (!missing(last.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) > last.year,]
+    } else {
+      last.year <- max(as.numeric(site.data.selected$Year))
     }
     
     if (nrow(site.data.selected) == 0) {
@@ -116,17 +135,17 @@ getField_ICOS <- function(source,
     ICOS.cfluxes %>% select(Year, Day, Lon, Lat, quant@id) -> quant.data
   }
   
+ 
   # creating a data table with the lon/lat
-  gridcells <- data.table(Lat = unique(ICOS.cfluxes$Lat),
-                          Lon = unique(ICOS.cfluxes$Lon),
+  gridcells <- data.table(Lat = as.numeric(unique(ICOS.cfluxes$Lat)),
+                          Lon = as.numeric(unique(ICOS.cfluxes$Lon)),
                           Site = unique(ICOS.cfluxes$Site),
                           Site_name = unique(ICOS.cfluxes$Site_name))
-  
   field.id <-
     makeFieldID(
       source = source,
       quant.string = quant@id,
-      sta.info = sta.info
+      sta.info = target.STAInfo
     )
   
   return.field <- new(
