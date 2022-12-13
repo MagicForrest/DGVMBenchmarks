@@ -11,7 +11,6 @@
 #' @param source A  \code{\linkS4class{Source}} containing the meta-data about the ICOS observations
 #' @param quant A Quantity object to define what quantity from the ICOS observations to extract
 #' @param layers Ignored for ICOS
-#' @param path.ICOS Path to where the ICOS files are stored
 #' @param UT.threshold USTAR threshold, variable (VUT) or constant (CUT). VUT is default
 #' @param partition.method Partition method, e.g. REF, USTAR50, MEAN. REF is default
 #' @param first.year Optional, will exclude data before this year
@@ -25,7 +24,6 @@
 getField_ICOS <- function(source,
                           quant,
                           layers = NULL,
-                          path.ICOS,
                           UT.threshold = "VUT",
                           partition.method = "REF",
                           first.year = "",
@@ -36,21 +34,21 @@ getField_ICOS <- function(source,
   variables.cfluxes = c("GPP", "NEE", "Reco")
   
   # lists all files with daily fluxes
-  daily.files <- list.files(path = path.ICOS) %>%
+  daily.files <- list.files(path = source@dir) %>%
     stringr::str_subset("DD") %>% stringr::str_subset("VARINFO", negate = T)
   
   # list all files with site information
-  siteinfo.files <- list.files(path = path.ICOS) %>% stringr::str_subset("SITEINFO")
+  siteinfo.files <- list.files(path = source@dir) %>% stringr::str_subset("SITEINFO")
   
   
   # loops through all available files with daily fluxes
   for (i in 1:length(daily.files)) {
     # reading the daily data from the .csv file
-    site.data <- read.csv(file = file.path(path.ICOS, daily.files[i]),
+    site.data <- read.csv(file = file.path(source@dir, daily.files[i]),
                           na = c("-9999", "NA"))
     
     # reading the site info from the .csv file
-    siteinfo.data <- read.csv(file = file.path(path.ICOS, siteinfo.files[i]))
+    siteinfo.data <- read.csv(file = file.path(source@dir, siteinfo.files[i]))
     
     # determining the site name abbreviation
     site <- unlist(stringr::str_extract_all(string = daily.files[i],
@@ -119,7 +117,8 @@ getField_ICOS <- function(source,
   
   # creating a data table with the lon/lat
   gridcells <- data.table(Lat = unique(ICOS.cfluxes$Lat),
-                          Lon = unique(ICOS.cfluxes$Lon))
+                          Lon = unique(ICOS.cfluxes$Lon),
+                          Site = unique(ICOS.cfluxes$Site))
   
   field.id <-
     makeFieldID(
