@@ -22,7 +22,7 @@ params:
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       out.width = '100%',
-                      fig.height = 9)
+                      fig.height = 7)
 library(DGVMTools)
 library(DGVMBenchmarks)
 library(terra)
@@ -34,10 +34,11 @@ library(knitr)
 library(dplyr)
 library(tictoc)
 
-
+# conversion factors
 KG_TO_PG <- 1/1e+12
-
-
+KM2_TO_MegaM2 <- 1/1e+12
+  
+# start timer
 tic()
 
 
@@ -79,9 +80,9 @@ doPublicationPlots <- FALSE
 # switches for which benchmarks to do
 do_GCP_NBP <- TRUE
 do_Biomes <- TRUE
-do_GOSIF_GPP <- TRUE
-do_MODIS_LAI <- FALSE
-do_GFED4_BA <- FALSE
+do_global_GPP <- TRUE
+do_global_LAI <- TRUE
+do_GFED4_BA <- TRUE
 do_Pan_Biomass <- FALSE
 do_Global_Biomass <- FALSE
 
@@ -97,9 +98,10 @@ summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 
 # Standard plot formatting arguments
 num_cols <- 1
-map.overlay <- "world"  # set to NULL for faster plotting
-
-
+map_overlay <- "world"  # set to NULL for faster plotting
+interior_lines <- FALSE
+stats_lon <- -130
+stats_lat <- -20
 
 
 ```
@@ -209,14 +211,14 @@ if(do_GCP_NBP){
 
 # PNV Biomes
 
-##  Dinerstein 2017 ecoregions, no model output classification yet done
+##  Dinerstein 2017 ecoregions (no model output classification available)
 
 Any volunteers for performing such a classification?  If you do, Stefan will buy you a beer.
 
 ## Haxeltine and Prentice 1992 biomes, classification following Smith et al 2014.
 
 
-```{r Global PNV biomes}
+```{r Global PNV biomes, fig.height = 9}
 
 #### H&P Biomes ####
 if(do_Biomes){
@@ -230,7 +232,7 @@ if(do_Biomes){
   
   ### the benchmarking datasets for global biomass
   smith_biomes = list(
-    first_year = 1961,
+    first_year = 1960,
     last_year = 1990,
     dir = "biomes/HanP_PNV",
     file_name = "Smith2014.nc",
@@ -334,224 +336,183 @@ Intro, data links, etc.
 
 ```{r GOSIF GPP data prep, echo=FALSE, out.width = '100%'}
 
-if(do_GOSIF_GPP){
+if(do_global_GPP){
   
-  #### GOSIF GPP SETTINGS AND PARAMETERS ####
+  # Currently only got one GPP dataset, but code as a list of data source for future flexibility
+  GPP_data_Fields <- list()
   
-  this_benchmark <- new("Benchmark",
-                        id = "Global_GPP",
-                        name = "Global GPP",
-                        description = "Global GPP",
-                        simulation = "tellus",
-                        guess_var = "mgpp",
-                        guess_layers = "mgpp",
-                        unit = "kg m^-2^ y^-1^",
-                        agg.unit = "PgC y^-1")
+  #### GOSIF GPP SETTINGS AND DATA ####
   
-  
-  ### the benchmarking datasets for global biomass
-  liu_biomass = list(
-    first_year = 1993,
-    last_year = 2012,
-    this_data_dir = "annual_ba/GFED4.0",
-    this_data_file_name = "GFED4.0_averageBA_2000-2016.nc",
-    id = "liu",
-    name = "Liu global biomass",
-    this_unit = "PgC"
-  )
-  this_dataset <- liu_biomass
-  
-  makeSummaryLine <- function(benchmark, col_names) {
-    summary_table_lines <- as.list(rep("-", length(col_names)))
-    names(summary_table_lines) <- col_names
-    summary_table_lines$Dataset <- benchmark@name
-    summary_table_lines$Quantity <- benchmark@description
-    summary_table_lines$Unit <- benchmark@agg.unit
-    return(summary_table_lines)
-  }
-  summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
-  
-  
-  ### some parameters and settings
-  guess_var <- "mgpp"
-  first_year_GOSIF <- 2001
-  last_year_GOSIF <- 2018
-  dataset_name <- "GOSIF GPP"
-  
-  ### for the full monthly data (stored externally to the package)
   GOSIF_GPP_monthly_dir <- "monthly_gpp/GOSIFGPP"
   GOSIF_GPP_monthly_file.name <- "GOSIF_GPP.txt"
+  GOSIF_GPP_Source <- defineSource(id = "GOSIF_GPP",
+                                   name = "GOSIF GPP",
+                                   dir = file.path(params$data_directory, GOSIF_GPP_monthly_dir),
+                                   format = GUESS)
+  
+  full_file_path <- file.path(GOSIF_GPP_Source@dir, GOSIF_GPP_monthly_file.name)
+  if(!file.exists(full_file_path)) {
+    print("GOSIF GPP data not available.")
+  } else {
+    GPP_data_Fields[[GOSIF_GPP_Source@name]] <- getField(source = GOSIF_GPP_Source,
+                                                         quant = "mgpp",
+                                                         file.name = GOSIF_GPP_monthly_file.name)
+  }
   
   
+  #### PREPARE GPP BENCHMARK SETTINGS AND DATA ####
   
-  
-  
-  ### Lists for storing the appropriate Fields and summary numbers
-  all_GPP_Maps <- list()
-  all_GPP_Trends <- list()
-  all_GPP_Seasonal <- list()
-  all_GPP_totals <- list()
-  
-  #### READ GOSIF DATA ####
-  
-  ### read the GOSIF full monthly data
-  full_file_path <- file.path(params$data_directory, GOSIF_GPP_monthly_dir, GOSIF_GPP_monthly_file.name)
-  if(file.exists(full_file_path)) {
-    
-    # Read the GOSIF monthly data via a GUESS formatted Source
-    this_data_Source <- defineSource(id = "GOSIF_GPP",
-                                     name = "GOSIF GPP",
-                                     dir = file.path(params$data_directory, GOSIF_GPP_monthly_dir),
-                                     format = GUESS)
-    GOSIF_full_Field <- getField(source = this_data_Source,
-                                 quant = guess_var,
-                                 file.name = GOSIF_GPP_monthly_file.name)
-    
-    # delete values with -9999 and covert to kg
-    GOSIF_full_Field@data <- GOSIF_full_Field@data[mgpp != -9999.0,]
-    
-    # Calculate the slope (still in grams)
-    all_GPP_Trends[["GOSIF GPP"]] <- calcLinearTrend(GOSIF_full_Field)
-    
-    # go from g to kg for spatial maps
-    GOSIF_full_Field <- layerOp(GOSIF_full_Field, operator = "divc", constant = 1000, layers = "mgpp", new.layer = "mgpp")
-    
-    # make the annual map for comparison (leave only spatial)
-    all_GPP_Maps[[this_data_Source@name]] <- aggregateYears(aggregateSubannual(GOSIF_full_Field, method = "sum", target = "Year"), method = "mean")
-    
-    # make the seasonal cycle for comparison (leave months andspatial)
-    all_GPP_Seasonal[[this_data_Source@name]] <- aggregateYears(GOSIF_full_Field, method = "mean")
-    
-    # make and save the mean annual global GPP
-    data_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_data_Source@name]])@data*KG_TO_PG
-    all_GPP_totals[[this_data_Source@name]] <- data_GPP_PgC
-    summary_table_lines$Data <- signif(as.numeric(data_GPP_PgC),4)
-    
+  if(length(GPP_data_Fields) == 0) {
+    do_global_GPP <- FALSE
+    print("Skipping GPP benchmark because no datasets available.")
   }
   else {
-    do_GOSIF_GPP <- FALSE
-  }
-  
-  
-  #### READ LPJ-GUESS GPP DATA ####
-  
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
     
-    # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir, "crop_global")
-    if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
-      
-      # make local sources pointing to the crop_global directory
-      this_crop_global_Source <- this_sim_Source
-      this_crop_global_Source@dir <- this_benchmark_run_dir
-      
-      # read the full data and
-      suppressWarnings(
-        this_simulation_GPP <- getField(source = this_crop_global_Source,
-                                        this_benchmark@guess_var,
-                                        first.year = first_year_GOSIF,
-                                        last.year = last_year_GOSIF,
-                                        quick.read = quick_read,
-                                        quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
-      )
-      
-      ### take sum of month and average of years and store for later use - very easy ###
-      all_GPP_Maps[[this_sim_Source@id]] <- aggregateYears(aggregateSubannual(this_simulation_GPP, target = "Year", method = "sum"),  "mean")
-      
-      ### take yearly average and store for later use - very easy ###
-      all_GPP_Seasonal[[this_sim_Source@id]] <- aggregateYears(this_simulation_GPP, "mean")
-      
-      ### calculate and store the linear trend and p-value for every gridcell (also change unit to gC/m^-2/month^-2)
-      this_GPP_Trend <- calcLinearTrend(this_simulation_GPP)
-      this_GPP_Trend <- layerOp( this_GPP_Trend, operator = "mulc", constant = 1000, layers = "Trend", new.layer = "Trend")
-      all_GPP_Trends[[this_sim_Source@id]] <- this_GPP_Trend
-      
-      # remove to save memory
-      rm(this_simulation_GPP)
-      
-    } # if file is present 
-    else {
-      do_GOSIF_GPP <- FALSE
+    # find overlapping years (general case if multiple datasets)
+    first.year = last.year = NA
+    for(this_Field in GPP_data_Fields) {
+      first.year <- min(c(this_Field@first.year, first.year), na.rm = TRUE)
+      last.year <- max(c(this_Field@last.year, last.year), na.rm = TRUE)
     }
     
-  } # for each model run
+    this_benchmark <- new("Benchmark",
+                          id = "Global_GPP",
+                          name = "Global GPP",
+                          description = "Global GPP",
+                          simulation = "tellus",
+                          guess_var = "mgpp",
+                          guess_layers = "mgpp",
+                          unit = "kg m^-2^ y^-1^",
+                          agg.unit = "PgC y^-1^",
+                          datasets = GPP_data_Fields,
+                          first.year = first.year,
+                          last.year = last.year,
+                          metrics = c("NME", "RMSE"))
+    
+    
+    summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
+    
+    
+    
+    ### Lists for storing the appropriate Fields and summary numbers
+    all_GPP_Maps <- list()
+    all_GPP_Trends <- list()
+    all_GPP_Seasonal <- list()
+    all_GPP_totals <- list()
+    
+    # Process the datasets according to the benchmark parameters above
+    # this code will likely need to be adjusted depending on the details of variables, units, datasets etc
+    for(this_data_Field in this_benchmark@datasets) {
+      
+      # crop the data to the comment benchmark year
+      this_data_Field <- selectYears(this_data_Field, first = this_benchmark@first.year, last = this_benchmark@last.year)
+      
+      # delete values with -9999 and covert to kg
+      this_data_Field@data <- this_data_Field@data[mgpp != -9999.0,]
+      
+      # Calculate the slope (still in grams)
+      all_GPP_Trends[[this_data_Field@source@name]] <- calcLinearTrend(this_data_Field)
+      
+      # go from g to kg for spatial maps
+      this_data_Field <- layerOp(this_data_Field, operator = "divc", constant = 1000, layers = "mgpp", new.layer = "mgpp")
+      
+      # make the annual map for comparison (leave only spatial)
+      all_GPP_Maps[[this_data_Field@source@name]] <- aggregateYears(aggregateSubannual(this_data_Field, method = "sum", target = "Year"), method = "mean")
+      
+      # make the seasonal cycle for comparison (leave months andspatial)
+      all_GPP_Seasonal[[this_data_Field@source@name]] <- aggregateYears(this_data_Field, method = "mean")
+      
+      # make and save the mean annual global GPP
+      # TODO, make this more flexible for multiple datasets
+      data_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_data_Field@source@name]])@data*KG_TO_PG
+      all_GPP_totals[[this_data_Field@source@name]] <- data_GPP_PgC
+      summary_table_lines$Data <- signif(as.numeric(data_GPP_PgC),4)
+      
+    }
+    
+    #### READ LPJ-GUESS DATA ####
+    
+    # loop through model runs to be processed
+    for(this_sim_Source in all_simulation_Sources_list) {
+      
+      # check if file is present (if not don't include this run)
+      this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
+      if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
+        
+        # make local sources pointing to the crop_global directory
+        this_crop_global_Source <- this_sim_Source
+        this_crop_global_Source@dir <- this_benchmark_run_dir
+        
+        # read the full data and
+        suppressWarnings(
+          this_simulation_GPP <- getField(source = this_crop_global_Source,
+                                          this_benchmark@guess_var,
+                                          first.year = this_benchmark@first.year,
+                                          last.year = this_benchmark@last.year,
+                                          quick.read = quick_read,
+                                          quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+        )
+        
+        ### take sum of month and average of years and store for later use - very easy ###
+        all_GPP_Maps[[this_sim_Source@name]] <- aggregateYears(aggregateSubannual(this_simulation_GPP, target = "Year", method = "sum"),  "mean")
+        
+        ### take yearly average and store for later use - very easy ###
+        all_GPP_Seasonal[[this_sim_Source@name]] <- aggregateYears(this_simulation_GPP, "mean")
+        
+        ### calculate and store the linear trend and p-value for every gridcell (also change unit to gC/m^-2/month^-2)
+        this_GPP_Trend <- calcLinearTrend(this_simulation_GPP)
+        this_GPP_Trend <- layerOp( this_GPP_Trend, operator = "mulc", constant = 1000, layers = "Trend", new.layer = "Trend")
+        all_GPP_Trends[[this_sim_Source@name]] <- this_GPP_Trend
+        
+        # calculate and save the global total
+        this_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_sim_Source@name]])@data*KG_TO_PG
+        all_GPP_totals[[this_sim_Source@name]] <- this_GPP_PgC
+        summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_GPP_PgC),4)
+        
+        # remove to save memory
+        rm(this_simulation_GPP)
+        
+      } # if file is present 
+      else {
+        do_global_GPP <- FALSE
+      }
+      
+    } # for each model run
+    
+    
+    # do all spatial comparisons and store them in a big list'o'lists to be plotted in the next code chunks
+    all_GPP_comparisons <- fullSpatialComparison(this_benchmark, all_GPP_Maps, all_GPP_Trends, all_GPP_Seasonal, params$new_name, params$old_name)
+    
+    # save the summary table line 
+    # TODO - add the data references
+    summary_table <- rbind(summary_table, summary_table_lines)
+    
+    
+  } # if data are available
   
-  
-  # Lists for all comparisons
-  spatial_comparisons_list <- list()
-  nme_scores_list <- list()
-  trend_comparisons_list <- list()
-  seasonal_comparisons_list <- list()
-  
-  
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
-    
-    #### GOSIF SPATIAL VALUES COMPARISONS ####
-    suppressWarnings(
-      spatial_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_GPP_Maps[[this_sim_Source@id]],
-                                                                      field2 = all_GPP_Maps[[this_data_Source@name]],
-                                                                      layers1 =  this_benchmark@guess_var, 
-                                                                      layers2 = this_benchmark@guess_var, 
-                                                                      show.stats = FALSE))
-    # store the NME 
-    nme_scores_list[[this_sim_Source@name]] <- spatial_comparisons_list[[this_sim_Source@id]]@stats$NME
-    
-    #### GOSIF TRENDS COMPARISONS ####
-    suppressWarnings(trend_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_GPP_Trends[[this_sim_Source@id]],
-                                                                                   field2 = all_GPP_Trends[[this_data_Source@name]],
-                                                                                   layers1 = "Trend",
-                                                                                   layers2 = "Trend", 
-                                                                                   show.stats = FALSE))
-    
-    
-    #### GOSIF SEASONAL COMPARISONS ####
-    
-    # before doing comparison, set all (incorrectly) negative GPPs to zero
-    this_simulation_only_positive <- layerOp(all_GPP_Seasonal[[this_sim_Source@id]],
-                                             operator = function(x){pmax(x,0)},
-                                             layers = this_benchmark@guess_var, 
-                                             new.layer = this_benchmark@guess_var)
-    suppressWarnings(
-      seasonal_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = this_simulation_only_positive,
-                                                                       field2 = all_GPP_Seasonal[[this_data_Source@name]],
-                                                                       layers1 = this_benchmark@guess_var,
-                                                                       layers2 = this_benchmark@guess_var, 
-                                                                       do.seasonality = TRUE, 
-                                                                       show.stats = FALSE))
-    
-    #### GLOBAL GPP SUMS ####
-    total_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_sim_Source@id]])@data*KG_TO_PG
-    all_GPP_totals[[this_sim_Source@name]] <- total_GPP_PgC
-    summary_table_lines$Data <- signif(as.numeric(total_GPP_PgC),4)
-    
-  }
-  
-}
-
+} # if do_global_GPP
 ```
 
 ## Spatial patterns {.tabset}
 
 ### Absolute values
-```{r fig.height = 8}
-if(do_GOSIF_GPP){  
+```{r}
+if(do_global_GPP){  
   # plot all absolute values together
   GPP_abs_values_plot <- plotSpatial(all_GPP_Maps, 
                                      ncol = num_cols, 
                                      legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
                                      map.overlay = map.overlay,
                                      title = "Absolute GPP values",
-                                     subtitle = NULL)
+                                     subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
   # add the total GPP to the plots
   total_label_df <- data.frame()
-  for(this_panel  in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
-                                                                     list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
-                                                                          Facet = this_panel, 
-                                                                          x = -130, y = -40),
-                                                                     stringsAsFactors = FALSE)
+  for(this_panel in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
+                                                                    list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
+                                                                         Facet = this_panel, 
+                                                                         x = stats_lon, y = stats_lat),
+                                                                    stringsAsFactors = FALSE)
   GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
   suppressWarnings(print(GPP_abs_values_plot))
 }
@@ -559,22 +520,29 @@ if(do_GOSIF_GPP){
 
 ### Differences
 
-```{r, fig.height = 6}
-if(do_GOSIF_GPP){  
-  GPP_diff_values_plot <- plotSpatialComparison(spatial_comparisons_list, 
+```{r}
+if(do_global_GPP){  
+  GPP_diff_values_plot <- plotSpatialComparison(all_GPP_comparisons[["Values"]], 
                                                 ncol = num_cols, 
                                                 legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
                                                 map.overlay = map.overlay,
                                                 title = "GPP biases", 
-                                                subtitle = paste(first_year_GOSIF, last_year_GOSIF, sep = "-") )
-  # add statistical metrics to the plots
-  metric_label_df <- data.frame()
-  for(this_panel  in names(nme_scores_list))  metric_label_df <- rbind(metric_label_df,
-                                                                       list(label = paste("NME =", round(nme_scores_list[[this_panel]], 2)), 
-                                                                            Facet = paste(this_panel, "-", this_data_Source@name), 
-                                                                            x = -130, y = -40),
-                                                                       stringsAsFactors = FALSE)
-  GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
+                                                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+  
+  # extract metric scores and add to the panels
+  lat_offset = 0
+  for(this_metric in this_benchmark@metrics) {
+    metric_label_df <- data.frame()
+    for(comparison_name  in names(all_GPP_comparisons[["Values"]])) {
+      metric_label_df <- rbind(metric_label_df,
+                               list(label = paste(this_metric, "=", round(all_GPP_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
+                                    Facet = comparison_name, 
+                                    x = stats_lon, y = stats_lat - lat_offset),
+                               stringsAsFactors = FALSE)  
+    }
+    GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
+    lat_offset <- lat_offset + 10  
+  }
   
   suppressWarnings(print(GPP_diff_values_plot))
 }
@@ -584,11 +552,11 @@ if(do_GOSIF_GPP){
 
 ## Temporal trends {.tabset}
 
-QUESTION: Should we also show trends *restricted* to where they are significant?
+**QUESTION: Should we also show trends *restricted* to where they are significant?**
 
 ### Trend value
-```{r, fig.height = 8}
-if(do_GOSIF_GPP) {
+```{r}
+if(do_global_GPP) {
   suppressWarnings( print(
     plotSpatial(all_GPP_Trends, 
                 layers = "Trend", 
@@ -599,13 +567,13 @@ if(do_GOSIF_GPP) {
                 title = "Trend in GPP", 
                 legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
                 map.overlay = map.overlay,
-                subtitle = paste(first_year_GOSIF, last_year_GOSIF, sep = "-"))))
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Trend significance
-```{r, fig.height = 8}
-if(do_GOSIF_GPP) {
+```{r}
+if(do_global_GPP) {
   suppressWarnings(print(
     plotSpatial(all_GPP_Trends, 
                 layers = "p.value", 
@@ -616,396 +584,433 @@ if(do_GOSIF_GPP) {
                 title = "Significance in GPP Trends",
                 legend.title =  "p value",
                 map.overlay = map.overlay,
-                subtitle = paste(first_year_GOSIF, last_year_GOSIF, sep = "-"))))
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 
 ```
 
 ### Trend Differences
-```{r, fig.height = 6}
-if(do_GOSIF_GPP) {
+```{r}
+if(do_global_GPP) {
   suppressWarnings(print(
-    plotSpatialComparison(trend_comparisons_list, 
+    plotSpatialComparison(all_GPP_comparisons[["Trend"]], 
                           ncol = num_cols, 
                           drop.cuts = NULL,
                           title = "Difference Trend in GPP", 
                           legend.title =  expression(Delta~gC~m^{"-2"}~month^{"-2"}),
                           map.overlay = map.overlay,
-                          subtitle = paste(first_year_GOSIF, last_year_GOSIF, sep = "-"))))
+                          subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
   
 }
 ```
 
 
 ## Seasonal analysis {.tabset}
+Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **Seasonal concentration** equals one if the variable is concentrated all in one month, and is zero if it is spread even across all months.  The **seasonal phase** is a measure of the peak of the season - it is not strictly the maximum monthly, but rather the average of all months when considering months as an angle in the complex plane.  
 
 ### Seasonal phase
-```{r, fig.height = 8}
-if(do_GOSIF_GPP) {
+```{r}
+if(do_global_GPP) {
   suppressWarnings(print(
-    plotSpatialComparison(seasonal_comparisons_list, 
+    plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           type = "values",
                           cuts = 0:12, 
                           override.cols = pals::ocean.phase(12),
                           ncol = num_cols,
                           map.overlay = map.overlay,
-                          subtitle = NULL)))
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Phase differences
-```{r, fig.height = 6}
-if(do_GOSIF_GPP){
+```{r}
+if(do_global_GPP){
   suppressWarnings(print(
-    plotSpatialComparison(seasonal_comparisons_list, 
+    plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           cuts = seq(-6,6), 
                           symmetric.scale = FALSE,
                           ncol = num_cols,
                           map.overlay = map.overlay,
-                          subtitle = paste(first_year_GOSIF, last_year_GOSIF, sep = "-"))))
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 
 ### Seasonal concentration
-```{r, fig.height = 8}
-if(do_GOSIF_GPP) {
+```{r}
+if(do_global_GPP) {
   suppressWarnings(print(
-    plotSpatialComparison(seasonal_comparisons_list, 
+    plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           type = "values",
                           ncol = num_cols,
                           map.overlay = map.overlay,
-                          subtitle = paste(first_year_GOSIF, last_year_GOSIF, sep = "-"))))
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Concentraton differences
-```{r, fig.height = 6}
-if(do_GOSIF_GPP) {
+```{r}
+if(do_global_GPP) {
   suppressWarnings(print(
-    plotSpatialComparison(seasonal_comparisons_list, 
+    plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           ncol = num_cols,
                           map.overlay = map.overlay,
-                          subtitle = paste(first_year_GOSIF, last_year_GOSIF, sep = "-"))))
-  
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
+## {-}
 <a href="#top">Back to top</a>
+
 ---
 
 # MODIS Leaf Area Index
 
 
-```{r MODIS LAI data prep, echo=FALSE, out.width = '100%'}
+```{r LAI data prep, echo=FALSE, out.width = '100%'}
 
-if(do_MODIS_LAI){
+if(do_global_LAI){
   
-  ### Here we read the model and data for both the spatial and trend analyses (which are actually done in the next code blocks)
+  # Currently only got one LAI dataset, but code as a list of data source for future flexibility
+  LAI_data_Fields <- list()
   
-  ### some parameters and settings
-  guess_var <- "mlai"
-  first_year_MODIS <- 2001
-  last_year_MODIS <- 2020
+  #### MODIS LAI SETTINGS AND DATA ####
   
-  ### for the full monthly data (stored externally to the package)
   MODIS_LAI_monthly_dir <- "monthly_lai/MODIS"
   MODIS_LAI_monthly_file.name <- "MODIS_LAI.txt"
+  MODIS_LAI_Source <- defineSource(id = "MODIS_LAI",
+                                   name = "MODIS LAI",
+                                   dir = file.path(params$data_directory, MODIS_LAI_monthly_dir),
+                                   format = GUESS)
   
-  ### Lists for storing the files
-  all_LAI_Map_Fields_list <- list()
-  all_LAI_Trend_Fields_list <- list()
-  all_LAI_Seasonal_Fields_list <- list()
-  
-  
-  #### READ MODIS DATA ####
-  
-  ### read the MODIS full monthly data
-  full_file_path <- file.path(params$data_directory, MODIS_LAI_monthly_dir, MODIS_LAI_monthly_file.name)
-  if(file.exists(full_file_path)) {
-    
-    # Read the MODIS monthly data via a GUESS formatted Source
-    MODIS_Source <- defineSource(id = "MODIS_LAI",
-                                 name = "MODIS LAI",
-                                 dir = file.path(params$data_directory, MODIS_LAI_monthly_dir),
-                                 format = GUESS)
-    MODIS_full_Field <- getField(source = MODIS_Source,
-                                 quant = guess_var,
-                                 file.name = MODIS_LAI_monthly_file.name)
-    
-    # delete values with -9999
-    MODIS_full_Field@data <- MODIS_full_Field@data[mlai != -9999.0,]
-    
-    # Calculate the slope (still in grams)
-    all_GPP_Trends[["MODIS"]] <- calcLinearTrend(MODIS_full_Field)
-    
-    # make the annual map for comparison (leave only spatial)
-    all_LAI_Map_Fields_list[["MODIS"]] <- aggregateYears(aggregateSubannual(MODIS_full_Field, method = "max", target = "Year"), method = "mean")
-    
-    # make the seasonal cycle for comparison (leave months and  spatial)
-    all_LAI_Seasonal_Fields_list[["MODIS"]] <- aggregateYears(MODIS_full_Field, method = "mean")
-    
+  full_file_path <- file.path(MODIS_LAI_Source@dir, MODIS_LAI_monthly_file.name)
+  if(!file.exists(full_file_path)) {
+    print("MODIS LAI data not available.")
+  } else {
+    LAI_data_Fields[[MODIS_LAI_Source@name]] <- getField(source = MODIS_LAI_Source,
+                                                         quant = "mlai",
+                                                         file.name = MODIS_LAI_monthly_file.name)
   }
   
   
-  #### READ LPJ-GUESS LAI DATA ####
+  #### PREPARE LAI BENCHMARK SETTINGS AND DATA ####
   
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
+  if(length(LAI_data_Fields) == 0) {
+    do_global_LAI <- FALSE
+    print("Skipping LAI benchmark because no datasets available.")
+  }
+  else {
     
-    # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir, "crop_global")
-    if(file.exists(file.path(this_benchmark_run_dir, paste0(guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(guess_var, ".out.gz")))) {
-      
-      # make local sources pointing to the crop_global directory
-      this_crop_global_Source <- this_sim_Source
-      this_crop_global_Source@dir <- this_benchmark_run_dir
-      
-      # read the full data and
-      suppressWarnings(
-        this_simulation_LAI <- getField(source = this_crop_global_Source,
-                                        guess_var,
-                                        first.year = first_year_MODIS,
-                                        quick.read = quick_read,
-                                        quick.read.file = paste(guess_var, version_label, sep = "_"))
-      )
-      
-      ### take sum of month and average of years and store for later use - very easy ###
-      all_LAI_Map_Fields_list[[this_sim_Source@id]] <- aggregateYears(aggregateSubannual(this_simulation_LAI, target = "Year", method = "max"),  "mean")
-      
-      ### take yearly average and store for later use - very easy ###
-      all_LAI_Seasonal_Fields_list[[this_sim_Source@id]] <- aggregateYears(this_simulation_LAI, "mean")
-      
-      ### calculate the linear trend and p-value for every gridcell and store for later use ###     
-      this_LAI_Trend <- calcLinearTrend(this_simulation_LAI)
-      
-      # store the Field in the list of all Fields for plotting later
-      all_LAI_Trend_Fields_list[[this_sim_Source@id]] <- this_LAI_Trend
-      
-      # remove to save memory
-      rm(this_simulation_LAI)
-      
-    } # if file is present 
-    else {
-      do_MODIS_LAI <- FALSE
+    # find overlapping years (general case if multiple datasets)
+    first.year = last.year = NA
+    for(this_Field in LAI_data_Fields) {
+      first.year <- min(c(this_Field@first.year, first.year), na.rm = TRUE)
+      last.year <- max(c(this_Field@last.year, last.year), na.rm = TRUE)
     }
     
-  } # for each model run
+    this_benchmark <- new("Benchmark",
+                          id = "Global_LAI",
+                          name = "Global LAI",
+                          description = "Global LAI",
+                          simulation = "tellus",
+                          guess_var = "mlai",
+                          guess_layers = "mlai",
+                          unit = "m^2^ m^-2^",
+                          agg.unit = "Mm^2^",
+                          datasets = LAI_data_Fields,
+                          first.year = first.year,
+                          last.year = last.year,
+                          metrics = c("NME", "RMSE"))
+    
+    
+    makeSummaryLine <- function(benchmark, col_names) {
+      summary_table_lines <- as.list(rep("-", length(col_names)))
+      names(summary_table_lines) <- col_names
+      for(this_dataset in benchmark@datasets) {
+        if(summary_table_lines$Dataset == "-") summary_table_lines$Dataset <- this_dataset@source@name
+        else summary_table_lines$Dataset <- paste0(summary_table_lines$Dataset, ", ", this_dataset@source@name) 
+      }
+      summary_table_lines$Quantity <- benchmark@description
+      summary_table_lines$Unit <- benchmark@agg.unit
+      return(summary_table_lines)
+    }
+    summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
+    
+    
+    
+    ### Lists for storing the appropriate Fields and summary numbers
+    all_LAI_Maps <- list()
+    all_LAI_Trends <- list()
+    all_LAI_Seasonal <- list()
+    all_LAI_totals <- list()
+    
+    # Process the datasets according to the benchmark parameters above
+    # this code will likely need to be adjusted depending on the details of variables, units, datasets etc
+    for(this_data_Field in this_benchmark@datasets) {
+      
+      # crop the data to the comment benchmark year
+      this_data_Field <- selectYears(this_data_Field, first = this_benchmark@first.year, last = this_benchmark@last.year)
+      
+      # delete values with -9999 and covert to kg
+      this_data_Field@data <- this_data_Field@data[mlai != -9999.0,]
+      
+      # Calculate the slope (still in grams)
+      all_LAI_Trends[[this_data_Field@source@name]] <- calcLinearTrend(this_data_Field)
+      
+      # make the annual map for comparison (leave only spatial)
+      all_LAI_Maps[[this_data_Field@source@name]] <- aggregateYears(aggregateSubannual(this_data_Field, method = "max", target = "Year"), method = "mean")
+      
+      # make the seasonal cycle for comparison (leave months andspatial)
+      all_LAI_Seasonal[[this_data_Field@source@name]] <- aggregateYears(this_data_Field, method = "mean")
+      
+      # make and save the mean annual global LAI
+      # TODO, make this more flexible for multiple datasets
+      data_LAI_PgC <- areaWeightedTotal(all_LAI_Maps[[this_data_Field@source@name]])@data * KM2_TO_MegaM2
+      all_LAI_totals[[this_data_Field@source@name]] <- data_LAI_PgC
+      summary_table_lines$Data <- signif(as.numeric(data_LAI_PgC),4)
+      
+    }
+    
+    #### READ LPJ-GUESS DATA ####
+    
+    # loop through model runs to be processed
+    for(this_sim_Source in all_simulation_Sources_list) {
+      
+      # check if file is present (if not don't include this run)
+      this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
+      if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
+        
+        # make local sources pointing to the crop_global directory
+        this_crop_global_Source <- this_sim_Source
+        this_crop_global_Source@dir <- this_benchmark_run_dir
+        
+        # read the full data and
+        suppressWarnings(
+          this_simulation_LAI <- getField(source = this_crop_global_Source,
+                                          this_benchmark@guess_var,
+                                          first.year = this_benchmark@first.year,
+                                          last.year = this_benchmark@last.year,
+                                          quick.read = quick_read,
+                                          quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+        )
+        
+        ### take sum of month and average of years and store for later use - very easy ###
+        all_LAI_Maps[[this_sim_Source@name]] <- aggregateYears(aggregateSubannual(this_simulation_LAI, target = "Year", method = "max"),  "mean")
+        
+        ### take yearly average and store for later use - very easy ###
+        all_LAI_Seasonal[[this_sim_Source@name]] <- aggregateYears(this_simulation_LAI, "mean")
+        
+        ### calculate and store the linear trend and p-value for every gridcell 
+        all_LAI_Trends[[this_sim_Source@name]] <- calcLinearTrend(this_simulation_LAI)
+        
+        # calculate and save the global total
+        this_LAI_PgC <- areaWeightedTotal(all_LAI_Maps[[this_sim_Source@name]])@data * KM2_TO_MegaM2
+        all_LAI_totals[[this_sim_Source@name]] <- this_LAI_PgC
+        summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_LAI_PgC),4)
+        
+        # remove to save memory
+        rm(this_simulation_LAI)
+        
+      } # if file is present 
+      else {
+        do_global_LAI <- FALSE
+      }
+      
+    } # for each model run
+    
+    
+    # do all spatial comparisons and store them in a big list'o'lists to be plotted in the next code chunks
+    all_LAI_comparisons <- fullSpatialComparison(this_benchmark, all_LAI_Maps, all_LAI_Trends, all_LAI_Seasonal, params$new_name, params$old_name)
+    
+    # save the summary table line 
+    # TODO - add the data references
+    names(summary_table_lines) <- names(summary_table)
+    summary_table <- rbind(summary_table, summary_table_lines)
+    
+    
+  } # if data are available
   
-} # if do_MODIS_LAI
-
-
+} # if do_global_LAI
 ```
 
 
-## Spatial analysis
 
-Maps show max LAI of the year (averaged across all years).
+## Spatial patterns {.tabset}
 
-
-```{r MODIS LAI map, echo=FALSE, out.width = '100%'}
-
-if(do_MODIS_LAI){
-  
-  # Do spatial comparisons for each model run
-  # Comparisons
-  spatial_comparisons_list <- list()
-  
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
-    
-    # make comparison 
-    message(paste("Comparison stats for run", this_sim_Source@name, "LAI values vs. MODIS LAI values"))
-    suppressWarnings(
-      spatial_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_LAI_Map_Fields_list[[this_sim_Source@id]],
-                                                                      field2 = all_LAI_Map_Fields_list[["MODIS"]],
-                                                                      layers1 =  guess_var,
-                                                                      layers2 =  guess_var, 
-                                                                      show.stats = FALSE)
-    )
-  }
-  
-  
-  # plot all slope values together
-  LAI_abs_values_plot <- plotSpatial(all_LAI_Map_Fields_list, 
+### Absolute values
+```{r}
+if(do_global_LAI){  
+  # plot all absolute values together
+  LAI_abs_values_plot <- plotSpatial(all_LAI_Maps, 
                                      ncol = num_cols, 
-                                     legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
-                                     map.overlay = map.overlay)
-  # suppress warnings about uneven horizontal intervals
+                                     legend.title = expression(m^{"2"}~m^{"-2"}),
+                                     map.overlay = map.overlay,
+                                     title = "Absolute LAI values",
+                                     limits = c(0,8),
+                                     subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+  
+  # add the total LAI to the plots
+  total_label_df <- data.frame()
+  for(this_panel in names(all_LAI_totals))  total_label_df <- rbind(total_label_df,
+                                                                    list(label = paste(round(all_LAI_totals[[this_panel]], 1), "m^2"), 
+                                                                         Facet = this_panel, 
+                                                                         x = stats_lon, y = stats_lat),
+                                                                    stringsAsFactors = FALSE)
+  LAI_abs_values_plot  <- LAI_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
   suppressWarnings(print(LAI_abs_values_plot))
-  
-  # also make the difference plots
-  LAI_diff_values_plot <- plotSpatialComparison(spatial_comparisons_list, 
+}
+```
+
+### Differences
+
+```{r}
+if(do_global_LAI){  
+  LAI_diff_values_plot <- plotSpatialComparison(all_LAI_comparisons[["Values"]], 
                                                 ncol = num_cols, 
-                                                legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
-                                                map.overlay = map.overlay )
-  # suppress warnings about uneven horizontal intervals
+                                                legend.title = expression(Delta~m^{"2"}~m^{"-2"}),
+                                                map.overlay = map.overlay,
+                                                title = "LAI biases", 
+                                                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+  
+  # extract metric scores and add to the panels
+  lat_offset = 0
+  for(this_metric in this_benchmark@metrics) {
+    metric_label_df <- data.frame()
+    for(comparison_name  in names(all_LAI_comparisons[["Values"]])) {
+      metric_label_df <- rbind(metric_label_df,
+                               list(label = paste(this_metric, "=", round(all_LAI_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
+                                    Facet = comparison_name, 
+                                    x = stats_lon, y = stats_lat - lat_offset),
+                               stringsAsFactors = FALSE)  
+    }
+    LAI_diff_values_plot  <- LAI_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
+    lat_offset <- lat_offset + 10  
+  }
+  
   suppressWarnings(print(LAI_diff_values_plot))
-  
-  
 }
-
 ```
 
 
 
-## Trend analysis
+## Temporal trends {.tabset}
 
-```{r MODIS LAI trend, echo=FALSE, out.width = '100%'}
+**QUESTION: Should we also show trends *restricted* to where they are significant?**
 
-if(do_MODIS_LAI) {
-  
-  ### Read the LPJ-GUESS data
-  
-  # Comparisons
-  trend_comparisons_list <- list()
-  
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
-    # make comparison 
-    message(paste("Comparison stats for run", this_sim_Source@name, "LAI trend vs. MODIS LAI trend"))
-    suppressWarnings(
-      trend_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_LAI_Trend_Fields_list[[this_sim_Source@id]],
-                                                                    field2 = all_LAI_Trend_Fields_list[["MODIS"]],
-                                                                    layers1 = "Trend",
-                                                                    layers2 = "Trend")
-    )
-  }
-  
-  # plot all slope values together
-  LAI_trend_plot <- plotSpatial(all_LAI_Trend_Fields_list, 
-                                layers = "Trend", 
-                                ncol = num_cols, 
-                                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
-                                #cuts = c(-1.0, -0.5, -0.2, -0.1, -0.05, -0.02, -0.01, 0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0),
-                                limits = c(-0.5,0.5),
-                                drop.cuts = FALSE,
-                                title = "Trend in LAI",
-                                map.overlay = map.overlay)
-  # suppress warnings about uneven horizontal intervals
-  suppressWarnings(print(LAI_trend_plot))
-  
-  # plot differences in model vs data slope values together
-  LAI_trend_diff_plot <-  suppressWarnings(
-    plotSpatialComparison(trend_comparisons_list, 
+### Trend value
+```{r}
+if(do_global_LAI) {
+  suppressWarnings( print(
+    plotSpatial(all_LAI_Trends, 
+                layers = "Trend", 
+                ncol = num_cols, 
+                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                limits = c(-0.01,0.01),
+                drop.cuts = FALSE,
+                title = "Trend in LAI", 
+                legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
+                map.overlay = map.overlay,
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+### Trend significance
+```{r}
+if(do_global_LAI) {
+  suppressWarnings(print(
+    plotSpatial(all_LAI_Trends, 
+                layers = "p.value", 
+                ncol = num_cols, 
+                cols = viridis::turbo(6), 
+                cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
+                drop.cuts = FALSE,
+                title = "Significance in LAI Trends",
+                legend.title =  "p value",
+                map.overlay = map.overlay,
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+
+```
+
+### Trend Differences
+```{r}
+if(do_global_LAI) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_LAI_comparisons[["Trend"]], 
                           ncol = num_cols, 
-                          #cuts = c(-1.0, -0.5, -0.2, -0.1, -0.05, -0.02, -0.01, 0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0),
-                          drop.cuts = FALSE,
-                          title = "Difference Trend in LAI",
-                          map.overlay = map.overlay)
-  )
-  # suppress warnings about uneven horizontal intervals
-  suppressWarnings(print(LAI_trend_diff_plot))
-  
-  # and plot significance
-  LAI_trend_sig_plot <- plotSpatial(all_LAI_Trend_Fields_list, 
-                                    layers = "p.value", 
-                                    ncol = num_cols, 
-                                    cols = viridis::turbo(6), 
-                                    cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
-                                    drop.cuts = FALSE,
-                                    title = "Significance in LAI Trends",
-                                    legend.title =  "p value",
-                                    map.overlay = map.overlay)
-  # suppress warnings about uneven horizontal intervals
-  suppressWarnings(print(LAI_trend_sig_plot))
-  
-  
-  
+                          drop.cuts = NULL,
+                          title = "Difference Trend in LAI", 
+                          legend.title =  expression(m^{"2"}~m^{"-2"}~month^{"-2"}),
+                          map.overlay = map.overlay,
+                          subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
   
 }
-
 ```
 
 
+## Seasonal analysis {.tabset}
+Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **Seasonal concentration** equals one if the variable is concentrated all in one month, and is zero if it is spread even across all months.  The **seasonal phase** is a measure of the peak of the season - it is not strictly the maximum monthly, but rather the average of all months when considering months as an angle in the complex plane.  
 
-## Seasonal analysis
-
-```{r MODIS LAI seasonality, echo=FALSE, out.width = '100%'}
-
-if(do_MODIS_LAI) {
-  
-  ### Read the LPJ-GUESS data
-  
-  # Comparisons
-  seasonal_comparisons_list <- list()
-  
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
-    
-    # make comparison 
-    message(paste("Comparison stats for run", this_sim_Source@name, "LAI seasonality vs. MODIS seasonality trend"))
-    suppressWarnings(
-      seasonal_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_LAI_Seasonal_Fields_list[[this_sim_Source@id]],
-                                                                       field2 = all_LAI_Seasonal_Fields_list[["MODIS"]],
-                                                                       layers1 = guess_var,
-                                                                       layers2 = guess_var, 
-                                                                       do.seasonality = TRUE)
-    )
-    
-  }
-  
-  
-  #### PHASE
-  # absolute value
-  LAI_seasonality_vals_plot <- plotSpatialComparison(seasonal_comparisons_list, 
-                                                     do.phase = TRUE,
-                                                     type = "values",
-                                                     cuts = 0:12,
-                                                     ncol = num_cols,
-                                                     subtitle = FALSE,
-                                                     map.overlay = map.overlay)
-  suppressWarnings(print(LAI_seasonality_vals_plot))
-  
-  # difference
-  LAI_seasonality_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
-                                                     do.phase = TRUE,
-                                                     cuts = seq(-6,6), 
-                                                     symmetric.scale = FALSE,
-                                                     ncol = num_cols,
-                                                     subtitle = FALSE,
-                                                     map.overlay = map.overlay)
-  suppressWarnings(print(LAI_seasonality_diff_plot))
-  
-  #### CONCENTRATION
-  # absolute value
-  LAI_seasonality_conc_vals_plot <- plotSpatialComparison(seasonal_comparisons_list, 
-                                                          type = "values",
-                                                          ncol = num_cols,
-                                                          subtitle = FALSE,
-                                                          map.overlay = map.overlay)
-  suppressWarnings(print(LAI_seasonality_conc_vals_plot))
-  
-  # difference value
-  LAI_seasonality_conc_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
-                                                          ncol = num_cols,
-                                                          subtitle = FALSE,
-                                                          map.overlay = map.overlay)
-  
-  
-  if(doPublicationPlots) {
-    
-    LAI_seasonality_conc_diff_plot <- plotSpatialComparison(seasonal_comparisons_list, 
-                                                            ncol = num_cols, 
-                                                            tile = TRUE)
-    
-    LAI_seasonality_conc_diff_plot_reprojected <- LAI_seasonality_conc_diff_plot + coord_map(projection = "mollweide")
-    t1 <- Sys.time()
-    print(LAI_seasonality_conc_diff_plot_reprojected)
-    t2 <-  Sys.time()
-    print(t2-t1)
-  }
-  
-  suppressWarnings(print(LAI_seasonality_conc_diff_plot))
-  
+### Seasonal phase
+```{r}
+if(do_global_LAI) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
+                          do.phase = TRUE,
+                          type = "values",
+                          cuts = 0:12, 
+                          override.cols = pals::ocean.phase(12),
+                          ncol = num_cols,
+                          map.overlay = map.overlay,
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
-
 ```
+
+### Phase differences
+```{r}
+if(do_global_LAI){
+  suppressWarnings(print(
+    plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
+                          do.phase = TRUE,
+                          cuts = seq(-6,6), 
+                          symmetric.scale = FALSE,
+                          ncol = num_cols,
+                          map.overlay = map.overlay,
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+
+### Seasonal concentration
+```{r}
+if(do_global_LAI) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
+                          type = "values",
+                          ncol = num_cols,
+                          map.overlay = map.overlay,
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+### Concentration differences
+```{r}
+if(do_global_LAI) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
+                          ncol = num_cols,
+                          map.overlay = map.overlay,
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+## {-}
 <a href="#top">Back to top</a>
 
 ---
+
 
 # GFED4 burnt area
 
@@ -1025,7 +1030,7 @@ if(do_GFED4_BA){
   first_year_GFED4 <- 2000
   last_year_GFED4 <- 2016
   this_data_dir <- "annual_ba/GFED4.0"
-  this_data_file_name <- "GFED4.0_averageBA_2000-2016.nc"
+  this_data_file_name <- "GFED4.0_BA_2000-2016.nc"
   dataset_id <- "GFED4.0"
   dataset_name <- "GFED4.0"
   this_unit <- "Mha"
@@ -1051,7 +1056,7 @@ if(do_GFED4_BA){
   if(file.exists(full_file_path)) {
     
     # Read th data via a GUESS formatted Source
-    data_Source <- defineSource(id = dataset_id,
+   data_Source <- defineSource(id = dataset_id,
                                 name = dataset_name,
                                 dir = file.path(params$data_directory, this_data_dir),
                                 format = NetCDF)
@@ -1106,7 +1111,7 @@ if(do_GFED4_BA){
       temp_fld <- layerOp(temp_fld, "*", c(guess_var, "Area"), "Area_summed")
       suppressWarnings(all_Totals_vec[[this_sim_Source@name]] <- aggregateSpatial(selectLayers(temp_fld, "Area_summed"), method = "sum")@data/1e+6)
       rm(temp_fld)
-      summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(all_Totals_vec[[this_sim_Source@name]]))
+      summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(all_Totals_vec[[this_sim_Source@name]]),4)
       
       #### COMMENTED OUT BECAUSE WE DONT HAVE MONTHLY DATA - but we might
       
@@ -1136,8 +1141,8 @@ if(do_GFED4_BA){
   
   # complete and  save the summary table line 
   # TODO - add the data references
+  names(summary_table_lines) <- names(summary_table)
   summary_table <- rbind(summary_table, summary_table_lines)
-  
   
 } # if do_GFED4
 
@@ -1151,6 +1156,9 @@ if(do_GFED4_BA){
 
 if(do_GFED4_BA){
   
+  ba.cuts <- c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1.0)
+  ba.cols <- viridis::turbo(length(ba.cuts)-1)
+  
   # Do spatial comparisons for each model run and calculated global GPP
   spatial_comparisons_list <- list()
   nme_scores_list <- list()
@@ -1161,11 +1169,11 @@ if(do_GFED4_BA){
     # make comparison 
     # message(paste("Comparison stats for run", this_sim_Source@name, "GPP values vs. GOSIF GPP values"))
     suppressWarnings(
-        spatial_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_Map_Fields_list[[this_sim_Source@id]],
-                                                                        field2 = all_Map_Fields_list[[data_Source@name]],
-                                                                        layers1 =  guess_var,
-                                                                        layers2 =  guess_var, 
-                                                                        show.stats = FALSE)
+      spatial_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_Map_Fields_list[[this_sim_Source@id]],
+                                                                      field2 = all_Map_Fields_list[[data_Source@name]],
+                                                                      layers1 =  guess_var,
+                                                                      layers2 =  guess_var, 
+                                                                      show.stats = FALSE)
     )
     
     # store the NME 
@@ -1179,8 +1187,8 @@ if(do_GFED4_BA){
                                  ncol = num_cols, 
                                  legend.title = "BA Frac.",
                                  map.overlay = map.overlay,
-                                 cuts = c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1.0),
-                                 
+                                 cuts = ba.cuts,
+                                 cols = ba.cols,
                                  title = NULL,
                                  subtitle = NULL)
   
@@ -1465,11 +1473,11 @@ if(do_Global_Biomass){
 ## Global Summary Table
 
 
-TABLE FORMATTING:
+TABLE FORMATTING: see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
 
-The table above it just an example with the default formatting.  I have not yet looked into making prettier tables, but it is definitely possible, see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
 
 ``` {r Global summary, echo=FALSE, out.width = '100%', out.height= '150%'}
+
 
 if(nrow(summary_table) > 0) {
   colnames(summary_table) <- summary_col_names
@@ -1477,9 +1485,13 @@ if(nrow(summary_table) > 0) {
 }
 
 
+```
+
+## Timing
+Total run time:
+``` {r time}
+
+# report total run time
 toc()
 
 ```
-
-<a href="#top">Back to top</a>
-

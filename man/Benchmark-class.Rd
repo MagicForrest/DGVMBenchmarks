@@ -5,35 +5,34 @@
 \alias{Benchmark-class}
 \title{Benchmark class}
 \description{
-This class encapsulates all the specific details of a supported model or dataset.  This comprises functions to read the data off the disk,
-and metadata describing certain pre-defined \code{\linkS4class{Quantity}} and \code{\linkS4class{Layer}} objects. From a user-perspective, these are used as the \code{\linkS4class{Format}} argument to
-\code{\link{defineSource}} function.
+This class encapsulates all the specific details benchmark comparison.
 }
 \details{
-Format objects which are included in the package are listed below:
-
-For DGVMTools to support a particular model or dataset, this is the object that needs to be defined.  But normally a user won't need to deal with this
-class since it defines model/dataset specific metadata and functions which should be defined once and then 'just work' (haha) in the future.
-If someone wants their model to be supported by DGVMTools then this is the object that needs to be defined correctly.
-
-Note that the 'predefined.layers' and  'quantities' arguments are just default values, it is easy to add new ones.  Equally they don't all need
-to be available for a particular run or dataset.  You can define your own for your own data format if you, for example, want to include a new model type.
+This class defines metadata about a benchmark and the DGVMTools::Field to which the model output should be compared.  \emph{But} it should be kept in
+mind that benchmarks and datasets can vary a lot in terms of units, processing needed, how to deal with different time period etc, so the actual information
+stored in the class needs to be used carefully and should not be too automated.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{id}}{Simple character string to gave an uniquely identify this format}
+\item{\code{id}}{Simple character string to gave an uniquely identify this Benchmark}
 
-\item{\code{predefined.layers}}{'Standard' Layer type that this format uses, as a list of \code{\linkS4class{Layer}} objects.
-This is most likely applicable to formats describing DGVM output, but also for some data sets.
-This is just a default Layer set available for convenience, can be easily over-ridden when defining a Source object (see \code{\link{defineSource}}).}
+\item{\code{name}}{More complex character string to describe this Benchmark}
 
-\item{\code{quantities}}{'Standard' quantities (as a list of \code{\linkS4class{Quantity}} objects) which might be availably from the model output or dataset.}
+\item{\code{description}}{An even more complex string to describe the Benchmark, probably redundant}
 
-\item{\code{availableQuantities}}{A function to determine which quantities \emph{are actually available} from the model run or dataset.}
+\item{\code{simulation}}{A character string to describe which type of simulation is needed to compare to this benchmark.  Can be a vector, in which they
+will be tried in order}
 
-\item{\code{getField}}{A function to retrieve actually data from the model output or dataset.  This is likely to be a fairly complex function, and really depends on the specifics
-and idiosynchrasies of the model output format or dataset.}
+\item{\code{guess_var}}{Character describing the modelled variable(s) needed for this benchmark}
+
+\item{\code{guess_layers}}{Character describing the modelled layers(s) needed for this benchmark}
+
+\item{\code{unit}}{Character string for the unit used in individual gridcells in the spatial plots, will be evaluated as an expression.}
+
+\item{\code{agg.unit}}{Character string for the aggregated units used for global summaries, will be evaluated as an expression.}
+
+\item{\code{datasets}}{A list of DGVMTools::Field objects that are used for comparison in this benchmark}
 }}
 
 \author{

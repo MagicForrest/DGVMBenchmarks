@@ -3,31 +3,26 @@
 
 #' Benchmark class
 #'
-#' This class encapsulates all the specific details of a supported model or dataset.  This comprises functions to read the data off the disk, 
-#' and metadata describing certain pre-defined \code{\linkS4class{Quantity}} and \code{\linkS4class{Layer}} objects. From a user-perspective, these are used as the \code{\linkS4class{Format}} argument to
-#' \code{\link{defineSource}} function.
+#' This class encapsulates all the specific details benchmark comparison.
 #' 
-#'  Format objects which are included in the package are listed below:
-#'
-#' @slot id Simple character string to gave an uniquely identify this format
-#' @slot predefined.layers 'Standard' Layer type that this format uses, as a list of \code{\linkS4class{Layer}} objects.  
-#' This is most likely applicable to formats describing DGVM output, but also for some data sets.  
-#' This is just a default Layer set available for convenience, can be easily over-ridden when defining a Source object (see \code{\link{defineSource}}).
-#' @slot quantities 'Standard' quantities (as a list of \code{\linkS4class{Quantity}} objects) which might be availably from the model output or dataset.
-#' @slot availableQuantities A function to determine which quantities \emph{are actually available} from the model run or dataset.
-#' @slot getField A function to retrieve actually data from the model output or dataset.  This is likely to be a fairly complex function, and really depends on the specifics 
-#' and idiosynchrasies of the model output format or dataset.
+#' @slot id Simple character string to gave an uniquely identify this Benchmark
+#' @slot name More complex character string to describe this Benchmark
+#' @slot description An even more complex string to describe the Benchmark, probably redundant
+#' @slot simulation A character string to describe which type of simulation is needed to compare to this benchmark.  Can be a vector, in which they
+#' will be tried in order
+#' @slot guess_var Character describing the modelled variable(s) needed for this benchmark
+#' @slot guess_layers Character describing the modelled layers(s) needed for this benchmark
+#' @slot unit Character string for the unit used in individual gridcells in the spatial plots, will be evaluated as an expression.
+#' @slot agg.unit Character string for the aggregated units used for global summaries, will be evaluated as an expression.
+#' @slot datasets A list of DGVMTools::Field objects that are used for comparison in this benchmark
 #' 
-#' @details For DGVMTools to support a particular model or dataset, this is the object that needs to be defined.  But normally a user won't need to deal with this 
-#' class since it defines model/dataset specific metadata and functions which should be defined once and then 'just work' (haha) in the future. 
-#' If someone wants their model to be supported by DGVMTools then this is the object that needs to be defined correctly.
-#' 
-#' Note that the 'predefined.layers' and  'quantities' arguments are just default values, it is easy to add new ones.  Equally they don't all need
-#' to be available for a particular run or dataset.  You can define your own for your own data format if you, for example, want to include a new model type.    
+#' @details This class defines metadata about a benchmark and the DGVMTools::Field to which the model output should be compared.  *But* it should be kept in
+#' mind that benchmarks and datasets can vary a lot in terms of units, processing needed, how to deal with different time period etc, so the actual information
+#' stored in the class needs to be used carefully and should not be too automated.
 #' 
 #' @name Benchmark-class
 #' @rdname Benchmark-class
-#' @exportClass Format
+#' @exportClass Benchmark
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}
 setClass("Benchmark", 
          slots = c(id = "character",
@@ -37,7 +32,11 @@ setClass("Benchmark",
                    guess_var = "character",
                    guess_layers = "character",
                    unit = "character",
-                   agg.unit = "character"),
+                   agg.unit = "character",
+                   datasets = "list",
+                   metrics = "character"),
          contains = "STAInfo",
+         
+         # TODO make a function to check the validity of a created benchmark, at a minimum that all elements of the datasets slot list are DGVMTools::Fields
 )
 
