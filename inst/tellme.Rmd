@@ -100,7 +100,7 @@ summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 # Standard plot formatting arguments
 num_cols <- 1
 map_overlay <- "world"
-interior_lines <- FALSE # turn of the country lines by popular request
+interior_lines <- FALSE # turn off the country lines by popular request
 stats_lon <- -130
 stats_lat <- -20
 
@@ -312,6 +312,14 @@ if(do_Biomes){
   
   biome_plot <- biome_plot+ guides(fill = guide_legend(ncol = 2))
   suppressWarnings(plot(biome_plot))
+  
+  
+  # such a nice solution, integrate into package....
+  # library(rnaturalearth)
+  # countryLines <- ne_coastline(returnclass = "sf")
+  # biome_plot2 <- biome_plot+geom_sf(data=countryLines, linewidth = 0.1)
+  # print(biome_plot2)
+  
   
 } # if do_Global_Biomass
 
