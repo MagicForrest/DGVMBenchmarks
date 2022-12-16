@@ -8,11 +8,14 @@ getField_ICOS(
   source,
   quant,
   layers = NULL,
+  target.STAInfo,
+  file.name,
+  verbose,
   UT.threshold = "VUT",
   partition.method = "REF",
-  first.year = "",
-  last.year = "",
-  verbose = F
+  first.year,
+  last.year,
+  ...
 )
 }
 \arguments{
@@ -22,6 +25,13 @@ getField_ICOS(
 
 \item{layers}{Ignored for ICOS}
 
+\item{target.STAInfo}{The spatial-temporal target domain}
+
+\item{file.name}{Character string holding the name of the file.  This can be left blank, in which case the file name is just taken to be
+"\href{mailto:quant@id}{quant@id}.out" (also "\href{mailto:quant@id}{quant@id}.out.gz")}
+
+\item{verbose}{A logical, set to true to give progress/debug information}
+
 \item{UT.threshold}{USTAR threshold, variable (VUT) or constant (CUT). VUT is default}
 
 \item{partition.method}{Partition method, e.g. REF, USTAR50, MEAN. REF is default}
@@ -29,8 +39,6 @@ getField_ICOS(
 \item{first.year}{Optional, will exclude data before this year}
 
 \item{last.year}{Optional, will exclude data beyond this year}
-
-\item{verbose}{A logical, set to true to give progress/debug information}
 }
 \value{
 A list containing firstly the data.table containing the data, and secondly the STA.info
