@@ -70,8 +70,9 @@ getField_ICOS <- function(source,
                                             pattern = "(?<=ICOSETC_).+(?=_FLUXNET)"))
     
     # determining the longitude and latitude
-    lon <- siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LONG"]
-    lat <- siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LAT"]
+    lon <- as.numeric(as.character(siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LONG"]))
+    lat <- as.numeric(as.character(siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LAT"]))
+    
     
     # determining the full site name
     site.name <- siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "SITE_NAME"]
