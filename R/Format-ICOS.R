@@ -78,13 +78,13 @@ getField_ICOS <- function(source,
     
     
     # declaring a new data table with metadata that will be used to append the daily fluxes to
-    site.data.selected <- data.table(Site = site,
-                                     Site_name = site.name,
-                                     Year = stringr::str_sub(site.data$TIMESTAMP, 1, 4),
-                                     Day = stringr::str_sub(site.data$TIMESTAMP, 7, 8),
+    site.data.selected <- data.table(Code = site,
+                                     Name = site.name,
+                                     Year = as.integer(stringr::str_sub(site.data$TIMESTAMP, 1, 4)),
+                                     Day = as.integer(stringr::str_sub(site.data$TIMESTAMP, 7, 8)),
                                      ymd = site.data$TIMESTAMP,
-                                     Lon = lon,
-                                     Lat = lat)
+                                     Lon = as.numeric(lon),
+                                     Lat = as.numeric(lat))
     
     
     # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
@@ -102,18 +102,18 @@ getField_ICOS <- function(source,
     }
     
     # convert day to day of year (doy)
-    site.data.selected$Day <- lubridate::yday(lubridate::ymd(site.data.selected$ymd))
+    site.data.selected$Day <- as.integer(lubridate::yday(lubridate::ymd(site.data.selected$ymd)))
     
     if (!missing(first.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) < first.year,]
     } else {
-      first.year <- min(as.numeric(site.data.selected$Year))
+      first.year <- min(as.integer(site.data.selected$Year))
     }
     
     if (!missing(last.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) > last.year,]
     } else {
-      last.year <- max(as.numeric(site.data.selected$Year))
+      last.year <- max(as.integer(site.data.selected$Year))
     }
     
     if (nrow(site.data.selected) == 0) {
@@ -137,10 +137,10 @@ getField_ICOS <- function(source,
   
  
   # creating a data table with the lon/lat
-  gridcells <- data.table(Lat = as.numeric(unique(ICOS.cfluxes$Lat)),
-                          Lon = as.numeric(unique(ICOS.cfluxes$Lon)),
-                          Site = unique(ICOS.cfluxes$Site),
-                          Site_name = unique(ICOS.cfluxes$Site_name))
+  gridcells <- data.table(Lon = as.numeric(unique(ICOS.cfluxes$Lon)),
+                          Lat = as.numeric(unique(ICOS.cfluxes$Lat)),
+                          Code = unique(ICOS.cfluxes$Code),
+                          Name = unique(ICOS.cfluxes$Name))
   field.id <-
     makeFieldID(
       source = source,
