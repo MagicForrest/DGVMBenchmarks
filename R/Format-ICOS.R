@@ -107,15 +107,11 @@ getField_ICOS <- function(source,
     
     if (!missing(first.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) < first.year,]
-    } else {
-      first.year <- min(as.integer(site.data.selected$Year))
-    }
+    } 
     
     if (!missing(last.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) > last.year,]
-    } else {
-      last.year <- max(as.integer(site.data.selected$Year))
-    }
+    } 
     
     if (nrow(site.data.selected) == 0) {
       warning("No data for this time period available. Check first and/or last year")
@@ -154,8 +150,8 @@ getField_ICOS <- function(source,
     id = field.id,
     quant = quant,
     data = quant.data,
-    first.year = first.year,
-    last.year = last.year,
+    first.year = min(quant.data$Year),
+    last.year = max(quant.data$Year),
     year.aggregate.method = "none",
     spatial.extent = gridcells,
     spatial.extent.id = "Gridcells",
