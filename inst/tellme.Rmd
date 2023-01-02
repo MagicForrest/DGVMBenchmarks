@@ -99,8 +99,7 @@ summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 
 # Standard plot formatting arguments
 num_cols <- 1
-map_overlay <- "world"
-interior_lines <- FALSE # turn off the country lines by popular request
+map_overlay <- "coastlines"
 stats_lon <- -130
 stats_lat <- -20
 
@@ -304,7 +303,6 @@ if(do_Biomes){
                                              ncol = num_cols, 
                                              text.multiplier = 1.3, 
                                              map.overlay = map_overlay, 
-                                             interior.lines = interior_lines,
                                              title = NULL))
   biome_plot <- biome_plot + theme(legend.position = "bottom",
                                    legend.text=element_text(size=rel(0.9)),
@@ -507,7 +505,6 @@ if(do_global_GPP){
                                      ncol = num_cols, 
                                      legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
                                      map.overlay = map_overlay, 
-                                     interior.lines = interior_lines, 
                                      title = "Absolute GPP values",
                                      subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
@@ -533,7 +530,6 @@ if(do_global_GPP){
                                                 ncol = num_cols, 
                                                 legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
                                                 map.overlay = map_overlay, 
-                                                interior.lines = interior_lines, 
                                                 title = "GPP biases", 
                                                 facet.order = names(all_GPP_comparisons[["Values"]]),
                                                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
@@ -560,7 +556,6 @@ if(do_global_GPP){
                                                        ncol = num_cols, 
                                                        legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
                                                        map.overlay = map_overlay, 
-                                                       interior.lines = interior_lines, 
                                                        title = "GPP biases", 
                                                        subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"),
                                                        plot = FALSE)
@@ -585,7 +580,6 @@ if(do_global_GPP) {
                 title = "Trend in GPP", 
                 legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
                 map.overlay = map_overlay, 
-                interior.lines = interior_lines, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -603,7 +597,6 @@ if(do_global_GPP) {
                 title = "Significance in GPP Trends",
                 legend.title =  "p value",
                 map.overlay = map_overlay, 
-                interior.lines = interior_lines, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 
@@ -619,7 +612,6 @@ if(do_global_GPP) {
                           title = "Difference Trend in GPP", 
                           legend.title =  expression(Delta~gC~m^{"-2"}~month^{"-2"}),
                           map.overlay = map_overlay,                
-                          interior.lines = interior_lines,   
                           subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -637,7 +629,6 @@ if(do_global_GPP) {
                 title = "Significant Trend in GPP (p-value < 0.05)", 
                 legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
                 map.overlay = map_overlay, 
-                interior.lines = interior_lines, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -658,7 +649,6 @@ if(do_global_GPP) {
                           override.cols = pals::ocean.phase(12),
                           ncol = num_cols,
                           map.overlay = map_overlay,   
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -673,7 +663,6 @@ if(do_global_GPP){
                           symmetric.scale = FALSE,
                           ncol = num_cols,
                           map.overlay = map_overlay,    
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -687,7 +676,6 @@ if(do_global_GPP) {
                           type = "values",
                           ncol = num_cols,
                           map.overlay = map_overlay,            
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -699,7 +687,6 @@ if(do_global_GPP) {
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           ncol = num_cols,
                           map.overlay = map_overlay,           
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -890,7 +877,6 @@ if(do_global_LAI){
                                      ncol = num_cols, 
                                      legend.title = expression(m^{"2"}~m^{"-2"}),
                                      map.overlay = map_overlay,  
-                                     interior.lines = interior_lines,   
                                      title = "Absolute LAI values",
                                      limits = c(0,8),
                                      subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
@@ -916,7 +902,6 @@ if(do_global_LAI){
                                                 ncol = num_cols, 
                                                 legend.title = expression(Delta~m^{"2"}~m^{"-2"}),
                                                 map.overlay = map_overlay,             
-                                                interior.lines = interior_lines,   
                                                 title = "LAI biases", 
                                                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
@@ -958,7 +943,6 @@ if(do_global_LAI) {
                 title = "Trend in LAI", 
                 legend.title = expression(m^{"2"}~m^{"-2"}~month^{"-2"}),
                 map.overlay = map_overlay,                  
-                interior.lines = interior_lines,   
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -976,7 +960,6 @@ if(do_global_LAI) {
                 title = "Significance in LAI Trends",
                 legend.title =  "p value",
                 map.overlay = map_overlay,                   
-                interior.lines = interior_lines,   
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 
@@ -992,7 +975,6 @@ if(do_global_LAI) {
                           title = "Difference Trend in LAI", 
                           legend.title =  expression(m^{"2"}~m^{"-2"}~month^{"-2"}),
                           map.overlay = map_overlay,          
-                          interior.lines = interior_lines,   
                           subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
   
 }
@@ -1012,7 +994,6 @@ if(do_global_LAI) {
                 title = "Significant Trend in GPP (p-value < 0.05)", 
                 legend.title = expression(expression(m^{"2"}~m^{"-2"}~month^{"-2"})),
                 map.overlay = map_overlay, 
-                interior.lines = interior_lines, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1032,7 +1013,6 @@ if(do_global_LAI) {
                           override.cols = pals::ocean.phase(12),
                           ncol = num_cols,
                           map.overlay = map_overlay,                   
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1047,7 +1027,6 @@ if(do_global_LAI){
                           symmetric.scale = FALSE,
                           ncol = num_cols,
                           map.overlay = map_overlay,                              
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1061,7 +1040,6 @@ if(do_global_LAI) {
                           type = "values",
                           ncol = num_cols,
                           map.overlay = map_overlay,                          
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1073,7 +1051,6 @@ if(do_global_LAI) {
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           ncol = num_cols,
                           map.overlay = map_overlay,                       
-                          interior.lines = interior_lines,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1259,7 +1236,6 @@ if(do_GFED4_BA){
                                  ncol = num_cols, 
                                  legend.title = "BA Frac.",
                                  map.overlay = map_overlay,                                 
-                                 interior.lines = interior_lines,   
                                  cuts = ba.cuts,
                                  cols = ba.cols,
                                  title = NULL,
@@ -1283,7 +1259,7 @@ if(do_GFED4_BA){
   diff_values_plot <- plotSpatialComparison(spatial_comparisons_list, 
                                             ncol = num_cols, 
                                             legend.title = expression(Delta ~"BA frac"),
-                                            map.overlay = map_overlay,                                       interior.lines = interior_lines,   
+                                            map.overlay = map_overlay,                                    
                                             title = "Burnt area biases", 
                                             subtitle = paste(first_year_GFED4, last_year_GFED4, sep = "-") )
   # add statistical metrics to the plots
