@@ -13,6 +13,7 @@ getField_FLUXNET(
   verbose,
   UT.threshold = "VUT",
   partition.method = "REF",
+  day.night.method = "NT",
   first.year,
   last.year,
   ...
@@ -35,6 +36,8 @@ getField_FLUXNET(
 \item{UT.threshold}{USTAR threshold, variable (VUT) or constant (CUT). VUT is default}
 
 \item{partition.method}{Partition method, e.g. REF, USTAR50, MEAN. REF is default}
+
+\item{day.night.method}{Nighttime (NT) or daytime (DT) partition method for GPP and Reco. Default is NT}
 
 \item{first.year}{Optional, will exclude data before this year}
 
