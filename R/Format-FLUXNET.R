@@ -17,6 +17,7 @@
 #' @param verbose A logical, set to true to give progress/debug information
 #' @param UT.threshold USTAR threshold, variable (VUT) or constant (CUT). VUT is default
 #' @param partition.method Partition method, e.g. REF, USTAR50, MEAN. REF is default
+#' @param day.night.method Nighttime (NT) or daytime (DT) partition method for GPP and Reco. Default is NT
 #' @param first.year Optional, will exclude data before this year
 #' @param last.year Optional, will exclude data beyond this year
 #' @import stringr
@@ -35,6 +36,7 @@ getField_FLUXNET <- function(source,
                               verbose,
                               UT.threshold = "VUT",
                               partition.method = "REF",
+                              day.night.method = "NT",
                               first.year,
                               last.year,
                               ...) {
@@ -92,7 +94,7 @@ getField_FLUXNET <- function(source,
     # divides by a 1000 to convert gC/m^2 to kgC/m^2
     for (v in variables.cfluxes) {
       to.cbind <- select(site.data, contains(toupper(v))) %>%
-        select(contains(c("_DT", "_NT")) | ends_with("_F")) %>%
+        select(contains(day.night.method) | ends_with("_F")) %>%
         rowSums() / 1000
       
       site.data.selected <- cbind(site.data.selected, to.cbind)
@@ -164,7 +166,7 @@ getField_FLUXNET <- function(source,
       to.cbind <- select(site.data, contains(UT.threshold)) %>%
         select(contains(v)) %>%
         select(contains(partition.method)) %>%
-        select(contains(c("_DT", "_NT")) | ends_with(c("DAY", "NIGHT"))) %>%
+        select(contains(day.night.method) | ends_with(partition.method)) %>%
         rowSums() / 1000
       
       site.data.selected <- cbind(site.data.selected, to.cbind)

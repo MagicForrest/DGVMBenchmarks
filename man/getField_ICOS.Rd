@@ -13,6 +13,8 @@ getField_ICOS(
   verbose,
   UT.threshold = "VUT",
   partition.method = "REF",
+  day.night.method = "NT",
+  NEE.day.night = NULL,
   first.year,
   last.year,
   ...
@@ -35,6 +37,10 @@ getField_ICOS(
 \item{UT.threshold}{USTAR threshold, variable (VUT) or constant (CUT). VUT is default}
 
 \item{partition.method}{Partition method, e.g. REF, USTAR50, MEAN. REF is default}
+
+\item{day.night.method}{Nighttime (NT) or daytime (DT) partition method for GPP and Reco. Default is NT}
+
+\item{NEE.day.night}{Set to DAY or NIGHT for only daytime or nighttime NEE. Default is NULL}
 
 \item{first.year}{Optional, will exclude data before this year}
 
