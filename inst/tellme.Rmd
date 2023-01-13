@@ -3,19 +3,19 @@ title: "Tellme Benchmark Report for LPJ-GUESS"
 author: "Matthew Forrest"
 date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output: 
-  html_document:
-    toc: true
+ html_document:
+  toc: true
 params:
-  new_directory:
-    value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
-  new_name:
-    value: "New Run"
-  old_directory:
-    value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
-  old_name:
-    value: "Old Run"
-  data_directory: 
-    value: "/data/shared/Tellus"
+ new_directory:
+  value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
+ new_name:
+  value: "New Run"
+ old_directory:
+  value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
+ old_name:
+  value: "Old Run"
+ data_directory: 
+  value: "/data/shared/Tellus"
 ---
 
 ```{r setup, include=FALSE}
@@ -37,7 +37,9 @@ library(tictoc)
 
 # conversion factors
 KG_TO_PG <- 1/1e+12
-KM2_TO_MegaM2 <- 1/1e+12
+M2_TO_MegaM2 <- 1/1e+12
+M2_TO_Mha <- 1/1e+10
+
 
 # start timer
 tic()
@@ -79,11 +81,11 @@ version_label <- "tellus_v1.1"
 doPublicationPlots <- FALSE
 
 # switches for which benchmarks to do
-do_GCP_NBP <- TRUE
-do_Biomes <- TRUE
-do_global_GPP <- TRUE
-do_global_LAI <- TRUE
-do_GFED4_BA <- TRUE
+do_GCP_NBP <- FALSE
+do_Biomes <- FALSE
+do_global_GPP <- FALSE
+do_global_LAI <- FALSE
+do_global_BA <- TRUE
 do_Pan_Biomass <- FALSE
 do_Global_Biomass <- FALSE
 
@@ -106,7 +108,7 @@ stats_lat <- -20
 
 ```
 
----
+------
 
 
 
@@ -200,7 +202,7 @@ if(do_GCP_NBP){
 ```
 <a href="#top">Back to top</a>
 
----
+------
 
 # PNV Biomes
 
@@ -298,7 +300,7 @@ if(do_Biomes){
     }
     
   } # for each model run
-
+  
   suppressWarnings(biome_plot <- plotSpatial(Biome_Map_Fields_list, 
                                              ncol = num_cols, 
                                              text.multiplier = 1.3, 
@@ -328,7 +330,7 @@ if(do_Biomes){
 
 <a href="#top">Back to top</a>
 
----
+------
 
 
 # GOSIF Gross Primary Productivity
@@ -694,7 +696,7 @@ if(do_global_GPP) {
 
 <a href="#top">Back to top</a>
 
----
+------
 
 # MODIS Leaf Area Index
 
@@ -1058,231 +1060,389 @@ if(do_global_LAI) {
 
 <a href="#top">Back to top</a>
 
----
+------
 
-
-# GFED4 burnt area
-
-
-
-```{r GFED4 BA data prep, echo=FALSE, out.width = '100%'}
-
-
-#### GFED4 Burnt Area Data Prep ####
-
-if(do_GFED4_BA){
-  
-  ### Here we read the model and data for both the spatial and trend analyses (which are actually done in the next code blocks)
-  
-  ### some parameters and settings
-  guess_var <- "mburned_area"
-  first_year_GFED4 <- 2000
-  last_year_GFED4 <- 2016
-  this_data_dir <- "annual_ba/GFED4.0"
-  this_data_file_name <- "GFED4.0_BA_2000-2016.nc"
-  dataset_id <- "GFED4.0"
-  dataset_name <- "GFED4.0"
-  this_unit <- "Mha"
-  benchmark_description <- "Global burnt area"
-  
-  
-  summary_table_lines <- as.list(rep("-", length(summary_col_names)))
-  names(summary_table_lines) <- summary_col_names
-  summary_table_lines$Dataset <- dataset_name
-  summary_table_lines$Quantity <- benchmark_description
-  summary_table_lines$Unit <- this_unit
-  
-  
-  ### Lists for storing the field and totals
-  all_Map_Fields_list <- list()
-  all_Trend_Fields_list <- list()
-  all_Seasonal_Fields_list <- list()
-  all_Totals_vec <- list()
-  
-  
-  #### READ DATA ####
-  full_file_path <- file.path(params$data_directory, this_data_dir, this_data_file_name)
-  if(file.exists(full_file_path)) {
-    
-    # Read th data via a GUESS formatted Source
-    data_Source <- defineSource(id = dataset_id,
-                                name = dataset_name,
-                                dir = file.path(params$data_directory, this_data_dir),
-                                format = NetCDF)
-    this_data_Field <- getField(source = data_Source,
-                                quant = guess_var,
-                                file.name = this_data_file_name)
-    
-    # calculate global total BA and put into a data.frame for the labels
-    suppressWarnings(all_Totals_vec[[data_Source@name]] <- aggregateSpatial(selectLayers(this_data_Field, guess_var), method = "sum")@data/1e+6)
-    summary_table_lines$Data <- signif(as.numeric(all_Totals_vec[[data_Source@name]]),4)
-    
-    
-    # go from ha for fraction burnt area
-    this_data_Field <- addArea(this_data_Field, "ha")
-    this_data_Field <- layerOp(this_data_Field, "/", c(guess_var, "Area"), guess_var)
-    this_data_Field <- layerOp(this_data_Field, NULL, "Area")
-    this_data_Field@quant@units <- "1"
-    
-    # already aggregated to spatial map, so just save
-    all_Map_Fields_list[[dataset_name]] <- this_data_Field
-    
-  }
-  
-  #### READ LPJ-GUESS BURNT AREA DATA ####
-  
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
-    
-    # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir, "crop_global")
-    if(file.exists(file.path(this_benchmark_run_dir, paste0(guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(guess_var, ".out.gz")))) {
-      
-      # make local sources pointing to the crop_global directory
-      this_crop_global_Source <- this_sim_Source
-      this_crop_global_Source@dir <- this_benchmark_run_dir
-      
-      # read the full data and
-      suppressWarnings(
-        this_simulation_Field <- getField(source = this_crop_global_Source,
-                                          guess_var,
-                                          first.year = first_year_GFED4,
-                                          last.year = last_year_GFED4,
-                                          quick.read = quick_read,
-                                          quick.read.file = paste(guess_var, version_label, sep = "_"))
-      )
-      
-      ### take sum of month and average of years and store for later use - very easy ###
-      all_Map_Fields_list[[this_sim_Source@id]] <- aggregateYears(aggregateSubannual(this_simulation_Field, target = "Year", method = "max"),  "mean")
-      
-      # also calculate global total BA and put into a data.frame for the labels
-      temp_fld <- addArea(all_Map_Fields_list[[this_sim_Source@id]], "ha")
-      temp_fld <- layerOp(temp_fld, "*", c(guess_var, "Area"), "Area_summed")
-      suppressWarnings(all_Totals_vec[[this_sim_Source@name]] <- aggregateSpatial(selectLayers(temp_fld, "Area_summed"), method = "sum")@data/1e+6)
-      rm(temp_fld)
-      summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(all_Totals_vec[[this_sim_Source@name]]),4)
-      
-      #### COMMENTED OUT BECAUSE WE DONT HAVE MONTHLY DATA - but we might
-      
-      ### take yearly average and store for later use - very easy ###
-      #all_Fields_list[[this_sim_Source@id]] <- aggregateYears(this_simulation_Field, "mean")
-      
-      ### calculate the linear trend and p-value for every gridcell and store for later use ###     
-      #this_Trend <- calcLinearTrend(this_simulation_LAI)
-      
-      # store the Field in the list of all Fields for plotting later
-      #all_Trend_Fields_list[[this_sim_Source@id]] <- this_Trend
-      
-      # remove to save memory
-      rm(this_simulation_Field)
-      
-    } # if file is present 
-    
-  } # for each model run
-  
-  
-  #### SPECIAL CASE FOR GFED4 - extract only the modelled gridcells and set the quantity to match the data ####
-  modelled_gridcells <- getDimInfo(all_Map_Fields_list[["New_Run"]], info = "full")
-  all_Map_Fields_list[[dataset_name]] <- selectGridcells(all_Map_Fields_list[[dataset_name]], gridcells = modelled_gridcells, "Full")
-  all_Map_Fields_list[[dataset_name]]@quant <- all_Map_Fields_list[["New_Run"]]@quant
-  
-  
-  
-  # complete and  save the summary table line 
-  # TODO - add the data references
-  names(summary_table_lines) <- names(summary_table)
-  summary_table <- rbind(summary_table, summary_table_lines)
-  
-} # if do_GFED4
+# Global burnt area 
 
 
 
-```
-
-
-
-```{r GFED4 BA map, echo=FALSE, out.width = '100%', out.height= '150%'}
-
-if(do_GFED4_BA){
+```{r BA data prep, echo=FALSE, out.width = '100%'}
+if(do_global_BA){
   
   ba.cuts <- c(0,0.002,0.005,0.01,0.02,0.05,0.10,0.2,0.50,1.0)
   ba.cols <- viridis::turbo(length(ba.cuts)-1)
   
-  # Do spatial comparisons for each model run and calculated global GPP
-  spatial_comparisons_list <- list()
-  nme_scores_list <- list()
+  # Currently only got one burnt area dataset, but code as a list of data source for future flexibility
+  BA_data_Fields <- list()
   
-  # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
-    
-    # make comparison 
-    # message(paste("Comparison stats for run", this_sim_Source@name, "GPP values vs. GOSIF GPP values"))
-    suppressWarnings(
-      spatial_comparisons_list[[this_sim_Source@id]] <- compareLayers(field1 = all_Map_Fields_list[[this_sim_Source@id]],
-                                                                      field2 = all_Map_Fields_list[[data_Source@name]],
-                                                                      layers1 =  guess_var,
-                                                                      layers2 =  guess_var, 
-                                                                      show.stats = FALSE)
-    )
-    
-    # store the NME 
-    nme_scores_list[[this_sim_Source@name]] <- spatial_comparisons_list[[this_sim_Source@id]]@stats$NME
-    
+  #### MODIS LAI SETTINGS AND DATA ####
+  
+  GFED4_BA_monthly_dir <- "monthly_ba/GFED4"
+  GFED4_BA_monthly_file.name <- "GFED4.0_monthly_1996-2016.nc"
+  GFED4_BA_Source <- defineSource(id = "GFED4_BA",
+                                  name = "GFED4 BA",
+                                  dir = file.path(params$data_directory, GFED4_BA_monthly_dir),
+                                  format = NetCDF)
+  
+  full_file_path <- file.path(GFED4_BA_Source@dir, GFED4_BA_monthly_file.name)
+  if(!file.exists(full_file_path)) {
+    print("MODIS LAI data not available.")
+  } else {
+    BA_data_Fields[[GFED4_BA_Source@name]] <- suppressWarnings(getField(source = GFED4_BA_Source,
+                                                                        quant = "burned_area_fraction",
+                                                                        file.name = GFED4_BA_monthly_file.name))
   }
   
   
-  # plot all slope values together
-  abs_values_plot <- plotSpatial(all_Map_Fields_list, 
-                                 ncol = num_cols, 
-                                 legend.title = "BA Frac.",
-                                 map.overlay = map_overlay,                                 
-                                 cuts = ba.cuts,
-                                 cols = ba.cols,
-                                 title = NULL,
-                                 subtitle = NULL)
+  #### PREPARE BA BENCHMARK SETTINGS AND DATA ####
   
-  # add the total GPP to the plots
+  if(length(BA_data_Fields) == 0) {
+    do_global_BA <- FALSE
+    print("Skipping global burnt area benchmark because no datasets available.")
+  }
+  else {
+    
+    # find overlapping years (general case if multiple datasets)
+    first.year = last.year = NA
+    for(this_Field in BA_data_Fields) {
+      first.year <- min(c(this_Field@first.year, first.year), na.rm = TRUE)
+      last.year <- max(c(this_Field@last.year, last.year), na.rm = TRUE)
+    }
+    
+    this_benchmark <- new("Benchmark",
+                          id = "Global_BA",
+                          name = "Global Burnt Area",
+                          description = "Global burnt area",
+                          simulation = "tellus",
+                          guess_var = "mburned_area",
+                          guess_layers = "mburned_area",
+                          unit = "fraction",
+                          agg.unit = "Mha",
+                          datasets = BA_data_Fields,
+                          first.year = first.year,
+                          last.year = last.year,
+                          metrics = c("NME", "RMSE"))
+    
+    
+    makeSummaryLine <- function(benchmark, col_names) {
+      summary_table_lines <- as.list(rep("-", length(col_names)))
+      names(summary_table_lines) <- col_names
+      for(this_dataset in benchmark@datasets) {
+        if(summary_table_lines$Dataset == "-") summary_table_lines$Dataset <- this_dataset@source@name
+        else summary_table_lines$Dataset <- paste0(summary_table_lines$Dataset, ", ", this_dataset@source@name) 
+      }
+      summary_table_lines$Quantity <- benchmark@description
+      summary_table_lines$Unit <- benchmark@agg.unit
+      return(summary_table_lines)
+    }
+    summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
+    
+    
+    
+    ### Lists for storing the appropriate Fields and summary numbers
+    all_BA_Maps <- list()
+    all_BA_Trends <- list()
+    all_BA_Seasonal <- list()
+    all_BA_totals <- list()
+    
+    # Process the datasets according to the benchmark parameters above
+    # this code will likely need to be adjusted depending on the details of variables, units, datasets etc
+    for(this_data_Field in this_benchmark@datasets) {
+      
+      # SPECIAL CASE for GFED4 data, remove gridcells that aren't in model gridlist
+      if(this_data_Field@source@name == "GFED4 BA") {
+        gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_global_0.5deg.txt", package = "DGVMBenchmarks"), header = TRUE)
+        names(gridcells) <- c("Lon", "Lat")
+        this_data_Field <- selectGridcells(this_data_Field, gridcells = gridcells, spatial.extent.id = "Global" )
+      }
+      
+      # rename layer
+      renameLayers(this_data_Field, this_benchmark@guess_var)
+      
+      # crop the data to the comment benchmark year
+      this_data_Field <- selectYears(this_data_Field, first = this_benchmark@first.year, last = this_benchmark@last.year)
+      
+      # Calculate the slope (still in grams)
+      all_BA_Trends[[this_data_Field@source@name]] <- calcLinearTrend(this_data_Field)
+      
+      # make the annual map for comparison (leave only spatial)
+      all_BA_Maps[[this_data_Field@source@name]] <- aggregateYears(aggregateSubannual(this_data_Field, method = "sum", target = "Year"), method = "mean")
+      
+      # make the seasonal cycle for comparison (leave months andspatial)
+      all_BA_Seasonal[[this_data_Field@source@name]] <- aggregateYears(this_data_Field, method = "mean")
+      
+      # make and save the mean annual global LAI
+      # TODO, make this more flexible for multiple datasets
+      data_BA_MHa <- areaWeightedTotal(all_BA_Maps[[this_data_Field@source@name]])@data * M2_TO_Mha
+      all_BA_totals[[this_data_Field@source@name]] <- data_BA_MHa
+      summary_table_lines$Data <- signif(as.numeric(data_BA_MHa),4)
+      
+    }
+    
+    #### READ LPJ-GUESS DATA ####
+    
+    # loop through model runs to be processed
+    for(this_sim_Source in all_simulation_Sources_list) {
+      
+      # check if file is present (if not don't include this run)
+      this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
+      if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
+        
+        # make local sources pointing to the crop_global directory
+        this_crop_global_Source <- this_sim_Source
+        this_crop_global_Source@dir <- this_benchmark_run_dir
+        
+        # read the full data and
+        suppressWarnings(
+          this_simulation_BA <- getField(source = this_crop_global_Source,
+                                         this_benchmark@guess_var,
+                                         first.year = this_benchmark@first.year,
+                                         last.year = this_benchmark@last.year,
+                                         quick.read = quick_read,
+                                         quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+        )
+        
+        ### take sum of month and average of years and store for later use - very easy ###
+        all_BA_Maps[[this_sim_Source@name]] <- aggregateYears(aggregateSubannual(this_simulation_BA, target = "Year", method = "sum"),  "mean")
+        
+        ### take yearly average and store for later use - very easy ###
+        all_BA_Seasonal[[this_sim_Source@name]] <- aggregateYears(this_simulation_BA, "mean")
+        
+        ### calculate and store the linear trend and p-value for every gridcell 
+        all_BA_Trends[[this_sim_Source@name]] <- calcLinearTrend(this_simulation_BA)
+        
+        # calculate and save the global total
+        this_BA_Mha <- areaWeightedTotal(all_BA_Maps[[this_sim_Source@name]])@data * M2_TO_Mha
+        all_BA_totals[[this_sim_Source@name]] <- this_BA_Mha
+        summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_BA_Mha),4)
+        
+        # remove to save memory
+        rm(this_simulation_BA)
+        
+      } # if file is present 
+      else {
+        do_global_BA <- FALSE
+      }
+      
+    } # for each model run
+    
+    # SPECIAL: for burnt area, convert trends in %/year
+    for(this_trend in names(all_BA_Trends)) {
+      all_BA_Trends[[this_trend]] <- layerOp(all_BA_Trends[[this_trend]], operator = "mulc", layers = "Trend", new.layer = "Trend", constant = 100*12) 
+    }
+    
+    # do all spatial comparisons and store them in a big list'o'lists to be plotted in the next code chunks
+    all_BA_comparisons <- fullSpatialComparison(this_benchmark, all_BA_Maps, all_BA_Trends, all_BA_Seasonal, params$new_name, params$old_name)
+    
+    # save the summary table line 
+    # TODO - add the data references
+    names(summary_table_lines) <- names(summary_table)
+    summary_table <- rbind(summary_table, summary_table_lines)
+    
+    
+  } # if data are available
+  
+} # if do_global_BA
+```
+
+
+
+## Spatial patterns {.tabset}
+
+### Absolute values
+```{r}
+if(do_global_BA){  
+  # plot all absolute values together
+  BA_abs_values_plot <- suppressWarnings(
+    plotSpatial(all_BA_Maps, 
+                ncol = num_cols, 
+                legend.title = "fraction",
+                map.overlay = map_overlay,  
+                title = "Absolute burnt fraction values",
+                cuts = ba.cuts,
+                cols = ba.cols,
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+  )
+  
+  # add the total BA to the plots
   total_label_df <- data.frame()
-  for(this_panel  in names(all_Totals_vec))  total_label_df <- rbind(total_label_df,
-                                                                     list(label = paste(round(all_Totals_vec[[this_panel]], 1), "Mha/year"), 
-                                                                          Facet = this_panel, 
-                                                                          x = -130, 
-                                                                          y = -40),
-                                                                     stringsAsFactors = FALSE)
-  abs_values_plot  <- abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
+  for(this_panel in names(all_BA_totals))  total_label_df <- rbind(total_label_df,
+                                                                   list(label = paste(round(all_BA_totals[[this_panel]], 1), this_benchmark@agg.unit), 
+                                                                        Facet = this_panel, 
+                                                                        x = stats_lon, y = stats_lat),
+                                                                   stringsAsFactors = FALSE)
+  total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_BA_totals))
+  BA_abs_values_plot  <- BA_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
+  suppressWarnings(print(BA_abs_values_plot))
+}
+```
+
+### Differences
+
+```{r}
+if(do_global_BA){  
+  BA_diff_values_plot <- plotSpatialComparison(all_BA_comparisons[["Values"]], 
+                                               ncol = num_cols, 
+                                               legend.title = expression(Delta~"fraction"),
+                                               map.overlay = map_overlay,             
+                                               title = "BA biases", 
+                                               subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
+  # extract metric scores and add to the panels
+  lat_offset = 0
+  for(this_metric in this_benchmark@metrics) {
+    metric_label_df <- data.frame()
+    for(comparison_name  in names(all_BA_comparisons[["Values"]])) {
+      metric_label_df <- rbind(metric_label_df,
+                               list(label = paste(this_metric, "=", round(all_BA_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
+                                    Facet = comparison_name, 
+                                    x = stats_lon, y = stats_lat - lat_offset),
+                               stringsAsFactors = FALSE)  
+    }
+    metric_label_df$Facet <- factor( metric_label_df$Facet, names(all_BA_comparisons[["Values"]]))
+    
+    BA_diff_values_plot  <- BA_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
+    lat_offset <- lat_offset + 10  
+  }
   
-  # suppress warnings about uneven horizontal intervals
-  suppressWarnings(print(abs_values_plot))
-  
-  # also make the difference plots
-  diff_values_plot <- plotSpatialComparison(spatial_comparisons_list, 
-                                            ncol = num_cols, 
-                                            legend.title = expression(Delta ~"BA frac"),
-                                            map.overlay = map_overlay,                                    
-                                            title = "Burnt area biases", 
-                                            subtitle = paste(first_year_GFED4, last_year_GFED4, sep = "-") )
-  # add statistical metrics to the plots
-  metric_label_df <- data.frame()
-  for(this_panel  in names(nme_scores_list))  metric_label_df <- rbind(metric_label_df,
-                                                                       list(label = paste("NME =", round(nme_scores_list[[this_panel]], 2)), 
-                                                                            Facet = paste(this_panel, "-", data_Source@name), 
-                                                                            x = -130, 
-                                                                            y = -40),
-                                                                       stringsAsFactors = FALSE)
-  diff_values_plot  <- diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
-  
-  # suppress warnings about uneven horizontal intervals
-  suppressWarnings(print(diff_values_plot))
-  
+  suppressWarnings(print(BA_diff_values_plot))
+}
+```
+
+
+
+## Temporal trends {.tabset}
+
+### Trend value
+```{r}
+if(do_global_BA) {
+  suppressWarnings( print(
+    plotSpatial(all_BA_Trends, 
+                layers = "Trend", 
+                ncol = num_cols, 
+                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                limits = c(-0.3,0.3),
+                drop.cuts = FALSE,
+                title = "Trend in BA", 
+                legend.title =  expression('%'~year^{"-1"}),
+                map.overlay = map_overlay,                  
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+### Trend significance
+```{r}
+if(do_global_BA) {
+  suppressWarnings(print(
+    plotSpatial(all_BA_Trends, 
+                layers = "p.value", 
+                ncol = num_cols, 
+                cols = viridis::turbo(6), 
+                cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
+                drop.cuts = FALSE,
+                title = "Significance in BA Trends",
+                legend.title =  "p value",
+                map.overlay = map_overlay,                   
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 
+```
+
+### Trend Differences
+```{r}
+if(do_global_BA) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_BA_comparisons[["Trend"]], 
+                          ncol = num_cols, 
+                          drop.cuts = NULL,
+                          title = "Difference Trend in BA", 
+                          legend.title =  expression(Delta ~ '%'~year^{"-1"}),
+                          map.overlay = map_overlay,          
+                          subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+  
+}
+```
+
+
+### Significant Trends
+```{r}
+if(do_global_BA) {
+  suppressWarnings( print(
+    plotSpatial(all_BA_Trends, 
+                layers = "Significant_Trend", 
+                ncol = num_cols, 
+                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                limits = c(-0.3,0.3),
+                drop.cuts = FALSE,
+                title = "Significant Trend in burnt area (p-value < 0.05)", 
+                legend.title = expression('%'~year^{"-1"}),
+                map.overlay = map_overlay, 
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+
+## Seasonal analysis {.tabset}
+Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **Seasonal concentration** equals one if the variable is concentrated all in one month, and is zero if it is spread even across all months.  The **seasonal phase** is a measure of the peak of the season - it is not strictly the maximum monthly, but rather the average of all months when considering months as an angle in the complex plane.  
+
+### Seasonal phase
+```{r}
+if(do_global_BA) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
+                          do.phase = TRUE,
+                          type = "values",
+                          cuts = 0:12, 
+                          override.cols = pals::ocean.phase(12),
+                          ncol = num_cols,
+                          map.overlay = map_overlay,                   
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+### Phase differences
+```{r}
+if(do_global_BA){
+  suppressWarnings(print(
+    plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
+                          do.phase = TRUE,
+                          override.cols =  colorRampPalette(colors = c("black", "blue", "white", "red", "black"))(11),
+                          cuts = c(-6, -4.5, -3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 6.0),
+                          symmetric.scale = FALSE,
+                          ncol = num_cols,
+                          map.overlay = map_overlay,                              
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+
+### Seasonal concentration
+```{r}
+if(do_global_BA) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
+                          type = "values",
+                          ncol = num_cols,
+                          map.overlay = map_overlay,                          
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
+```
+
+### Concentration differences
+```{r}
+if(do_global_BA) {
+  suppressWarnings(print(
+    plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
+                          ncol = num_cols,
+                          map.overlay = map_overlay,                       
+                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+}
 ```
 
 
 <a href="#top">Back to top</a>
 
----
+***
 
 
 ## Pan forest biomass
@@ -1390,7 +1550,7 @@ if(do_Pan_Biomass){
 
 <a href="#top">Back to top</a>
 
----
+***
 
 
 
@@ -1516,7 +1676,7 @@ if(do_Global_Biomass){
 
 <a href="#top">Back to top</a>
 
----
+***
 
 
 ## Global Summary Table
