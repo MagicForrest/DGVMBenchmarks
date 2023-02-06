@@ -85,10 +85,10 @@ do_GCP_NBP <- FALSE
 do_Biomes <- FALSE
 do_global_GPP <- FALSE
 do_global_LAI <- FALSE
-do_global_BA <- TRUE
+do_global_BA <- FALSE
 do_Pan_Biomass <- FALSE
 do_Global_Biomass <- FALSE
-
+do_Regrowth <- TRUE
 
 # The summary table
 summary_col_names <- c("Quantity", "Unit")
@@ -1086,7 +1086,7 @@ if(do_global_BA){
   
   full_file_path <- file.path(GFED4_BA_Source@dir, GFED4_BA_monthly_file.name)
   if(!file.exists(full_file_path)) {
-    print("MODIS LAI data not available.")
+    print("GFED4 BA data not available.")
   } else {
     BA_data_Fields[[GFED4_BA_Source@name]] <- suppressWarnings(getField(source = GFED4_BA_Source,
                                                                         quant = "burned_area_fraction",
@@ -1445,7 +1445,7 @@ if(do_global_BA) {
 ***
 
 
-## Pan forest biomass
+# Pan forest biomass
 
 
 
@@ -1552,6 +1552,194 @@ if(do_Pan_Biomass){
 
 ***
 
+# Regrowth
+
+
+## Original plots
+
+```{r regrowth, echo=FALSE, out.width = '100%'}
+
+#### Global Biomass Data Prep ####
+if(do_Regrowth){
+  
+  # read the regrowth data
+  
+  # first the gridlist
+  input_dir <- system.file("extdata", "Regrowth", package = "DGVMBenchmarks")
+  gridlist_file <- file.path(input_dir, "gridlist.txt")
+  gridlist <- read.table(gridlist_file)
+  names(gridlist) <- c("Lon","Lat","distyear","Biome")
+  gridlist$Lon <- gridlist$Lon+0.25
+  gridlist$Lat <- gridlist$Lat+0.25
+  
+  # now the data
+  regrowth_file <- file.path(input_dir, "benchmark_regrowth_and_eq_dynamics_251122.csv")
+  regrowth <- read.csv(file =regrowth_file)
+  
+  
+  regrowth_full_dt <- data.table(regrowth)[, list(bin_ranges, bin_num, AGB_kgCm2_med, AGB_kgCm2_10, AGB_kgCm2_90, Biome, final)]
+  regrowth_full_dt[, bin_centres := as.factor(bin_num)]
+  regrowth_full_dt$Source <- "Data"
+  
+  # define the benchmark
+  this_benchmark <- new("Benchmark",
+                        id = "Regrowth",
+                        name = "Regrowth",
+                        description = "Regroeth",
+                        simulation = "regrowth",
+                        guess_var = "cmass",
+                        guess_layers = "Total",
+                        unit = "kgC/m^2",
+                        agg.unit = "Not USed",
+                        datasets = regrowth,
+                        first.year = 0,
+                        last.year = 150,
+                        metrics = character(0))
+  
+  # read the model output
+  # loop through model runs to be processed
+  all_Regrowth_Fields <- list()
+  for(this_sim_Source in all_simulation_Sources_list) {
+    
+    # check if file is present (if not don't include this run)
+    this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
+    if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
+      
+      # make local sources pointing to the crop_global directory
+      this_regrowth_Source <- this_sim_Source
+      this_regrowth_Source@dir <- this_benchmark_run_dir
+      
+      # read the full data and
+      suppressWarnings(
+        this_simulation_regrowth <- getField(source = this_regrowth_Source,
+                                             this_benchmark@guess_var,
+                                             quick.read = quick_read,
+                                             quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+      )
+      
+   
+      #merge with gridcell to find disturbance year, needed to reconstruct stand age
+      tmp <- inner_join(this_simulation_regrowth@data,gridlist)
+      tmp_all <- copy(tmp)
+      
+      
+      #### Only Boreal for original plots
+      tmp <- tmp[which(tmp$Biome =="Boreal")] # not working for Tropical until "cru-compatibility" in gridlist is implemented.
+      
+      #introduce some new variables, Age, age-bins and summary stats:
+      tmp <-tmp %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
+      tmp_regr <- tmp %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
+      age <- tmp_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
+      age_bins <- age %>% group_by(Lat,Lon) %>% mutate(age_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
+      
+      #summary stats on bins:
+      
+      # Boreal only
+      regrowth_mod <- age_bins %>% group_by(age_bin) %>% summarise(AGB_kgCm2_med = median(Total),
+                                                                   AGB_kgCm2_10 = quantile(Total, c(.10) ),
+                                                                   AGB_kgCm2_90 = quantile(Total, c(.90) ),
+                                                                   bin_centres =  floor(mean(Age)))
+      
+      regrowth_mod_full <- age_bins %>% group_by(age_bin, Biome) %>% summarise(AGB_kgCm2_med = median(Total),
+                                                                               AGB_kgCm2_10 = quantile(Total, c(.10) ),
+                                                                               AGB_kgCm2_90 = quantile(Total, c(.90) ),
+                                                                               bin_centres =  floor(mean(Age)))
+      
+      #visualise aggregated output:
+      plot(regrowth_mod$age_bin,
+           regrowth_mod$AGB_kgCm2_med,
+           ylim=c(0,35),col="red",xlim=c(0,16),ylab='',xlab='',
+           xaxt = 'n',yaxt= 'n')
+      
+      abline(h=10,col="light grey")
+      arrows(1:30, regrowth_mod$AGB_kgCm2_10, 1:30, regrowth_mod$AGB_kgCm2_90, length=0.00, angle=90, code=3,col= "dark green")
+      #axis(side=1,at=1:12, labels=seq(10,240,20))
+      mtext(side=2,"AGB KgCm2",line=1)
+      mtext(side=1,line=2,"Years after disturbance")
+      axis(1, mgp=c(3, .6, 0), tck=-.015, labels=NA)
+      axis(side = 1, lwd = 0, line = -0.8, las = 0.5,at=1:12, labels=seq(10,240,20))
+      axis(2, mgp=c(3, .6, 0), tck=-.015, labels=NA)
+      axis(side = 2, lwd = 0, line = -0.8, las = 0.5)
+      mtext("Temperate",adj=0.95,side=3,line=-1.3)
+      
+      
+      regrowth_obs <-  regrowth[regrowth$Biome=="Temperate",]
+      
+      par(new=TRUE)
+      plot(regrowth_obs$bin_num/10,
+           regrowth_obs$AGB_kgCm2_med,
+           ylim=c(0,35),col="red",xlim=c(0,16),ylab='',xlab='',
+           xaxt = 'n',yaxt= 'n')
+      
+      arrows(regrowth_obs$bin_num/10, regrowth_obs$AGB_kgCm2_10, regrowth_obs$bin_num/10, regrowth_obs$AGB_kgCm2_90, length=0.00, angle=90, code=3,col= "red")
+      
+      
+      
+      
+      
+      tmp <- tmp[which(tmp$Biome =="Boreal")] # not working for Tropical until "cru-compatibility" in gridlist is implemented.
+      
+      
+      
+      #introduce some new variables, Age, age-bins and summary stats:
+      tmp_all <- tmp_all %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
+      tmp_regr <- tmp_all %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
+      age <- tmp_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
+      age_bins <- age %>% group_by(Lat,Lon) %>% mutate(age_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
+      
+      #summary stats on bins:
+      regrowth_mod_full <- age_bins %>% group_by(age_bin, Biome) %>% summarise(AGB_kgCm2_med = median(Total),
+                                                                               AGB_kgCm2_10 = quantile(Total, c(.10) ),
+                                                                               AGB_kgCm2_90 = quantile(Total, c(.90) ),
+                                                                               bin_centres =  floor(mean(Age)))
+      
+      
+      regrowth_mod_full$Source <- this_regrowth_Source@name
+      regrowth_full_dt <- rbindlist(list(regrowth_full_dt, regrowth_mod_full), fill = TRUE)
+      
+      
+    } # if output file exists
+    
+  } # for each simulations
+  
+  
+  
+  # set bin centres
+  regrowth_full_dt[, bin_centres := as.numeric(as.character(bin_centres))]
+  
+  
+  
+}
+```
+
+
+## ggplots
+
+
+```{r regrowth ggplots, echo=FALSE, out.width = '100%'}
+
+#### Regrowth plots with ggplot ####
+if(do_Regrowth){
+  
+  regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGB_kgCm2_med,
+                                                                                 col = Source)) +
+    geom_errorbar(aes(ymin=AGB_kgCm2_10, ymax=AGB_kgCm2_90, col = Source)) +
+    facet_wrap(~Biome, ncol = 2) +
+    labs(x= "Years after disturbance", y = expression(AGB~kgC~m^{"-2"})) +
+    geom_hline(yintercept = 10, col = "grey")
+  
+  print(regrowth_plot)
+ 
+  
+}
+```
+
+<a href="#top">Back to top</a>
+
+
+***
+
+# Global Biomass
 
 
 ```{r Global biomass prep, echo=FALSE, out.width = '100%'}
@@ -1679,7 +1867,7 @@ if(do_Global_Biomass){
 ***
 
 
-## Global Summary Table
+# Global Summary Table
 
 
 TABLE FORMATTING: see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
@@ -1696,7 +1884,7 @@ if(nrow(summary_table) > 0) {
 
 ```
 
-## Timing
+# Timing
 Total run time:
 ``` {r time}
 
