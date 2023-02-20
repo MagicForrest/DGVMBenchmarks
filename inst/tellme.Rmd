@@ -6,16 +6,18 @@ output:
  html_document:
   toc: true
 params:
- new_directory:
-  value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
- new_name:
-  value: "New Run"
- old_directory:
-  value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
- old_name:
-  value: "Old Run"
- data_directory: 
-  value: "/data/shared/Tellus"
+  new_directory:
+    value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
+  new_name:
+    value: "New Run"
+  old_directory:
+    value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
+  old_name:
+    value: "Old Run"
+  data_directory: 
+    value: "/data/shared/Tellus"
+  land_cover_file:
+    value: "/data/mforrest/LandUseLandCover/LUH2_GCP2019/lu_1549_2019_luh2_aggregate_sum2x2_midpoint_nourban_gcp2019_2019_10_22.txt"
 ---
 
 ```{r setup, include=FALSE}
@@ -87,8 +89,8 @@ do_global_GPP <- FALSE
 do_global_LAI <- FALSE
 do_global_BA <- FALSE
 do_Pan_Biomass <- FALSE
-do_Global_Biomass <- FALSE
-do_Regrowth <- TRUE
+do_Global_Biomass <- TRUE
+do_Regrowth <- FALSE
 
 # The summary table
 summary_col_names <- c("Quantity", "Unit")
@@ -216,6 +218,7 @@ Any volunteers for performing such a classification?  If you do, Stefan will buy
 ```{r Global PNV biomes, fig.height = 9}
 
 #### H&P Biomes ####
+
 if(do_Biomes){
   
   # Define the benchmark
@@ -320,6 +323,8 @@ if(do_Biomes){
   # biome_plot2 <- biome_plot+geom_sf(data=countryLines, linewidth = 0.1)
   # print(biome_plot2)
   
+  
+  # delete only 
   
 } # if do_Global_Biomass
 
@@ -1460,16 +1465,21 @@ if(do_Pan_Biomass){
   
   ### some parameters and settings
   guess_var <- "cpool_natural"
-  
   dataset_first_year <- 2007
   dataset_last_year <- 2007
   this_data_dir <- "Biomass"
   this_data_file_name <-  "pan_regional_data_reformatted.txt"
-  dataset_id <- "GFED4.0"
-  dataset_name <- "GFED4.0"
-  this_unit <- "Mha"
-  benchmark_description <- "Global burnt area"
+  this_gridlist_file_name <- "gridlist_pan_gfed_ISO3_UN.csv"
+  dataset_id <- "Pan_2007"
+  dataset_name <- "Pan forest biomass"
+  this_unit <- "C"
+  benchmark_description <- "Pan forest biomass"
   
+  
+  
+  # read the regions for subsetting
+  regions_file_path <- file.path( system.file("extdata", "Gridlist", package = "DGVMBenchmarks"), this_gridlist_file_name) 
+  regions_dt <- fread(regions_file_path)
   
   
   
@@ -1485,11 +1495,14 @@ if(do_Pan_Biomass){
       melt.data.table(id.vars = c("Pool","Year")) %>% 
       dcast( ... ~ Pool) %>% 
       setnames(c("variable", "LIT", "SOI", "TLB"), c("Region", "LitterC", "SoilC", "VegC")) %>%
+      mutate(across(everything(), function(x){replace(x, which(x<0), NA)}))  %>%
       mutate(Total = LitterC + SoilC + VegC + DWD) -> pan_dt
     
   }
   
   #### READ LPJ-GUESS LAI DATA ####
+  
+  all_Model_Biomass_Fields <- list()
   
   # loop through model runs to be processed
   for(this_sim_Source in all_simulation_Sources_list) {
@@ -1516,24 +1529,12 @@ if(do_Pan_Biomass){
       layerOp(this_simulation_Field, NULL, "HarvSlowC")
       layerOp(this_simulation_Field, "+", c("VegC", "LitterC", "SoilC"), "Total")
       
-      
-      # for Pan regions
-      
-      # extract regions
-      # weighted sum across regions
-      # add to table
-      
-      
-      # 
-      
-      
-      print(this_simulation_Field)
-      
-      
-      stop()
+      # save
+      all_Model_Biomass_Fields[[this_crop_global_Source@name]]  <- this_simulation_Field
       
       # remove to save memory
       rm(this_simulation_Field)
+      
       
     } # if file is present 
     
@@ -1543,6 +1544,47 @@ if(do_Pan_Biomass){
     
   } # for each model run
   
+  # Build a data and model table based in the data table
+  
+  pan_2007_dt <- pan_dt[Year == 2007, ]
+  pan_2007_dt[, Year := NULL]
+  pan_2007_dt[, Source := "Pan 2007"]
+  
+  final_dt <- data.table()
+  for(this_row_number in 1:nrow(pan_2007_dt)) {
+    
+    # add the data
+    final_dt <- rbind(final_dt, pan_2007_dt[this_row_number ,])
+    
+    # get the region and associated gridcells 
+    this_region <- pan_2007_dt[this_row_number ,][["Region"]]
+    if(this_region == "S_Korea") this_region <- "South_Korea"
+    if(this_region == "NZ") this_region <- "New_Zealand"
+    if(this_region == "S_Asia") this_region <- "South_Asia"
+    if(this_region != "Global") {this_region_gridcells <- regions_dt[Pan_2007 == this_region, .(Lon, Lat)]}
+    else{this_region_gridcells <- regions_dt[, .(Lon, Lat)]}
+    
+    # for each simulation
+    for(this_sim_Source in all_simulation_Sources_list) {
+      
+      this_sim_region <- selectGridcells(all_Model_Biomass_Fields[[this_sim_Source@name]], this_region_gridcells, as.character(this_region))
+      this_sim_region_summed <- aggregateSpatial(this_sim_region, method = "w.sum")    
+      this_line <- this_sim_region_summed@data
+      this_line[, Year := NULL]
+      this_line[, VegC := VegC *KG_TO_PG ]
+      this_line[, LitterC := LitterC *KG_TO_PG ]
+      this_line[, SoilC := SoilC *KG_TO_PG ]
+      this_line[, Total := Total *KG_TO_PG ]
+      this_line[, Source := this_sim_Source@name]
+      final_dt <-rbind(final_dt, this_line, fill = TRUE)
+      
+    }
+  }
+  
+  # order columns and print
+  setcolorder(final_dt, c( "Region", "Source", "LitterC", "SoilC", "VegC", "DWD", "Total"   ))
+  opts <- options(knitr.kable.NA = "")
+  kable(final_dt, digits = 1, align = "l")
   
   
 } # if do_GFED4
@@ -1747,112 +1789,214 @@ if(do_Regrowth){
 #### Global Biomass Data Prep ####
 if(do_Global_Biomass){
   
-  # Define the benchmark
-  this_benchmark <- list(
-    description = "Global biomass",
-    simulation = "tellus",
-    guess_var = "cmass",
-    guess_layers = c("Crop_sum", "Pasture_sum", "Natural_sum"),
-    unit = "kg m^-2^",
-    agg.unit = "PgC"
-  )
+  ### Lists for storing the field and totals
+  all_Map_Fields_list <- list()
+  Biome_Map_Fields_list <- list()  # only for simulation for the totle-to-aboveground biome-specific correction
+  all_Totals_vec <- list()
+  
+  this_benchmark <- new("Benchmark",
+                        id = "Global_Biomas",
+                        name = "Global Biomass",
+                        description = "Global Aboveground Biomass",
+                        simulation = "tellus",
+                        guess_var = "cmass",
+                        guess_layers = c("Crop_sum", "Pasture_sum", "Natural_sum"),
+                        unit = "kg m^-2^",
+                        agg.unit = "PgC",
+                        datasets = list(),
+                        first.year = 1993,
+                        last.year = 2012,
+                        metrics = c("NME", "RMSE"))
+  
+  
+  #### READ THE LUI DATA #### 
   
   ### the benchmarking datasets for global biomass
   liu_biomass = list(
+    dataset_id = "Liu_biomass",
+    dataset_name = "Liu biomass",
     first_year = 1993,
     last_year = 2012,
-    this_data_dir = "annual_ba/GFED4.0",
-    this_data_file_name = "GFED4.0_averageBA_2000-2016.nc",
+    this_data_dir = "biomass/Liu_1993-2012",
+    this_data_file_name = "Global_mean_ABC_1993-2012_Liu2015_SI.dat",
     id = "liu",
     name = "Liu global biomass",
     this_unit = "PgC"
   )
-  this_dataset <- liu_biomass
-  
-  summary_table_lines <- as.list(rep("-", length(summary_col_names)))
-  names(summary_table_lines) <- summary_col_names
-  summary_table_lines$Dataset <- this_benchmark$name
-  summary_table_lines$Quantity <- this_benchmark$description
-  summary_table_lines$Unit <- this_benchmark$agg.unit
-  
-  
-  ### Lists for storing the field and totals
-  all_Map_Fields_list <- list()
-  all_Trend_Fields_list <- list()
-  all_Seasonal_Fields_list <- list()
-  all_Totals_vec <- list()
-  
   
   #### READ DATASET ####
-  full_file_path <- file.path(params$data_directory, this_data_dir, this_data_file_name)
+  full_file_path <- file.path(params$data_directory, liu_biomass$this_data_dir, liu_biomass$this_data_file_name)
   if(file.exists(full_file_path)) {
     
     # Read th data via a GUESS formatted Source
-    data_Source <- defineSource(id = dataset_id,
-                                name = dataset_name,
-                                dir = file.path(params$data_directory, this_data_dir),
-                                format = NetCDF)
+    data_Source <- defineSource(id = liu_biomass$dataset_id,
+                                name = liu_biomass$dataset_name,
+                                dir = file.path(params$data_directory, liu_biomass$this_data_dir),
+                                format = GUESS)
     this_data_Field <- getField(source = data_Source,
-                                quant = guess_var,
-                                file.name = this_data_file_name)
+                                quant = this_benchmark@guess_var,
+                                file.name = liu_biomass$this_data_file_name)
     
-    # calculate global total BA and put into a data.frame for the labels
-    suppressWarnings(all_Totals_vec[[data_Source@name]] <- aggregateSpatial(selectLayers(this_data_Field, guess_var), method = "sum")@data/1e+6)
-    summary_table_lines$Data <- signif(as.numeric(all_Totals_vec[[data_Source@name]]),4)
-    
-    
-    # go from ha for fraction burnt area
-    this_data_Field <- addArea(this_data_Field, "ha")
-    this_data_Field <- layerOp(this_data_Field, "/", c(guess_var, "Area"), guess_var)
-    this_data_Field <- layerOp(this_data_Field, NULL, "Area")
-    this_data_Field@quant@units <- "1"
-    
-    # already aggregated to spatial map, so just save
-    all_Map_Fields_list[[dataset_name]] <- this_data_Field
-    
-  }
-  else {
-    message("Biomass dataset not found, benchmark will be skipped.")
-    do_Global_biomass <- FALSE
+    all_Map_Fields_list[[liu_biomass$dataset_name]] <- this_data_Field
   }
   
+  
+  
+  
+  this_dataset <- liu_biomass
+  
+  # makeSummaryLine <- function(benchmark, col_names) {
+  #   summary_table_lines <- as.list(rep("-", length(col_names)))
+  #   names(summary_table_lines) <- col_names
+  #   for(this_dataset in benchmark@datasets) {
+  #     if(summary_table_lines$Dataset == "-") summary_table_lines$Dataset <- this_dataset@source@name
+  #     else summary_table_lines$Dataset <- paste0(summary_table_lines$Dataset, ", ", this_dataset@source@name) 
+  #   }
+  #   summary_table_lines$Quantity <- benchmark@description
+  #   summary_table_lines$Unit <- benchmark@agg.unit
+  #   return(summary_table_lines)
+  # }
+  # summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
+  
+  
+  
   #### READ LPJ-GUESS BIOMASS DATA ####
+  
+  # read and process the land cover data required for weighting the LPJ-GUESS output
+  all_lc_dt <- fread(params$land_cover_file)
+  all_lc_dt <- all_lc_dt[Year >= liu_biomass$first_year & Year <= liu_biomass$last_year,]
+  final_lc_dt <- all_lc_dt[,lapply(.SD,mean),by=.(Lon, Lat)]
+  final_lc_dt[, Year := NULL]
+  
+  
+  
   # loop through model runs to be processed
   for(this_sim_Source in all_simulation_Sources_list) {
     
     # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir, this_benchmark$simulation)
-    if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark$guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark$guess_var, ".out.gz")))) {
+    this_benchmark_run_dir <- file.path(this_sim_Source@dir, this_benchmark@simulation)
+    if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
       
       # read the full data and
       temp_simulation_Source <- this_sim_Source
       temp_simulation_Source@dir <- this_benchmark_run_dir
       suppressWarnings(
-        all_Map_Fields_list[[this_sim_Source@id]] <- getField(source = temp_simulation_Source,
-                                                              quant = this_benchmark$guess_var,
-                                                              first.year = this_dataset$first_year,
-                                                              last.year = this_dataset$last_year,
-                                                              quick.read = quick_read,
-                                                              quick.read.file = paste(this_benchmark$guess_var, version_label, sep = "_"),
-                                                              layers = this_benchmark$guess_layers)
+        this_cmass <- getField(source = temp_simulation_Source,
+                               quant = this_benchmark@guess_var,
+                               first.year = this_dataset$first_year,
+                               last.year = this_dataset$last_year,
+                               year.aggregate.method = "mean",
+                               quick.read = quick_read,
+                               quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"),
+                               layers = this_benchmark@guess_layers)
       )
       
       
+      # get the biomes for the correction
+      suppressWarnings(
+        this_biomes <- getScheme(source = temp_simulation_Source,
+                                 scheme = Smith2014BiomeScheme,
+                                 first.year = this_dataset$first_year,
+                                 last.year = this_dataset$last_year,
+                                 year.aggregate.method = "mean",
+                                 quick.read = quick_read,
+                                 quick.read.file = paste(this_benchmark@guess_var,version_label, sep = "_"))
+      )
       
       
+      ### MF: Copied verbatim from postprocess_above_ground_biomass.sh to serve as documentation
       
+      # Above-ground biomass percentages following Jackson et al. 1996                                                                                                                                           
+      # BF=0.75        # boreal forest  
+      # CROPS=0.9
+      # DESERT=0.18
+      # ScS=0.45       # Sclerophyllous Shrubs
+      # TeCF=0.85      # Temp coniferous forest 
+      # TeDF=0.81      # Temp deciduous forest
+      # TeG=0.21       # Temp grassland  
+      # TrDF=0.75      # Tropical deciduous forest   
+      # TrEF=0.84      # Tropical evergreen forest
+      # TrGS=0.59      # Tropical grassland savanna 
+      # TU=0.13        # Tundra    
+      # Hickler Coding -> Jackson Coding:       
+      #  1 Boreal decid forest  -> BF     
+      #  2 Boreal ever forest   -> BF
+      #  3 Temp/boreal mix fo.  -> TeDF 
+      #  4 Temp conifer forest  -> TeCF  
+      #  5 Temp decid forest    -> TeDF    
+      #  6 Temp broad ever fo.  -> TeDF     
+      #  7 Temp mixed forest    -> 1/2(TeDF+TeCF)   
+      #  8 Trop season forest   -> 1/2(TrDF+TrEF)   
+      #  9 Trop rain forest     -> TrEF    
+      # 10 Trop decid forest    -> TrDF     
+      # 11 Moist savannas       -> TrGS      
+      # 12 Dry savannas         -> TrGS    
+      # 13 Tall grassland       -> TeG  
+      # 14 Dry grassland        -> TeG   
+      # 15 Xeric wood/shrub     -> ScS    
+      # 16 Arid shrub/steppe    -> ScS     
+      # 17 Desert               -> DESERT     
+      # 18 Arctic/alpine tundra -> TU    
       
+      # Based on the above I define the following lookup table for the biomes
+      biome_abg_lookup <- c(
+        "Boreal Deciduous Forest/Woodland" = 0.75,
+        "Boreal Evergreen Forest/Woodland" = 0.75,
+        "Temperate/Boreal Mixed Forest" = 0.81,
+        "Temperate Conifer Forest" = 0.85, # MF - NOTE:not present in biome scheme
+        "Temperate Deciduous Forest" = 0.85,
+        "Temperate Broadleaved Evergreen Forest" = 0.81,
+        "Temperate Mixed Forest" = (0.85+0.81)/2,
+        "Tropical Seasonal Forest" = (0.75+0.84)/2,
+        "Tropical Rain Forest" = 0.84,
+        "Tropical Deciduous Forest"= 0.75,
+        "Moist Savanna" = 0.59,
+        "Dry Savanna" = 0.59,
+        "Tall Grassland" = 0.21,
+        "Dry Grassland" = 0.21,
+        "Xeric Woodland/Shrubland" = 0.45,
+        "Arid Shrubland/Steppe" = 0.45,
+        "Desert" = 0.18,
+        "Arctic/Alpine Tundra" = 0.13
+      )
       
+      # first crops - easy
+      this_cmass <- layerOp(this_cmass, "mulc", "Crop_sum", new.layer = "Crop_sum", constant = 0.9)
       
+      # second pasture - outside +/-24 use temerate grasses, inside use tropical grasses
+      pasture_abg_fraction <- function(lat) {
+        ifelse(abs(lat) < 24, 0.59, 0.21)
+      }
+      this_cmass@data <- this_cmass@data[, Pasture_multiplier := pasture_abg_fraction(Lat)]
+      layerOp(this_cmass, operator = "*", layers = c("Pasture_sum", "Pasture_multiplier"), new.layer = "Pasture_sum")
+      layerOp(this_cmass, operator = NULL, "Pasture_multiplier")
+      
+      # third natural - look up biome specific multiplier
+      biomes_dt <- this_biomes@data[ , Natural_multiplier := biome_abg_lookup[Smith2014]]
+      this_cmass <- copyLayers(from = biomes_dt, to = this_cmass, layer.names = "Natural_multiplier")
+      layerOp(this_cmass, operator =  "*", layers = c("Natural_sum", "Natural_multiplier"), new.layer ="Natural_sum" )
+      layerOp(this_cmass, operator =  NULL, layers = "Natural_multiplier")
+      
+      # last step, weight the landcover types by their fraction 
+      this_cmass <- copyLayers(from = final_lc_dt, to = this_cmass, layer.names = c("NATURAL", "PASTURE", "CROPLAND"))
+      this_cmass <- layerOp(this_cmass, "*", c("NATURAL", "Natural_sum"),  "Natural_sum")
+      this_cmass <- layerOp(this_cmass, "*", c("PASTURE", "Pasture_sum"),  "Pasture_sum")
+      this_cmass <- layerOp(this_cmass, "*", c("CROPLAND", "Cropland_sum"),  "Cropland_sum")
+      this_cmass <- layerOp(this_cmass, "+", c("Natural_sum", "Pasture_sum", "Cropland_sum"),  "Total_ABG")
+      all_Map_Fields_list[[this_sim_Source@id]] <- selectLayers(this_cmass, "Total_ABG")
+
     } # if file is present 
     else {
-      message("Modelled biomass file not found, benchmark will be skipped.")
+      message("No modelled biomass file found, benchmark will be skipped.")
       do_Global_biomass <- FALSE
     }
     
   } # for each model run
   
-  print(plotSpatial())
+  
+  print(all_Map_Fields_list)
+  
+  print(plotSpatial(all_Map_Fields_list))
   
   
 } # if do_Global_Biomass
