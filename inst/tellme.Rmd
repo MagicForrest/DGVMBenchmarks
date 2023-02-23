@@ -5,7 +5,6 @@ date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output: 
  html_document:
   toc: true
-  code_folding: show
 params:
   new_directory:
     value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
@@ -51,9 +50,13 @@ tic()
 
 ```
 
-# Settings
-To see the settings for this run, click the "Code" button to the right ------------>
-```{r settings, echo = TRUE, class.source = 'fold-hide'}
+# Settings {.tabset}
+
+## Click here to hide settings
+
+## Click here to show settings
+
+```{r settings, echo = TRUE}
 
 #### DEFINE LPJ-GUESS RUNS ####
 # NOTE:
@@ -83,13 +86,13 @@ version_label <- "tellus_v1.2"
 doPublicationPlots <- FALSE
 
 # switches for which benchmarks to do
-do_GCP_NBP <- TRUE
-do_Biomes <- TRUE
+do_GCP_NBP <- FALSE
+do_Biomes <- FALSE
 do_global_GPP <- FALSE
 do_global_LAI <- FALSE
-do_global_BA <- TRUE
-do_Pan_Biomass <- TRUE
-do_Global_Biomass <- TRUE
+do_global_BA <- FALSE
+do_Pan_Biomass <- FALSE
+do_Global_Biomass <- FALSE
 do_Regrowth <- TRUE
 
 # The summary table
@@ -804,9 +807,9 @@ if(do_global_LAI){
       
       # make and save the mean annual global LAI
       # TODO, make this more flexible for multiple datasets
-      data_LAI_PgC <- areaWeightedTotal(all_LAI_Maps[[this_data_Field@source@name]])@data * M2_TO_MegaM2
-      all_LAI_totals[[this_data_Field@source@name]] <- data_LAI_PgC
-      summary_table_lines$Data <- signif(as.numeric(data_LAI_PgC),4)
+      data_LAI_MegaM2 <- areaWeightedTotal(all_LAI_Maps[[this_data_Field@source@name]])@data * M2_TO_MegaM2
+      all_LAI_totals[[this_data_Field@source@name]] <- data_LAI_MegaM2
+      summary_table_lines$Data <- signif(as.numeric(data_LAI_MegaM2), 4)
       
     }
     
@@ -843,9 +846,9 @@ if(do_global_LAI){
         all_LAI_Trends[[this_sim_Source@name]] <- calcLinearTrend(this_simulation_LAI)
         
         # calculate and save the global total
-        this_LAI_PgC <- areaWeightedTotal(all_LAI_Maps[[this_sim_Source@name]])@data * M2_TO_MegaM2
-        all_LAI_totals[[this_sim_Source@name]] <- this_LAI_PgC
-        summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_LAI_PgC),4)
+        this_LAI_MegaM2 <- areaWeightedTotal(all_LAI_Maps[[this_sim_Source@name]])@data * M2_TO_MegaM2
+        all_LAI_totals[[this_sim_Source@name]] <- this_LAI_MegaM2
+        summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_LAI_MegaM2),4)
         
         # remove to save memory
         rm(this_simulation_LAI)
@@ -1589,7 +1592,7 @@ if(do_Pan_Biomass){
   kable(final_dt, digits = 1, align = "l") %>% kable_classic( html_font = "Cambria", bootstrap_options = c("striped", "hover", "condensed"))
   
   
-} # if do_GFED4
+} # if do_Pan
 ```
 
 <a href="#top">Back to top</a>
@@ -1603,7 +1606,7 @@ if(do_Pan_Biomass){
 
 ```{r regrowth, echo=FALSE, out.width = '100%'}
 
-#### Global Biomass Data Prep ####
+#### Regrowth Data Prep ####
 if(do_Regrowth){
   
   # read the regrowth data
@@ -1613,15 +1616,13 @@ if(do_Regrowth){
   gridlist_file <- file.path(input_dir, "gridlist.txt")
   gridlist <- read.table(gridlist_file)
   names(gridlist) <- c("Lon","Lat","distyear","Biome")
-  gridlist$Lon <- gridlist$Lon+0.25
-  gridlist$Lat <- gridlist$Lat+0.25
   
   # now the data
-  regrowth_file <- file.path(input_dir, "benchmark_regrowth_and_eq_dynamics_251122.csv")
+  regrowth_file <- file.path(input_dir, "benchmark_regrowth_08022023.csv")
   regrowth <- read.csv(file =regrowth_file)
   
   
-  regrowth_full_dt <- data.table(regrowth)[, list(bin_ranges, bin_num, AGB_kgCm2_med, AGB_kgCm2_10, AGB_kgCm2_90, Biome, final)]
+  regrowth_full_dt <- data.table(regrowth)[, list(new_bin, bin_num, AGcwood_kgCm2_med, AGcwood_kgCm2_10, AGcwood_kgCm2_90, Biome)]
   regrowth_full_dt[, bin_centres := as.factor(bin_num)]
   regrowth_full_dt$Source <- "Data"
   
@@ -1629,7 +1630,7 @@ if(do_Regrowth){
   this_benchmark <- new("Benchmark",
                         id = "Regrowth",
                         name = "Regrowth",
-                        description = "Regroeth",
+                        description = "Regrowth",
                         simulation = "regrowth",
                         guess_var = "cmass",
                         guess_layers = "Total",
@@ -1663,7 +1664,7 @@ if(do_Regrowth){
       
       
       #merge with gridcell to find disturbance year, needed to reconstruct stand age
-      tmp <- inner_join(this_simulation_regrowth@data,gridlist)
+      tmp <- inner_join(this_simulation_regrowth@data, gridlist)
       tmp_all <- copy(tmp)
       
       
@@ -1674,29 +1675,29 @@ if(do_Regrowth){
       tmp <-tmp %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
       tmp_regr <- tmp %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
       age <- tmp_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
-      age_bins <- age %>% group_by(Lat,Lon) %>% mutate(age_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
+      age_bins <- age %>% group_by(Lat,Lon) %>% mutate(new_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
       
       #summary stats on bins:
       
       # Boreal only
-      regrowth_mod <- age_bins %>% group_by(age_bin) %>% summarise(AGB_kgCm2_med = median(Total),
-                                                                   AGB_kgCm2_10 = quantile(Total, c(.10) ),
-                                                                   AGB_kgCm2_90 = quantile(Total, c(.90) ),
+      regrowth_mod <- age_bins %>% group_by(new_bin) %>% summarise(AGcwood_kgCm2_med = median(Total),
+                                                                   AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
+                                                                   AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
                                                                    bin_centres =  floor(mean(Age)))
       
-      regrowth_mod_full <- age_bins %>% group_by(age_bin, Biome) %>% summarise(AGB_kgCm2_med = median(Total),
-                                                                               AGB_kgCm2_10 = quantile(Total, c(.10) ),
-                                                                               AGB_kgCm2_90 = quantile(Total, c(.90) ),
+      regrowth_mod_full <- age_bins %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
+                                                                               AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
+                                                                               AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
                                                                                bin_centres =  floor(mean(Age)))
       
       #visualise aggregated output:
-      plot(regrowth_mod$age_bin,
-           regrowth_mod$AGB_kgCm2_med,
+      plot(regrowth_mod$new_bin,
+           regrowth_mod$AGcwood_kgCm2_med,
            ylim=c(0,35),col="red",xlim=c(0,16),ylab='',xlab='',
            xaxt = 'n',yaxt= 'n')
       
       abline(h=10,col="light grey")
-      arrows(1:30, regrowth_mod$AGB_kgCm2_10, 1:30, regrowth_mod$AGB_kgCm2_90, length=0.00, angle=90, code=3,col= "dark green")
+      arrows(1:30, regrowth_mod$AGcwood_kgCm2_10, 1:30, regrowth_mod$AGcwood_kgCm2_90, length=0.00, angle=90, code=3,col= "dark green")
       #axis(side=1,at=1:12, labels=seq(10,240,20))
       mtext(side=2,"AGB KgCm2",line=1)
       mtext(side=1,line=2,"Years after disturbance")
@@ -1704,37 +1705,32 @@ if(do_Regrowth){
       axis(side = 1, lwd = 0, line = -0.8, las = 0.5,at=1:12, labels=seq(10,240,20))
       axis(2, mgp=c(3, .6, 0), tck=-.015, labels=NA)
       axis(side = 2, lwd = 0, line = -0.8, las = 0.5)
-      mtext("Temperate",adj=0.95,side=3,line=-1.3)
+      mtext("Boreal",adj=0.95,side=3,line=-1.3)
       
       
       regrowth_obs <-  regrowth[regrowth$Biome=="Temperate",]
       
       par(new=TRUE)
       plot(regrowth_obs$bin_num/10,
-           regrowth_obs$AGB_kgCm2_med,
+           regrowth_obs$AGcwood_kgCm2_med,
            ylim=c(0,35),col="red",xlim=c(0,16),ylab='',xlab='',
            xaxt = 'n',yaxt= 'n')
       
-      arrows(regrowth_obs$bin_num/10, regrowth_obs$AGB_kgCm2_10, regrowth_obs$bin_num/10, regrowth_obs$AGB_kgCm2_90, length=0.00, angle=90, code=3,col= "red")
-      
-      
-      
+      arrows(regrowth_obs$bin_num/10, regrowth_obs$AGcwood_kgCm2_10, regrowth_obs$bin_num/10, regrowth_obs$AGcwood_kgCm2_90, length=0.00, angle=90, code=3,col= "red")
       
       
       tmp <- tmp[which(tmp$Biome =="Boreal")] # not working for Tropical until "cru-compatibility" in gridlist is implemented.
-      
-      
       
       #introduce some new variables, Age, age-bins and summary stats:
       tmp_all <- tmp_all %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
       tmp_regr <- tmp_all %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
       age <- tmp_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
-      age_bins <- age %>% group_by(Lat,Lon) %>% mutate(age_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
+      age_bins <- age %>% group_by(Lat,Lon) %>% mutate(new_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
       
       #summary stats on bins:
-      regrowth_mod_full <- age_bins %>% group_by(age_bin, Biome) %>% summarise(AGB_kgCm2_med = median(Total),
-                                                                               AGB_kgCm2_10 = quantile(Total, c(.10) ),
-                                                                               AGB_kgCm2_90 = quantile(Total, c(.90) ),
+      regrowth_mod_full <- age_bins %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
+                                                                               AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
+                                                                               AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
                                                                                bin_centres =  floor(mean(Age)))
       
       
@@ -1765,11 +1761,11 @@ if(do_Regrowth){
 #### Regrowth plots with ggplot ####
 if(do_Regrowth){
   
-  regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGB_kgCm2_med,
+  regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGcwood_kgCm2_med,
                                                                                  col = Source)) +
-    geom_errorbar(aes(ymin=AGB_kgCm2_10, ymax=AGB_kgCm2_90, col = Source)) +
-    facet_wrap(~Biome, ncol = 2) +
-    labs(x= "Years after disturbance", y = expression(AGB~kgC~m^{"-2"})) +
+    geom_errorbar(aes(ymin=AGcwood_kgCm2_10, ymax=AGcwood_kgCm2_90, col = Source)) +
+    facet_wrap(~Biome, ncol = 2, scales = "free_y" ) +
+    labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) +
     geom_hline(yintercept = 10, col = "grey")
   
   print(regrowth_plot)
@@ -1810,6 +1806,7 @@ if(do_Global_Biomass){
                         last.year = 2012,
                         metrics = c("NME", "RMSE"))
   
+  
   #### READ THE LUI DATA #### 
   
   ### the benchmarking datasets for global biomass
@@ -1824,6 +1821,7 @@ if(do_Global_Biomass){
     name = "Liu global biomass",
     this_unit = "kg/m2"
   )
+  
   full_file_path <- file.path(params$data_directory, liu_biomass$this_data_dir, liu_biomass$this_data_file_name)
   if(file.exists(full_file_path)) {
     
@@ -1848,28 +1846,19 @@ if(do_Global_Biomass){
     
     # calculate the global total
     all_Biomass_totals[[this_data_Field@source@name]] <- areaWeightedTotal(this_data_Field)@data * KG_TO_PG
+    # calculate the global total
+    this_Biomass_total_PgC  <- areaWeightedTotal(this_data_Field)@data * KG_TO_PG
+    all_Biomass_totals[[this_data_Field@source@name]] <- this_Biomass_total_PgC
     
-    
+    # make the summary table lines
     this_benchmark@datasets <- list(this_data_Field)
+    summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
+    summary_table_lines$Data <- signif(as.numeric(this_Biomass_total_PgC),4)
     
   }
   
+  # no loop just use the Liu data
   this_dataset <- liu_biomass
-  
-  # makeSummaryLine <- function(benchmark, col_names) {
-  #   summary_table_lines <- as.list(rep("-", length(col_names)))
-  #   names(summary_table_lines) <- col_names
-  #   for(this_dataset in benchmark@datasets) {
-  #     if(summary_table_lines$Dataset == "-") summary_table_lines$Dataset <- this_dataset@source@name
-  #     else summary_table_lines$Dataset <- paste0(summary_table_lines$Dataset, ", ", this_dataset@source@name) 
-  #   }
-  #   summary_table_lines$Quantity <- benchmark@description
-  #   summary_table_lines$Unit <- benchmark@agg.unit
-  #   return(summary_table_lines)
-  # }
-  # summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
-  
-  
   
   #### READ LPJ-GUESS BIOMASS DATA ####
   
@@ -1901,7 +1890,7 @@ if(do_Global_Biomass){
                                quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"),
                                layers = this_benchmark@guess_layers)
       )
-
+      
       # get the biomes for the correction
       suppressWarnings(
         this_biomes <- getScheme(source = temp_simulation_Source,
@@ -1912,7 +1901,7 @@ if(do_Global_Biomass){
                                  quick.read = quick_read,
                                  quick.read.file = paste(this_benchmark@guess_var,version_label, sep = "_"))
       )
-
+      
       
       ### MF: Copied verbatim from postprocess_above_ground_biomass.sh to serve as documentation
       
@@ -2000,7 +1989,9 @@ if(do_Global_Biomass){
       all_Biomass_Maps[[this_sim_Source@name]] <- selectLayers(this_cmass, this_benchmark@guess_var)
       
       # calculate the global total
-      all_Biomass_totals[[this_sim_Source@name]] <-areaWeightedTotal(all_Biomass_Maps[[this_sim_Source@name]])@data * KG_TO_PG
+      this_Biomass_total_PgC  <-areaWeightedTotal(all_Biomass_Maps[[this_sim_Source@name]])@data * KG_TO_PG
+      all_Biomass_totals[[this_sim_Source@name]] <- this_Biomass_total_PgC
+      summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_Biomass_total_PgC),4)
       
     } # if file is present 
     else {
@@ -2009,12 +2000,15 @@ if(do_Global_Biomass){
     }
     
   } # for each model run
-
-    # do biomass spatial comparisons and store to be plotted in the next code chunks
-    all_Biomass_comparisons <- fullSpatialComparison(this_benchmark, all_maps = all_Biomass_Maps, new_model = params$new_name, old_model = params$old_name)
   
- 
-    
+  # do biomass spatial comparisons and store to be plotted in the next code chunks
+  all_Biomass_comparisons <- fullSpatialComparison(this_benchmark, all_maps = all_Biomass_Maps, new_model = params$new_name, old_model = params$old_name)
+  
+  # save the summary table line 
+  # TODO - add the data references
+  names(summary_table_lines) <- names(summary_table)
+  summary_table <- rbind(summary_table, summary_table_lines)
+  
   
 } # if do_Global_Biomass
 
@@ -2030,20 +2024,20 @@ if(do_Global_Biomass){
 if(do_Global_Biomass){  
   # plot all absolute values together
   Biomass_abs_values_plot <- plotSpatial(all_Biomass_Maps, 
-                                     ncol = num_cols, 
-                                     legend.title = expression(kg~m^{"-2"}),
-                                     map.overlay = map_overlay,  
-                                     title = "Absolute Biomass values",
-                                     limits = c(0,25),
-                                     subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+                                         ncol = num_cols, 
+                                         legend.title = expression(kg~m^{"-2"}),
+                                         map.overlay = map_overlay,  
+                                         title = "Absolute Biomass values",
+                                         limits = c(0,25),
+                                         subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
   # add the total LAI to the plots
   total_label_df <- data.frame()
   for(this_panel in names(all_Biomass_totals))  total_label_df <- rbind(total_label_df,
-                                                                    list(label = paste(round(all_Biomass_totals[[this_panel]], 1), this_benchmark@agg.unit), 
-                                                                         Facet = this_panel, 
-                                                                         x = stats_lon, y = stats_lat),
-                                                                    stringsAsFactors = FALSE)
+                                                                        list(label = paste(round(all_Biomass_totals[[this_panel]], 1), this_benchmark@agg.unit), 
+                                                                             Facet = this_panel, 
+                                                                             x = stats_lon, y = stats_lat),
+                                                                        stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_Biomass_totals))
   Biomass_abs_values_plot  <- Biomass_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
   suppressWarnings(print(Biomass_abs_values_plot))
@@ -2055,11 +2049,11 @@ if(do_Global_Biomass){
 ```{r}
 if(do_Global_Biomass){  
   Biomass_diff_values_plot <- plotSpatialComparison(all_Biomass_comparisons[["Values"]], 
-                                                ncol = num_cols, 
-                                                legend.title = expression(Delta~kg~m^{"-2"}),
-                                                map.overlay = map_overlay,             
-                                                title = "Biomass biases", 
-                                                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+                                                    ncol = num_cols, 
+                                                    legend.title = expression(Delta~kg~m^{"-2"}),
+                                                    map.overlay = map_overlay,             
+                                                    title = "Biomass biases", 
+                                                    subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
   # extract metric scores and add to the panels
   lat_offset = 0
