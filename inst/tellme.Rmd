@@ -1,6 +1,6 @@
 ---
 title: "Tellme Benchmark Report for LPJ-GUESS"
-author: "Matthew Forrest"
+author: "Matthew Forrest (current lead and contact person)"
 date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
 output: 
  html_document:
@@ -1683,12 +1683,14 @@ if(do_Regrowth){
       regrowth_mod <- age_bins %>% group_by(new_bin) %>% summarise(AGcwood_kgCm2_med = median(Total),
                                                                    AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
                                                                    AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
-                                                                   bin_centres =  floor(mean(Age)))
+                                                                   bin_centres =  floor(mean(Age)),
+                                                                   count = n())
       
       regrowth_mod_full <- age_bins %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
                                                                                AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
                                                                                AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
-                                                                               bin_centres =  floor(mean(Age)))
+                                                                               bin_centres =  floor(mean(Age)),
+                                                                               count = n()) %>% filter(count > 20)
       
       #visualise aggregated output:
       plot(regrowth_mod$new_bin,
@@ -1731,7 +1733,8 @@ if(do_Regrowth){
       regrowth_mod_full <- age_bins %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
                                                                                AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
                                                                                AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
-                                                                               bin_centres =  floor(mean(Age)))
+                                                                               bin_centres =  floor(mean(Age)),
+                                                                               count = n()) %>% filter(count > 20)
       
       
       regrowth_mod_full$Source <- this_regrowth_Source@name
@@ -1741,13 +1744,8 @@ if(do_Regrowth){
     } # if output file exists
     
   } # for each simulations
-  
-  
-  
   # set bin centres
   regrowth_full_dt[, bin_centres := as.numeric(as.character(bin_centres))]
-  
-  
   
 }
 ```
@@ -1764,7 +1762,7 @@ if(do_Regrowth){
   regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGcwood_kgCm2_med,
                                                                                  col = Source)) +
     geom_errorbar(aes(ymin=AGcwood_kgCm2_10, ymax=AGcwood_kgCm2_90, col = Source)) +
-    facet_wrap(~Biome, ncol = 2, scales = "free_y" ) +
+    facet_wrap(~Biome, ncol = 2, scales = "fixed" ) +
     labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) +
     geom_hline(yintercept = 10, col = "grey")
   
