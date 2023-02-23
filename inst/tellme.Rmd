@@ -1696,10 +1696,9 @@ if(do_Regrowth){
                                                                                  col = Source)) +
     geom_errorbar(aes(ymin=AGcwood_kgCm2_10, ymax=AGcwood_kgCm2_90, col = Source)) +
     facet_wrap(~Biome, ncol = 2, scales = "fixed" ) +
-    labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) +
-    geom_hline(yintercept = 10, col = "grey")
-  
-  print(regrowth_plot)
+    labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) # + geom_hline(yintercept = 10, col = "grey")
+    
+    print(regrowth_plot)
   
 }
 ```
