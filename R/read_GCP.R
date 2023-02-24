@@ -58,8 +58,8 @@ read_GCP <- function(data_file,
                              format = GUESS)
   
   # calculate the residual 
-  GCP_full_dt[, NEE := `fossil emissions excluding carbonation` - `atmospheric growth` - `ocean sink` - `cement carbonation sink`]
-  #GCP_full_dt[, NEE := get(land_sink_col_name) + get(imbalance_col_name) - get(luc_col_name)]
+  GCP_full_dt[, NBP := `fossil emissions excluding carbonation` - `atmospheric growth` - `ocean sink` - `cement carbonation sink`]
+  #GCP_full_dt[, NBP := get(land_sink_col_name) + get(imbalance_col_name) - get(luc_col_name)]
   
  
   # hack this into a DGVMTools::Field object

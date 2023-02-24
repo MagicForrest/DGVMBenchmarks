@@ -25,11 +25,15 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       out.width = '100%',
                       fig.height = 7)
+
+library(ggplot2)
+# set the ggplot theme to avoid the grey background that Stefan hates so much
+theme_set(theme_bw())
+
 library(DGVMTools)
 library(DGVMBenchmarks)
 library(terra)
 library(viridis)
-library(ggplot2)
 library(mapproj)
 library(pals)
 library(knitr)
@@ -43,8 +47,7 @@ KG_TO_PG <- 1/1e+12
 M2_TO_MegaM2 <- 1/1e+12
 M2_TO_Mha <- 1/1e+10
 
-# set the ggplot theme to avoid the grey background that Stefan hates so much
-theme_set(theme_bw())
+
 
 # start timer
 tic()
@@ -88,13 +91,13 @@ version_label <- "tellus_v1.2"
 doPublicationPlots <- FALSE
 
 # switches for which benchmarks to do
-do_GCP_NBP <- FALSE
-do_Biomes <- FALSE
-do_global_GPP <- FALSE
-do_global_LAI <- FALSE
-do_global_BA <- FALSE
-do_Pan_Biomass <- FALSE
-do_Global_Biomass <- FALSE
+do_GCP_NBP <- TRUE
+do_Biomes <- TRUE
+do_global_GPP <- TRUE
+do_global_LAI <- TRUE
+do_global_BA <- TRUE
+do_Pan_Biomass <- TRUE
+do_Global_Biomass <- TRUE
 do_Regrowth <- TRUE
 
 # The summary table
@@ -136,7 +139,7 @@ if(do_GCP_NBP){
   # make a list of all Fields to be compared  (this will also include whatever model runs are available)
   all_NBP_Fields_list <- list("GCP" = GCP_full_Field)
   # and the vector of labels to eventual put on the plot
-  all_NBP_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NEE"]], 3), " TgC/year"))
+  all_NBP_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NBP"]], 3), " PgC/year"))
   
   
   ### Read the LPJ-GUESS data
@@ -166,6 +169,9 @@ if(do_GCP_NBP){
                                       quick.read = quick_read,
                                       quick.read.file = paste("cflux", version_label, sep = "_") 
       )
+
+      if("NEE" %in% names(this_simulation_NBP)) renameLayers(this_simulation_NBP, "NEE", "NBP")
+      
       this_simulation_NBP <- layerOp(x = this_simulation_NBP, operator = "divc", layers = layers(this_simulation_NBP), new.layer = layers(this_simulation_NBP), constant = -1E12)
       
       # store the Field in the list of all Fields for plotting later
@@ -179,7 +185,7 @@ if(do_GCP_NBP){
       # make a text label for putting the yearly mean on th plot and aa it to the label vector of labels
       all_NBP_labels_vector <- append(all_NBP_labels_vector, paste0(this_simulation_NBP_ymean@source@name, 
                                                                     ": ", 
-                                                                    signif(this_simulation_NBP_ymean@data[["NEE"]],3), 
+                                                                    signif(this_simulation_NBP_ymean@data[["NBP"]],3), 
                                                                     " PgC/year"))
     } 
     
@@ -189,7 +195,7 @@ if(do_GCP_NBP){
   # plot all together
   NBP_plot <- plotTemporal(all_NBP_Fields_list, 
                            col.by = "Source", 
-                           layers = "NEE", 
+                           layers = "NBP", 
                            title = "Global NBP", 
                            subtitle = NULL, 
                            y.label = "Global NBP (PgC/year)",
@@ -1495,13 +1501,15 @@ if(do_Pan_Biomass){
   if(file.exists(full_file_path)) {
     
     # read data, make global and total sums, and reformat 
-    fread(full_file_path, quote = "") %>% 
-      mutate(Global = Russia+Canada+N_Europe+USA+Europe+China+Japan+S_Korea+Australia+NZ+S_Asia+Africa+Americas) %>%
-      melt.data.table(id.vars = c("Pool","Year")) %>% 
-      dcast( ... ~ Pool) %>% 
-      setnames(c("variable", "LIT", "SOI", "TLB"), c("Region", "LitterC", "SoilC", "VegC")) %>%
-      mutate(across(everything(), function(x){replace(x, which(x<0), NA)}))  %>%
-      mutate(Total = LitterC + SoilC + VegC + DWD) -> pan_dt
+    suppressWarnings( # suppresses warning about "<" not being valid for factors
+      fread(full_file_path, quote = "") %>% 
+        mutate(Global = Russia+Canada+N_Europe+USA+Europe+China+Japan+S_Korea+Australia+NZ+S_Asia+Africa+Americas) %>%
+        melt.data.table(id.vars = c("Pool","Year")) %>% 
+        dcast( ... ~ Pool) %>% 
+        setnames(c("variable", "LIT", "SOI", "TLB"), c("Region", "LitterC", "SoilC", "VegC")) %>%
+        mutate(across(everything(), function(x){replace(x, which(x<0), NA)}))  %>%
+        mutate(Total = LitterC + SoilC + VegC + DWD) -> pan_dt
+    )
     
   }
   
@@ -1672,13 +1680,15 @@ if(do_Regrowth){
       model_regr <- model_joined %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
       age <- model_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
       age_bins <- age %>% group_by(Lat,Lon) %>% mutate(new_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
+      #remove entries where the number of sites which achieve this stand age is lower than 10.
+      counts_filtered <- age_bins %>% group_by(Biome,Age) %>% mutate(count= n()) %>% filter(count > 10) 
+      
       
       #summary stats on bins:
-      regrowth_mod_full <- age_bins %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
+      regrowth_mod_full <- counts_filtered %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
                                                                                AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
                                                                                AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
-                                                                               bin_centres =  floor(mean(Age)),
-                                                                               count = n()) %>% filter(count > 20)
+                                                                               bin_centres =  floor(mean(Age))) 
       
       
       regrowth_mod_full$Source <- this_regrowth_Source@name
@@ -1697,8 +1707,8 @@ if(do_Regrowth){
     geom_errorbar(aes(ymin=AGcwood_kgCm2_10, ymax=AGcwood_kgCm2_90, col = Source)) +
     facet_wrap(~Biome, ncol = 2, scales = "fixed" ) +
     labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) # + geom_hline(yintercept = 10, col = "grey")
-    
-    print(regrowth_plot)
+  
+  print(regrowth_plot)
   
 }
 ```
@@ -2023,7 +2033,7 @@ TABLE FORMATTING: see here: [https://rmarkdown.rstudio.com/lesson-7.html](https:
 
 if(nrow(summary_table) > 0) {
   colnames(summary_table) <- summary_col_names
-  kable(summary_table)
+  kable(summary_table) %>% kable_styling(full_width = TRUE)
 }
 
 
