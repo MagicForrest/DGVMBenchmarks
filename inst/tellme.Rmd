@@ -21,10 +21,14 @@ params:
 ---
 
 ```{r setup, include=FALSE}
+# knitr options
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
                       out.width = '100%',
                       fig.height = 7)
+# kable options
+opts <- options(knitr.kable.NA = "")
+
 
 library(ggplot2)
 # set the ggplot theme to avoid the grey background that Stefan hates so much
@@ -44,8 +48,10 @@ library(tictoc)
 
 # conversion factors
 KG_TO_PG <- 1/1e+12
+KG_TO_TG <- 1/1e+9
 M2_TO_MegaM2 <- 1/1e+12
 M2_TO_Mha <- 1/1e+10
+L_TO_KM3 <- 1/1e+12
 
 
 
@@ -91,14 +97,20 @@ version_label <- "tellus_v1.2"
 doPublicationPlots <- FALSE
 
 # switches for which benchmarks to do
-do_GCP_NBP <- TRUE
-do_Biomes <- TRUE
-do_global_GPP <- TRUE
-do_global_LAI <- TRUE
-do_global_BA <- TRUE
-do_Pan_Biomass <- TRUE
-do_Global_Biomass <- TRUE
-do_Regrowth <- TRUE
+do_Global_Table <- TRUE
+do_GCP_NBP <- FALSE
+do_Biomes <- FALSE
+do_global_GPP <- FALSE
+do_global_LAI <- FALSE
+do_global_BA <- FALSE
+do_Pan_Biomass <- FALSE
+do_Global_Biomass <- FALSE
+do_Regrowth <- FALSE
+
+# Summary periods
+summary_periods <- list(c(1961, 1990),
+                        c(1990, 2000))
+
 
 # The summary table
 summary_col_names <- c("Quantity", "Unit")
@@ -169,7 +181,7 @@ if(do_GCP_NBP){
                                       quick.read = quick_read,
                                       quick.read.file = paste("cflux", version_label, sep = "_") 
       )
-
+      
       if("NEE" %in% names(this_simulation_NBP)) renameLayers(this_simulation_NBP, "NEE", "NBP")
       
       this_simulation_NBP <- layerOp(x = this_simulation_NBP, operator = "divc", layers = layers(this_simulation_NBP), new.layer = layers(this_simulation_NBP), constant = -1E12)
@@ -1598,7 +1610,6 @@ if(do_Pan_Biomass){
   
   # order columns and print
   setcolorder(final_dt, c( "Region", "Source", "LitterC", "SoilC", "VegC", "DWD", "Total"   ))
-  opts <- options(knitr.kable.NA = "")
   kable(final_dt, digits = 1, align = "l") %>% kable_classic( html_font = "Cambria", bootstrap_options = c("striped", "hover", "condensed"))
   
   
@@ -1686,9 +1697,9 @@ if(do_Regrowth){
       
       #summary stats on bins:
       regrowth_mod_full <- counts_filtered %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
-                                                                               AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
-                                                                               AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
-                                                                               bin_centres =  floor(mean(Age))) 
+                                                                                      AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
+                                                                                      AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
+                                                                                      bin_centres =  floor(mean(Age))) 
       
       
       regrowth_mod_full$Source <- this_regrowth_Source@name
@@ -2022,8 +2033,92 @@ if(do_Global_Biomass){
 ***
 
 
-# Global Summary Table
+# Global Summary Tables
 
+## Inter-model comparisons {.tabset}
+
+###  C Fluxes (Pg C/y)
+
+``` {r C fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
+this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                      var = "cflux", 
+                                      periods = summary_periods, 
+                                      new_sim =  params$new_name, 
+                                      old_sim = params$old_name, 
+                                      area_unit = "m^2",
+                                      unit_multiplier = KG_TO_PG)
+if(nrow(this_complete_df) > 0) {
+  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+}
+```
+
+
+
+###  N Fluxes (Tg N/y)
+
+``` {r N fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
+this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                      var = "nflux", 
+                                      periods = summary_periods, 
+                                      new_sim =  params$new_name, 
+                                      old_sim = params$old_name, 
+                                      area_unit = "ha",
+                                      unit_multiplier = KG_TO_TG)
+if(nrow(this_complete_df) > 0) {
+  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+}
+```
+
+
+###  C Pools (Pg C)
+
+``` {r C pools table, echo=FALSE, out.width = '100%', out.height= '150%'}
+this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                      var = "cpool", 
+                                      periods = summary_periods, 
+                                      new_sim =  params$new_name, 
+                                      old_sim = params$old_name, 
+                                      area_unit = "m^2",
+                                      unit_multiplier = KG_TO_PG)
+if(nrow(this_complete_df) > 0) {
+  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+}
+```
+
+###  N Pools (Pg N)
+
+``` {r N pools table, echo=FALSE, out.width = '100%', out.height= '150%'}
+this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                      var = "npool", 
+                                      periods = summary_periods, 
+                                      new_sim =  params$new_name, 
+                                      old_sim = params$old_name, 
+                                      area_unit = "m^2",
+                                      unit_multiplier = KG_TO_PG)
+if(nrow(this_complete_df) > 0) {
+  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+}
+```
+
+
+### Run-off (km^3^ H~2~O/y)
+
+``` {r Total runoff table, echo=FALSE, out.width = '100%', out.height= '150%'}
+this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                      var = "tot_runoff", 
+                                      periods = summary_periods, 
+                                      new_sim =  params$new_name, 
+                                      old_sim = params$old_name, 
+                                      area_unit = "m^2",
+                                      unit_multiplier = KG_TO_PG)
+if(nrow(this_complete_df) > 0) {
+  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+}
+```
+
+
+
+## Data comparisons
 
 TABLE FORMATTING: see here: [https://rmarkdown.rstudio.com/lesson-7.html](https://rmarkdown.rstudio.com/lesson-7.html)
 

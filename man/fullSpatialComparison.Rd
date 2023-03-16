@@ -7,8 +7,8 @@
 fullSpatialComparison(
   benchmark,
   all_maps,
-  all_trends,
-  all_seasonal,
+  all_trends = NULL,
+  all_seasonal = NULL,
   new_model = NULL,
   old_model = NULL
 )
