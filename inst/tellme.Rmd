@@ -96,6 +96,9 @@ version_label <- "tellus_v1.2"
 # do publication plots
 doPublicationPlots <- FALSE
 
+# plot maps (turn off to save time)
+doMapPlots <- FALSE
+
 # switches for which benchmarks to do
 do_Global_Table <- TRUE
 do_GCP_NBP <- TRUE
@@ -327,32 +330,24 @@ if(do_Biomes){
     
   } # for each model run
   
-  suppressWarnings(biome_plot <- plotSpatial(Biome_Map_Fields_list, 
-                                             ncol = num_cols, 
-                                             text.multiplier = 1.3, 
-                                             map.overlay = map_overlay, 
-                                             title = NULL))
-  biome_plot <- biome_plot + theme(legend.position = "bottom",
-                                   legend.text=element_text(size=rel(0.9)),
-                                   legend.key.size = unit(0.5, "lines"))
   
-  biome_plot <- biome_plot+ guides(fill = guide_legend(ncol = 2))
-  suppressWarnings(plot(biome_plot))
+  if(doMapPlots) {
+    suppressWarnings(biome_plot <- plotSpatial(Biome_Map_Fields_list, 
+                                               ncol = num_cols, 
+                                               text.multiplier = 1.3, 
+                                               map.overlay = map_overlay, 
+                                               title = NULL))
+    biome_plot <- biome_plot + theme(legend.position = "bottom",
+                                     legend.text=element_text(size=rel(0.9)),
+                                     legend.key.size = unit(0.5, "lines"))
+    
+    biome_plot <- biome_plot+ guides(fill = guide_legend(ncol = 2))
+    suppressWarnings(plot(biome_plot))
+  }
   
+ 
   
-  # such a nice solution, integrate into package....
-  # library(rnaturalearth)
-  # countryLines <- ne_coastline(returnclass = "sf")
-  # biome_plot2 <- biome_plot+geom_sf(data=countryLines, linewidth = 0.1)
-  # print(biome_plot2)
-  
-  
-  # delete only 
-  
-} # if do_Global_Biomass
-
-
-
+} # if do_Global_Biomes
 ```
 
 
@@ -529,67 +524,62 @@ if(do_global_GPP){
 
 ### Absolute values
 ```{r}
-if(do_global_GPP){  
-  # plot all absolute values together
-  GPP_abs_values_plot <- plotSpatial(all_GPP_Maps, 
-                                     ncol = num_cols, 
-                                     legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
-                                     map.overlay = map_overlay, 
-                                     title = "Absolute GPP values",
-                                     subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+if(do_global_GPP & doMapPlots){  
   
-  # add the total GPP to the plots
-  total_label_df <- data.frame()
-  for(this_panel in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
-                                                                    list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
-                                                                         Facet = this_panel, 
-                                                                         x = stats_lon, y = stats_lat),
-                                                                    stringsAsFactors = FALSE)
-  total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_GPP_totals))
-  GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
-  suppressWarnings(print(GPP_abs_values_plot))
+  # plot all absolute values together
+    GPP_abs_values_plot <- plotSpatial(all_GPP_Maps, 
+                                       ncol = num_cols, 
+                                       legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
+                                       map.overlay = map_overlay, 
+                                       title = "Absolute GPP values",
+                                       subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+    
+    # add the total GPP to the plots
+    total_label_df <- data.frame()
+    for(this_panel in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
+                                                                      list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
+                                                                           Facet = this_panel, 
+                                                                           x = stats_lon, y = stats_lat),
+                                                                      stringsAsFactors = FALSE)
+    total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_GPP_totals))
+    GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
+    suppressWarnings(print(GPP_abs_values_plot))
+    
 }
 ```
 
 ### Differences
 
 ```{r}
-if(do_global_GPP){  
-  
-  GPP_diff_values_plot <- plotSpatialComparison(all_GPP_comparisons[["Values"]], 
-                                                ncol = num_cols, 
-                                                legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
-                                                map.overlay = map_overlay, 
-                                                title = "GPP biases", 
-                                                facet.order = names(all_GPP_comparisons[["Values"]]),
-                                                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
-  
-  # extract metric scores and add to the panels
-  lat_offset = 0
-  for(this_metric in this_benchmark@metrics) {
-    metric_label_df <- data.frame()
-    for(comparison_name  in names(all_GPP_comparisons[["Values"]])) {
-      metric_label_df <- rbind(metric_label_df,
-                               list(label = paste(this_metric, "=", round(all_GPP_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
-                                    Facet = comparison_name, 
-                                    x = stats_lon, y = stats_lat - lat_offset),
-                               stringsAsFactors = FALSE)  
+if(do_global_GPP & doMapPlots){  
+ 
+    GPP_diff_values_plot <- plotSpatialComparison(all_GPP_comparisons[["Values"]], 
+                                                  ncol = num_cols, 
+                                                  legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
+                                                  map.overlay = map_overlay, 
+                                                  title = "GPP biases", 
+                                                  facet.order = names(all_GPP_comparisons[["Values"]]),
+                                                  subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+    
+    # extract metric scores and add to the panels
+    lat_offset = 0
+    for(this_metric in this_benchmark@metrics) {
+      metric_label_df <- data.frame()
+      for(comparison_name  in names(all_GPP_comparisons[["Values"]])) {
+        metric_label_df <- rbind(metric_label_df,
+                                 list(label = paste(this_metric, "=", round(all_GPP_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
+                                      Facet = comparison_name, 
+                                      x = stats_lon, y = stats_lat - lat_offset),
+                                 stringsAsFactors = FALSE)  
+      }
+      metric_label_df$Facet <- factor(metric_label_df$Facet, levels = names(all_GPP_comparisons[["Values"]]))
+      GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
+      lat_offset <- lat_offset + 10  
     }
-    metric_label_df$Facet <- factor(metric_label_df$Facet, levels = names(all_GPP_comparisons[["Values"]]))
-    GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
-    lat_offset <- lat_offset + 10  
-  }
-  
-  suppressWarnings(print(GPP_diff_values_plot))
-  
-  GPP_diff_values_plot_table  <- plotSpatialComparison(all_GPP_comparisons[["Values"]], 
-                                                       ncol = num_cols, 
-                                                       legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
-                                                       map.overlay = map_overlay, 
-                                                       title = "GPP biases", 
-                                                       subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"),
-                                                       plot = FALSE)
-  
+    
+    suppressWarnings(print(GPP_diff_values_plot))
+    
+
 }
 ```
 
@@ -599,24 +589,26 @@ if(do_global_GPP){
 
 ### Trend value
 ```{r}
-if(do_global_GPP) {
-  suppressWarnings( print(
-    plotSpatial(all_GPP_Trends, 
-                layers = "Trend", 
-                ncol = num_cols, 
-                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
-                limits = c(-0.2,0.2),
-                drop.cuts = FALSE,
-                title = "Trend in GPP", 
-                legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
-                map.overlay = map_overlay, 
-                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+if(do_global_GPP & doMapPlots) {
+  
+    suppressWarnings( print(
+      plotSpatial(all_GPP_Trends, 
+                  layers = "Trend", 
+                  ncol = num_cols, 
+                  cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                  limits = c(-0.2,0.2),
+                  drop.cuts = FALSE,
+                  title = "Trend in GPP", 
+                  legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
+                  map.overlay = map_overlay, 
+                  subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+ 
 }
 ```
 
 ### Trend significance
 ```{r}
-if(do_global_GPP) {
+if(do_global_GPP & doMapPlots) {
   suppressWarnings(print(
     plotSpatial(all_GPP_Trends, 
                 layers = "p.value", 
@@ -634,7 +626,7 @@ if(do_global_GPP) {
 
 ### Trend Differences
 ```{r}
-if(do_global_GPP) {
+if(do_global_GPP & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Trend"]], 
                           ncol = num_cols, 
@@ -648,7 +640,7 @@ if(do_global_GPP) {
 
 ### Significant Trends
 ```{r}
-if(do_global_GPP) {
+if(do_global_GPP & doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_GPP_Trends, 
                 layers = "Significant_Trend", 
@@ -670,7 +662,7 @@ Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **S
 
 ### Seasonal phase
 ```{r}
-if(do_global_GPP) {
+if(do_global_GPP & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
@@ -685,7 +677,7 @@ if(do_global_GPP) {
 
 ### Phase differences
 ```{r}
-if(do_global_GPP){
+if(do_global_GPP & doMapPlots){
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
@@ -700,7 +692,7 @@ if(do_global_GPP){
 
 ### Seasonal concentration
 ```{r}
-if(do_global_GPP) {
+if(do_global_GPP & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           type = "values",
@@ -712,7 +704,7 @@ if(do_global_GPP) {
 
 ### Concentration differences
 ```{r}
-if(do_global_GPP) {
+if(do_global_GPP & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           ncol = num_cols,
@@ -901,7 +893,7 @@ if(do_global_LAI){
 
 ### Absolute values
 ```{r}
-if(do_global_LAI){  
+if(do_global_LAI & doMapPlots){  
   # plot all absolute values together
   LAI_abs_values_plot <- plotSpatial(all_LAI_Maps, 
                                      ncol = num_cols, 
@@ -927,7 +919,7 @@ if(do_global_LAI){
 ### Differences
 
 ```{r}
-if(do_global_LAI){  
+if(do_global_LAI & doMapPlots){  
   LAI_diff_values_plot <- plotSpatialComparison(all_LAI_comparisons[["Values"]], 
                                                 ncol = num_cols, 
                                                 legend.title = expression(Delta~m^{"2"}~m^{"-2"}),
@@ -962,7 +954,7 @@ if(do_global_LAI){
 
 ### Trend value
 ```{r}
-if(do_global_LAI) {
+if(do_global_LAI & doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_LAI_Trends, 
                 layers = "Trend", 
@@ -979,7 +971,7 @@ if(do_global_LAI) {
 
 ### Trend significance
 ```{r}
-if(do_global_LAI) {
+if(do_global_LAI & doMapPlots) {
   suppressWarnings(print(
     plotSpatial(all_LAI_Trends, 
                 layers = "p.value", 
@@ -997,7 +989,7 @@ if(do_global_LAI) {
 
 ### Trend Differences
 ```{r}
-if(do_global_LAI) {
+if(do_global_LAI & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Trend"]], 
                           ncol = num_cols, 
@@ -1013,7 +1005,7 @@ if(do_global_LAI) {
 
 ### Significant Trends
 ```{r}
-if(do_global_LAI) {
+if(do_global_LAI & doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_LAI_Trends, 
                 layers = "Significant_Trend", 
@@ -1034,7 +1026,7 @@ Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **S
 
 ### Seasonal phase
 ```{r}
-if(do_global_LAI) {
+if(do_global_LAI & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
@@ -1049,7 +1041,7 @@ if(do_global_LAI) {
 
 ### Phase differences
 ```{r}
-if(do_global_LAI){
+if(do_global_LAI & doMapPlots){
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
@@ -1064,7 +1056,7 @@ if(do_global_LAI){
 
 ### Seasonal concentration
 ```{r}
-if(do_global_LAI) {
+if(do_global_LAI & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           type = "values",
@@ -1076,7 +1068,7 @@ if(do_global_LAI) {
 
 ### Concentration differences
 ```{r}
-if(do_global_LAI) {
+if(do_global_LAI & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           ncol = num_cols,
@@ -1279,7 +1271,7 @@ if(do_global_BA){
 
 ### Absolute values
 ```{r}
-if(do_global_BA){  
+if(do_global_BA & doMapPlots){  
   # plot all absolute values together
   BA_abs_values_plot <- suppressWarnings(
     plotSpatial(all_BA_Maps, 
@@ -1308,7 +1300,7 @@ if(do_global_BA){
 ### Differences
 
 ```{r}
-if(do_global_BA){  
+if(do_global_BA & doMapPlots){  
   BA_diff_values_plot <- plotSpatialComparison(all_BA_comparisons[["Values"]], 
                                                ncol = num_cols, 
                                                legend.title = expression(Delta~"fraction"),
@@ -1343,7 +1335,7 @@ if(do_global_BA){
 
 ### Trend value
 ```{r}
-if(do_global_BA) {
+if(do_global_BA & doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_BA_Trends, 
                 layers = "Trend", 
@@ -1360,7 +1352,7 @@ if(do_global_BA) {
 
 ### Trend significance
 ```{r}
-if(do_global_BA) {
+if(do_global_BA & doMapPlots) {
   suppressWarnings(print(
     plotSpatial(all_BA_Trends, 
                 layers = "p.value", 
@@ -1378,7 +1370,7 @@ if(do_global_BA) {
 
 ### Trend Differences
 ```{r}
-if(do_global_BA) {
+if(do_global_BA & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Trend"]], 
                           ncol = num_cols, 
@@ -1394,7 +1386,7 @@ if(do_global_BA) {
 
 ### Significant Trends
 ```{r}
-if(do_global_BA) {
+if(do_global_BA & doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_BA_Trends, 
                 layers = "Significant_Trend", 
@@ -1415,7 +1407,7 @@ Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **S
 
 ### Seasonal phase
 ```{r}
-if(do_global_BA) {
+if(do_global_BA & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
@@ -1430,7 +1422,7 @@ if(do_global_BA) {
 
 ### Phase differences
 ```{r}
-if(do_global_BA){
+if(do_global_BA & doMapPlots){
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
@@ -1446,7 +1438,7 @@ if(do_global_BA){
 
 ### Seasonal concentration
 ```{r}
-if(do_global_BA) {
+if(do_global_BA & doMapPlots ) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
                           type = "values",
@@ -1458,7 +1450,7 @@ if(do_global_BA) {
 
 ### Concentration differences
 ```{r}
-if(do_global_BA) {
+if(do_global_BA & doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
                           ncol = num_cols,
@@ -1972,7 +1964,7 @@ if(do_Global_Biomass){
 
 ### Absolute values
 ```{r}
-if(do_Global_Biomass){  
+if(do_Global_Biomass & doMapPlots){  
   # plot all absolute values together
   Biomass_abs_values_plot <- plotSpatial(all_Biomass_Maps, 
                                          ncol = num_cols, 
@@ -1998,7 +1990,7 @@ if(do_Global_Biomass){
 ### Differences
 
 ```{r}
-if(do_Global_Biomass){  
+if(do_Global_Biomass & doMapPlots){  
   Biomass_diff_values_plot <- plotSpatialComparison(all_Biomass_comparisons[["Values"]], 
                                                     ncol = num_cols, 
                                                     legend.title = expression(Delta~kg~m^{"-2"}),
