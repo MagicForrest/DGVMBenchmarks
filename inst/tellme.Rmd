@@ -98,14 +98,14 @@ doPublicationPlots <- FALSE
 
 # switches for which benchmarks to do
 do_Global_Table <- TRUE
-do_GCP_NBP <- FALSE
-do_Biomes <- FALSE
-do_global_GPP <- FALSE
-do_global_LAI <- FALSE
-do_global_BA <- FALSE
-do_Pan_Biomass <- FALSE
-do_Global_Biomass <- FALSE
-do_Regrowth <- FALSE
+do_GCP_NBP <- TRUE
+do_Biomes <- TRUE
+do_global_GPP <- TRUE
+do_global_LAI <- TRUE
+do_global_BA <- TRUE
+do_Pan_Biomass <- TRUE
+do_Global_Biomass <- TRUE
+do_Regrowth <- TRUE
 
 # Summary periods
 summary_periods <- list(c(1961, 1990),
