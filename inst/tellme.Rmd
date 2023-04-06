@@ -53,7 +53,9 @@ M2_TO_MegaM2 <- 1/1e+12
 M2_TO_Mha <- 1/1e+10
 L_TO_KM3 <- 1/1e+12
 
-
+# lons and lats for calculating area totals from sparsely populated grids
+hd_lons <- seq(-179.75, 179.75, by = 0.5)
+hd_lats <- seq(-89.75, 89.75, by = 0.5)
 
 # start timer
 tic()
@@ -91,7 +93,7 @@ all_simulation_Sources_list <- list(old_simulation_Source, new_simulation_Source
 
 # quick read switch and version label (for making quick read files)
 quick_read <- TRUE
-version_label <- "tellus_v1.2" 
+analysis_version <- "tellus_v1.2" 
 
 # do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
 verbose_read <- TRUE
@@ -100,7 +102,7 @@ verbose_read <- TRUE
 doPublicationPlots <- FALSE
 
 # plot maps (turn off to save time)
-doMapPlots <- FALSE
+doMapPlots <- TRUE
 
 # switches for which benchmarks to do
 do_Global_Table <- TRUE
@@ -109,13 +111,27 @@ do_Biomes <- TRUE
 do_global_GPP <- TRUE
 do_global_LAI <- TRUE
 do_global_BA <- TRUE
-do_Pan_Biomass <- TRUE
 do_Global_Biomass <- TRUE
+do_Pan_Biomass <- TRUE
 do_Regrowth <- TRUE
 
 # Summary periods
 summary_periods <- list(c(1961, 1990),
                         c(1990, 2000))
+
+
+
+#  **** SPECIAL FOR STEFAN'S RETUNING  ****
+subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_16_random.csv", package = "DGVMBenchmarks"), header = TRUE, flush = TRUE)
+#  **** END SPECIAL ****
+
+# Spatial extent 
+# Note that this only applies to some benchmarks - typically the spatially explicit global ones
+# it will be ignored for benchmarks such as the regrowth and Pan forest biomass benchmarks
+spatial_extent <- subset_1600_gridcells # extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) # leave as NULL to use the whole simulation extent
+spatial_extent_id <- "The1600" # "Europe" # "Global"  # set to a string to describe the spatial subset and use "Global" if not cropping area
+
+version_label <- paste(analysis_version, spatial_extent_id, sep = "_")
 
 
 # The summary table
@@ -182,7 +198,8 @@ if(do_GCP_NBP){
                                       first.year = first_GCP_GUESS_year,
                                       last.year = last_GCP_GUESS_year,
                                       spatial.aggregate.method = "w.sum",
-                                      spatial.extent.id = "Global",
+                                      spatial.extent = spatial_extent,
+                                      spatial.extent.id = spatial_extent_id,
                                       verbose = verbose_read,
                                       quick.read = quick_read,
                                       quick.read.file = paste("cflux", version_label, sep = "_") 
@@ -278,20 +295,22 @@ if(do_Biomes){
   full_file_path <- file.path(params$data_directory, this_dataset$dir, this_dataset$file_name)
   if(file.exists(full_file_path)) {
     
+    this_source <- defineSource(id = this_dataset$id,
+                                name = this_dataset$name,
+                                dir = file.path(params$data_directory, this_dataset$dir),
+                                format = NetCDF)
+    
     suppressWarnings(
-      Biome_Map_Fields_list[[this_dataset$name]] <- getField(source = defineSource(id = this_dataset$id,
-                                                                                   name = this_dataset$name,
-                                                                                   dir = file.path(params$data_directory, this_dataset$dir),
-                                                                                   format = NetCDF),
+      Biome_Map_Fields_list[[this_dataset$name]] <- getField(source = this_source,
                                                              quant = this_dataset$id,
+                                                             spatial.extent = spatial_extent,
+                                                             spatial.extent.id = spatial_extent_id,  
                                                              first.year = this_dataset$first_year,
                                                              last.year = this_dataset$last_year,
                                                              year.aggregate.method = "mean",
                                                              verbose = verbose_read,
                                                              quick.read = FALSE,
-                                                             quick.read.file = paste(this_benchmark$guess_var, version_label, sep = "_"))
-    )
-    
+                                                             quick.read.file = paste(this_benchmark$guess_var, version_label, sep = "_")))
     
   }
   else {
@@ -320,6 +339,8 @@ if(do_Biomes){
       suppressWarnings(
         Biome_Map_Fields_list[[this_sim_Source@id]] <- getScheme(source = temp_simulation_Source,
                                                                  scheme = Smith2014BiomeScheme,
+                                                                 spatial.extent = spatial_extent,
+                                                                 spatial.extent.id = spatial_extent_id,  
                                                                  first.year = this_dataset$first_year,
                                                                  last.year = this_dataset$last_year,
                                                                  year.aggregate.method = "mean",
@@ -386,6 +407,8 @@ if(do_global_GPP){
   } else {
     GPP_data_Fields[[GOSIF_GPP_Source@name]] <- getField(source = GOSIF_GPP_Source,
                                                          quant = "mgpp",
+                                                         spatial.extent = spatial_extent,
+                                                         spatial.extent.id = spatial_extent_id,
                                                          file.name = GOSIF_GPP_monthly_file.name,
                                                          verbose = verbose_read)
   }
@@ -455,7 +478,7 @@ if(do_global_GPP){
       
       # make and save the mean annual global GPP
       # TODO, make this more flexible for multiple datasets
-      data_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_data_Field@source@name]])@data*KG_TO_PG
+      data_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_data_Field@source@name]], lon_centres = hd_lons, lat_centres = hd_lats)@data*KG_TO_PG
       all_GPP_totals[[this_data_Field@source@name]] <- data_GPP_PgC
       summary_table_lines$Data <- signif(as.numeric(data_GPP_PgC),4)
       
@@ -478,6 +501,8 @@ if(do_global_GPP){
         suppressWarnings(
           this_simulation_GPP <- getField(source = this_crop_global_Source,
                                           this_benchmark@guess_var,
+                                          spatial.extent = spatial_extent,
+                                          spatial.extent.id = spatial_extent_id,
                                           first.year = this_benchmark@first.year,
                                           last.year = this_benchmark@last.year,
                                           verbose = verbose_read,
@@ -498,7 +523,7 @@ if(do_global_GPP){
         all_GPP_Trends[[this_sim_Source@name]] <- this_GPP_Trend
         
         # calculate and save the global total
-        this_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_sim_Source@name]])@data*KG_TO_PG
+        this_GPP_PgC <- areaWeightedTotal(all_GPP_Maps[[this_sim_Source@name]], lon_centres = hd_lons, lat_centres = hd_lats)@data*KG_TO_PG
         all_GPP_totals[[this_sim_Source@name]] <- this_GPP_PgC
         summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_GPP_PgC),4)
         
@@ -750,6 +775,8 @@ if(do_global_LAI){
   } else {
     LAI_data_Fields[[MODIS_LAI_Source@name]] <- getField(source = MODIS_LAI_Source,
                                                          quant = "mlai",
+                                                         spatial.extent = spatial_extent,
+                                                         spatial.extent.id = spatial_extent_id,
                                                          file.name = MODIS_LAI_monthly_file.name,
                                                          verbose = verbose_read)
   }
@@ -827,7 +854,7 @@ if(do_global_LAI){
       
       # make and save the mean annual global LAI
       # TODO, make this more flexible for multiple datasets
-      data_LAI_MegaM2 <- areaWeightedTotal(all_LAI_Maps[[this_data_Field@source@name]])@data * M2_TO_MegaM2
+      data_LAI_MegaM2 <- areaWeightedTotal(all_LAI_Maps[[this_data_Field@source@name]], lon_centres = hd_lons, lat_centres = hd_lats)@data * M2_TO_MegaM2
       all_LAI_totals[[this_data_Field@source@name]] <- data_LAI_MegaM2
       summary_table_lines$Data <- signif(as.numeric(data_LAI_MegaM2), 4)
       
@@ -850,6 +877,8 @@ if(do_global_LAI){
         suppressWarnings(
           this_simulation_LAI <- getField(source = this_crop_global_Source,
                                           this_benchmark@guess_var,
+                                          spatial.extent = spatial_extent,
+                                          spatial.extent.id = spatial_extent_id,
                                           first.year = this_benchmark@first.year,
                                           last.year = this_benchmark@last.year,  
                                           verbose = verbose_read,
@@ -867,7 +896,7 @@ if(do_global_LAI){
         all_LAI_Trends[[this_sim_Source@name]] <- calcLinearTrend(this_simulation_LAI)
         
         # calculate and save the global total
-        this_LAI_MegaM2 <- areaWeightedTotal(all_LAI_Maps[[this_sim_Source@name]])@data * M2_TO_MegaM2
+        this_LAI_MegaM2 <- areaWeightedTotal(all_LAI_Maps[[this_sim_Source@name]], lon_centres = hd_lons, lat_centres = hd_lats)@data * M2_TO_MegaM2
         all_LAI_totals[[this_sim_Source@name]] <- this_LAI_MegaM2
         summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_LAI_MegaM2),4)
         
@@ -1119,6 +1148,8 @@ if(do_global_BA){
   } else {
     BA_data_Fields[[GFED4_BA_Source@name]] <- suppressWarnings(getField(source = GFED4_BA_Source,
                                                                         quant = "burned_area_fraction",
+                                                                        spatial.extent = spatial_extent,
+                                                                        spatial.extent.id = spatial_extent_id,
                                                                         verbose = verbose_read,
                                                                         file.name = GFED4_BA_monthly_file.name))
   }
@@ -1203,7 +1234,7 @@ if(do_global_BA){
       
       # make and save the mean annual global LAI
       # TODO, make this more flexible for multiple datasets
-      data_BA_MHa <- areaWeightedTotal(all_BA_Maps[[this_data_Field@source@name]])@data * M2_TO_Mha
+      data_BA_MHa <- areaWeightedTotal(all_BA_Maps[[this_data_Field@source@name]], lon_centres = hd_lons, lat_centres = hd_lats)@data * M2_TO_Mha
       all_BA_totals[[this_data_Field@source@name]] <- data_BA_MHa
       summary_table_lines$Data <- signif(as.numeric(data_BA_MHa),4)
       
@@ -1226,6 +1257,8 @@ if(do_global_BA){
         suppressWarnings(
           this_simulation_BA <- getField(source = this_crop_global_Source,
                                          this_benchmark@guess_var,
+                                         spatial.extent = spatial_extent,
+                                         spatial.extent.id = spatial_extent_id,
                                          first.year = this_benchmark@first.year,
                                          last.year = this_benchmark@last.year,
                                          verbose = verbose_read,
@@ -1243,7 +1276,7 @@ if(do_global_BA){
         all_BA_Trends[[this_sim_Source@name]] <- calcLinearTrend(this_simulation_BA)
         
         # calculate and save the global total
-        this_BA_Mha <- areaWeightedTotal(all_BA_Maps[[this_sim_Source@name]])@data * M2_TO_Mha
+        this_BA_Mha <- areaWeightedTotal(all_BA_Maps[[this_sim_Source@name]], lon_centres = hd_lons, lat_centres = hd_lats)@data * M2_TO_Mha
         all_BA_totals[[this_sim_Source@name]] <- this_BA_Mha
         summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_BA_Mha),4)
         
@@ -1600,7 +1633,7 @@ if(do_Pan_Biomass){
     for(this_sim_Source in all_simulation_Sources_list) {
       
       this_sim_region <- selectGridcells(all_Model_Biomass_Fields[[this_sim_Source@name]], this_region_gridcells, as.character(this_region))
-      this_sim_region_summed <- aggregateSpatial(this_sim_region, method = "w.sum")    
+      this_sim_region_summed <- aggregateSpatial(this_sim_region, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)    
       this_line <- this_sim_region_summed@data
       this_line[, Year := NULL]
       this_line[, VegC := VegC *KG_TO_PG ]
@@ -1789,6 +1822,8 @@ if(do_Global_Biomass){
     suppressWarnings(
       this_data_Field <- getField(source = data_Source,
                                   quant = this_benchmark@guess_var,
+                                  spatial.extent = spatial_extent,
+                                  spatial.extent.id = spatial_extent_id,
                                   verbose = verbose_read,
                                   file.name = liu_biomass$this_data_file_name)
     )
@@ -1802,9 +1837,9 @@ if(do_Global_Biomass){
     all_Biomass_Maps[[this_data_Field@source@name]] <- this_data_Field
     
     # calculate the global total
-    all_Biomass_totals[[this_data_Field@source@name]] <- areaWeightedTotal(this_data_Field)@data * KG_TO_PG
+    all_Biomass_totals[[this_data_Field@source@name]] <- areaWeightedTotal(this_data_Field, lon_centres = hd_lons, lat_centres = hd_lats)@data * KG_TO_PG
     # calculate the global total
-    this_Biomass_total_PgC  <- areaWeightedTotal(this_data_Field)@data * KG_TO_PG
+    this_Biomass_total_PgC  <- areaWeightedTotal(this_data_Field, lon_centres = hd_lons, lat_centres = hd_lats)@data * KG_TO_PG
     all_Biomass_totals[[this_data_Field@source@name]] <- this_Biomass_total_PgC
     
     # make the summary table lines
@@ -1840,6 +1875,8 @@ if(do_Global_Biomass){
       suppressWarnings(
         this_cmass <- getField(source = temp_simulation_Source,
                                quant = this_benchmark@guess_var,
+                               spatial.extent = spatial_extent,
+                               spatial.extent.id = spatial_extent_id,
                                first.year = this_dataset$first_year,
                                last.year = this_dataset$last_year,
                                year.aggregate.method = "mean",
@@ -1853,6 +1890,8 @@ if(do_Global_Biomass){
       suppressWarnings(
         this_biomes <- getScheme(source = temp_simulation_Source,
                                  scheme = Smith2014BiomeScheme,
+                                 spatial.extent = spatial_extent,
+                                 spatial.extent.id = spatial_extent_id,
                                  first.year = this_dataset$first_year,
                                  last.year = this_dataset$last_year,
                                  year.aggregate.method = "mean",
@@ -1947,7 +1986,7 @@ if(do_Global_Biomass){
       all_Biomass_Maps[[this_sim_Source@name]] <- selectLayers(this_cmass, this_benchmark@guess_var)
       
       # calculate the global total
-      this_Biomass_total_PgC  <-areaWeightedTotal(all_Biomass_Maps[[this_sim_Source@name]])@data * KG_TO_PG
+      this_Biomass_total_PgC  <-areaWeightedTotal(all_Biomass_Maps[[this_sim_Source@name]], lon_centres = hd_lons, lat_centres = hd_lats)@data * KG_TO_PG
       all_Biomass_totals[[this_sim_Source@name]] <- this_Biomass_total_PgC
       summary_table_lines[[this_sim_Source@name]] <- signif(as.numeric(this_Biomass_total_PgC),4)
       
@@ -2054,6 +2093,8 @@ this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list,
                                       periods = summary_periods, 
                                       new_sim =  params$new_name, 
                                       old_sim = params$old_name, 
+                                      spatial_extent = spatial_extent,
+                                      spatial_extent_id = spatial_extent_id,
                                       area_unit = "m^2",
                                       unit_multiplier = KG_TO_PG)
 if(nrow(this_complete_df) > 0) {
@@ -2071,6 +2112,8 @@ this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list,
                                       periods = summary_periods, 
                                       new_sim =  params$new_name, 
                                       old_sim = params$old_name, 
+                                      spatial_extent = spatial_extent,
+                                      spatial_extent_id = spatial_extent_id,
                                       area_unit = "ha",
                                       unit_multiplier = KG_TO_TG)
 if(nrow(this_complete_df) > 0) {
@@ -2087,6 +2130,8 @@ this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list,
                                       periods = summary_periods, 
                                       new_sim =  params$new_name, 
                                       old_sim = params$old_name, 
+                                      spatial_extent = spatial_extent,
+                                      spatial_extent_id = spatial_extent_id,
                                       area_unit = "m^2",
                                       unit_multiplier = KG_TO_PG)
 if(nrow(this_complete_df) > 0) {
@@ -2102,6 +2147,8 @@ this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list,
                                       periods = summary_periods, 
                                       new_sim =  params$new_name, 
                                       old_sim = params$old_name, 
+                                      spatial_extent = spatial_extent,
+                                      spatial_extent_id = spatial_extent_id,
                                       area_unit = "m^2",
                                       unit_multiplier = KG_TO_PG)
 if(nrow(this_complete_df) > 0) {
@@ -2118,6 +2165,8 @@ this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list,
                                       periods = summary_periods, 
                                       new_sim =  params$new_name, 
                                       old_sim = params$old_name, 
+                                      spatial_extent = spatial_extent,
+                                      spatial_extent_id = spatial_extent_id,
                                       area_unit = "m^2",
                                       unit_multiplier = KG_TO_PG)
 if(nrow(this_complete_df) > 0) {
@@ -2138,6 +2187,12 @@ TABLE FORMATTING: see here: [https://rmarkdown.rstudio.com/lesson-7.html](https:
 if(nrow(summary_table) > 0) {
   colnames(summary_table) <- summary_col_names
   kable(summary_table) %>% kable_styling(full_width = TRUE)
+}
+
+# save the table in each model run directory
+# loop through model runs to be processed
+for(this_sim_Source in all_simulation_Sources_list) {
+  saveRDS(summary_table, file.path(this_sim_Source@dir, paste0("summary_totals_", version_label, ".RData")))
 }
 
 
