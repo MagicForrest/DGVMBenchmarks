@@ -89,9 +89,12 @@ old_simulation_Source <- defineSource(name = params$old_name,
 # combine into a list for looping later
 all_simulation_Sources_list <- list(old_simulation_Source, new_simulation_Source)
 
-# quik read switch and version label (for making quick read files)
+# quick read switch and version label (for making quick read files)
 quick_read <- TRUE
 version_label <- "tellus_v1.2" 
+
+# do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
+verbose_read <- TRUE
 
 # do publication plots
 doPublicationPlots <- FALSE
@@ -133,8 +136,7 @@ stats_lat <- -20
 
 ```
 
-------
-
+***
 
 
 # Global Carbon Project Net Biome Poductivity
@@ -181,6 +183,7 @@ if(do_GCP_NBP){
                                       last.year = last_GCP_GUESS_year,
                                       spatial.aggregate.method = "w.sum",
                                       spatial.extent.id = "Global",
+                                      verbose = verbose_read,
                                       quick.read = quick_read,
                                       quick.read.file = paste("cflux", version_label, sep = "_") 
       )
@@ -228,9 +231,10 @@ if(do_GCP_NBP){
 }
 
 ```
+
 <a href="#top">Back to top</a>
 
-------
+***
 
 # PNV Biomes
 
@@ -283,6 +287,7 @@ if(do_Biomes){
                                                              first.year = this_dataset$first_year,
                                                              last.year = this_dataset$last_year,
                                                              year.aggregate.method = "mean",
+                                                             verbose = verbose_read,
                                                              quick.read = FALSE,
                                                              quick.read.file = paste(this_benchmark$guess_var, version_label, sep = "_"))
     )
@@ -345,7 +350,7 @@ if(do_Biomes){
     suppressWarnings(plot(biome_plot))
   }
   
- 
+  
   
 } # if do_Global_Biomes
 ```
@@ -353,8 +358,7 @@ if(do_Biomes){
 
 <a href="#top">Back to top</a>
 
-------
-
+***
 
 # GOSIF Gross Primary Productivity
 
@@ -382,7 +386,8 @@ if(do_global_GPP){
   } else {
     GPP_data_Fields[[GOSIF_GPP_Source@name]] <- getField(source = GOSIF_GPP_Source,
                                                          quant = "mgpp",
-                                                         file.name = GOSIF_GPP_monthly_file.name)
+                                                         file.name = GOSIF_GPP_monthly_file.name,
+                                                         verbose = verbose_read)
   }
   
   
@@ -475,6 +480,7 @@ if(do_global_GPP){
                                           this_benchmark@guess_var,
                                           first.year = this_benchmark@first.year,
                                           last.year = this_benchmark@last.year,
+                                          verbose = verbose_read,
                                           quick.read = quick_read,
                                           quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
         )
@@ -527,24 +533,24 @@ if(do_global_GPP){
 if(do_global_GPP & doMapPlots){  
   
   # plot all absolute values together
-    GPP_abs_values_plot <- plotSpatial(all_GPP_Maps, 
-                                       ncol = num_cols, 
-                                       legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
-                                       map.overlay = map_overlay, 
-                                       title = "Absolute GPP values",
-                                       subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
-    
-    # add the total GPP to the plots
-    total_label_df <- data.frame()
-    for(this_panel in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
-                                                                      list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
-                                                                           Facet = this_panel, 
-                                                                           x = stats_lon, y = stats_lat),
-                                                                      stringsAsFactors = FALSE)
-    total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_GPP_totals))
-    GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
-    suppressWarnings(print(GPP_abs_values_plot))
-    
+  GPP_abs_values_plot <- plotSpatial(all_GPP_Maps, 
+                                     ncol = num_cols, 
+                                     legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
+                                     map.overlay = map_overlay, 
+                                     title = "Absolute GPP values",
+                                     subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+  
+  # add the total GPP to the plots
+  total_label_df <- data.frame()
+  for(this_panel in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
+                                                                    list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
+                                                                         Facet = this_panel, 
+                                                                         x = stats_lon, y = stats_lat),
+                                                                    stringsAsFactors = FALSE)
+  total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_GPP_totals))
+  GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
+  suppressWarnings(print(GPP_abs_values_plot))
+  
 }
 ```
 
@@ -552,34 +558,34 @@ if(do_global_GPP & doMapPlots){
 
 ```{r}
 if(do_global_GPP & doMapPlots){  
- 
-    GPP_diff_values_plot <- plotSpatialComparison(all_GPP_comparisons[["Values"]], 
-                                                  ncol = num_cols, 
-                                                  legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
-                                                  map.overlay = map_overlay, 
-                                                  title = "GPP biases", 
-                                                  facet.order = names(all_GPP_comparisons[["Values"]]),
-                                                  subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
-    
-    # extract metric scores and add to the panels
-    lat_offset = 0
-    for(this_metric in this_benchmark@metrics) {
-      metric_label_df <- data.frame()
-      for(comparison_name  in names(all_GPP_comparisons[["Values"]])) {
-        metric_label_df <- rbind(metric_label_df,
-                                 list(label = paste(this_metric, "=", round(all_GPP_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
-                                      Facet = comparison_name, 
-                                      x = stats_lon, y = stats_lat - lat_offset),
-                                 stringsAsFactors = FALSE)  
-      }
-      metric_label_df$Facet <- factor(metric_label_df$Facet, levels = names(all_GPP_comparisons[["Values"]]))
-      GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
-      lat_offset <- lat_offset + 10  
+  
+  GPP_diff_values_plot <- plotSpatialComparison(all_GPP_comparisons[["Values"]], 
+                                                ncol = num_cols, 
+                                                legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
+                                                map.overlay = map_overlay, 
+                                                title = "GPP biases", 
+                                                facet.order = names(all_GPP_comparisons[["Values"]]),
+                                                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
+  
+  # extract metric scores and add to the panels
+  lat_offset = 0
+  for(this_metric in this_benchmark@metrics) {
+    metric_label_df <- data.frame()
+    for(comparison_name  in names(all_GPP_comparisons[["Values"]])) {
+      metric_label_df <- rbind(metric_label_df,
+                               list(label = paste(this_metric, "=", round(all_GPP_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
+                                    Facet = comparison_name, 
+                                    x = stats_lon, y = stats_lat - lat_offset),
+                               stringsAsFactors = FALSE)  
     }
-    
-    suppressWarnings(print(GPP_diff_values_plot))
-    
-
+    metric_label_df$Facet <- factor(metric_label_df$Facet, levels = names(all_GPP_comparisons[["Values"]]))
+    GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 3)
+    lat_offset <- lat_offset + 10  
+  }
+  
+  suppressWarnings(print(GPP_diff_values_plot))
+  
+  
 }
 ```
 
@@ -591,18 +597,18 @@ if(do_global_GPP & doMapPlots){
 ```{r}
 if(do_global_GPP & doMapPlots) {
   
-    suppressWarnings( print(
-      plotSpatial(all_GPP_Trends, 
-                  layers = "Trend", 
-                  ncol = num_cols, 
-                  cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
-                  limits = c(-0.2,0.2),
-                  drop.cuts = FALSE,
-                  title = "Trend in GPP", 
-                  legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
-                  map.overlay = map_overlay, 
-                  subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
- 
+  suppressWarnings( print(
+    plotSpatial(all_GPP_Trends, 
+                layers = "Trend", 
+                ncol = num_cols, 
+                cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                limits = c(-0.2,0.2),
+                drop.cuts = FALSE,
+                title = "Trend in GPP", 
+                legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
+                map.overlay = map_overlay, 
+                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
+  
 }
 ```
 
@@ -713,10 +719,11 @@ if(do_global_GPP & doMapPlots) {
 }
 ```
 
+## {.unlisted .unnumbered}
 
 <a href="#top">Back to top</a>
 
-------
+***
 
 # MODIS Leaf Area Index
 
@@ -743,7 +750,8 @@ if(do_global_LAI){
   } else {
     LAI_data_Fields[[MODIS_LAI_Source@name]] <- getField(source = MODIS_LAI_Source,
                                                          quant = "mlai",
-                                                         file.name = MODIS_LAI_monthly_file.name)
+                                                         file.name = MODIS_LAI_monthly_file.name,
+                                                         verbose = verbose_read)
   }
   
   
@@ -843,7 +851,8 @@ if(do_global_LAI){
           this_simulation_LAI <- getField(source = this_crop_global_Source,
                                           this_benchmark@guess_var,
                                           first.year = this_benchmark@first.year,
-                                          last.year = this_benchmark@last.year,
+                                          last.year = this_benchmark@last.year,  
+                                          verbose = verbose_read,
                                           quick.read = quick_read,
                                           quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
         )
@@ -1077,13 +1086,13 @@ if(do_global_LAI & doMapPlots) {
 }
 ```
 
+## {.unlisted .unnumbered}
 
 <a href="#top">Back to top</a>
 
-------
+***
 
 # Global burnt area 
-
 
 
 ```{r BA data prep, echo=FALSE, out.width = '100%'}
@@ -1110,6 +1119,7 @@ if(do_global_BA){
   } else {
     BA_data_Fields[[GFED4_BA_Source@name]] <- suppressWarnings(getField(source = GFED4_BA_Source,
                                                                         quant = "burned_area_fraction",
+                                                                        verbose = verbose_read,
                                                                         file.name = GFED4_BA_monthly_file.name))
   }
   
@@ -1218,6 +1228,7 @@ if(do_global_BA){
                                          this_benchmark@guess_var,
                                          first.year = this_benchmark@first.year,
                                          last.year = this_benchmark@last.year,
+                                         verbose = verbose_read,
                                          quick.read = quick_read,
                                          quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
         )
@@ -1459,6 +1470,7 @@ if(do_global_BA & doMapPlots) {
 }
 ```
 
+## {.unlisted .unnumbered}
 
 <a href="#top">Back to top</a>
 
@@ -1540,6 +1552,7 @@ if(do_Pan_Biomass){
                                           guess_var,
                                           first.year = dataset_first_year, # TODO +/-3
                                           last.year = dataset_last_year,
+                                          verbose = verbose_read,
                                           quick.read = quick_read,
                                           quick.read.file = paste(guess_var, version_label, sep = "_"))
       )
@@ -1670,6 +1683,7 @@ if(do_Regrowth){
       suppressWarnings(
         this_simulation_regrowth <- getField(source = this_regrowth_Source,
                                              this_benchmark@guess_var,
+                                             verbose = verbose_read,
                                              quick.read = quick_read,
                                              quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
       )
@@ -1718,7 +1732,6 @@ if(do_Regrowth){
 
 
 <a href="#top">Back to top</a>
-
 
 ***
 
@@ -1776,6 +1789,7 @@ if(do_Global_Biomass){
     suppressWarnings(
       this_data_Field <- getField(source = data_Source,
                                   quant = this_benchmark@guess_var,
+                                  verbose = verbose_read,
                                   file.name = liu_biomass$this_data_file_name)
     )
     
@@ -1829,6 +1843,7 @@ if(do_Global_Biomass){
                                first.year = this_dataset$first_year,
                                last.year = this_dataset$last_year,
                                year.aggregate.method = "mean",
+                               verbose = verbose_read,
                                quick.read = quick_read,
                                quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"),
                                layers = this_benchmark@guess_layers)
@@ -2019,6 +2034,8 @@ if(do_Global_Biomass & doMapPlots){
 }
 ```
 
+
+## {.unlisted .unnumbered}
 
 <a href="#top">Back to top</a>
 
