@@ -120,27 +120,24 @@ summary_periods <- list(c(1961, 1990),
                         c(1990, 2000))
 
 
-
-#  **** SPECIAL FOR STEFAN'S RETUNING  ****
+#  **** SPECIAL SUBSETTING FOR STEFAN'S GLOBAL RETUNING  ****
 subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_16_random.csv", package = "DGVMBenchmarks"), header = TRUE, flush = TRUE)
-#  **** END SPECIAL ****
+#  **** END SPECIAL SUBSETTING ****
 
-# Spatial extent 
-# Note that this only applies to some benchmarks - typically the spatially explicit global ones
+# Spatial extent - note that this only applies to some benchmarks - typically the spatially explicit global ones
 # it will be ignored for benchmarks such as the regrowth and Pan forest biomass benchmarks
-spatial_extent <- subset_1600_gridcells # extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) # leave as NULL to use the whole simulation extent
-spatial_extent_id <- "The1600" # "Europe" # "Global"  # set to a string to describe the spatial subset and use "Global" if not cropping area
 
-version_label <- paste(analysis_version, spatial_extent_id, sep = "_")
+# spatial extent (can be a raster:: extent of a a two cloum data.frame of gridcells), set to NULL for no subsetting
+spatial_extent <- subset_1600_gridcells 
+# spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
+# spatial_extent <-  NULL 
+
+# set to a string to describe the spatial subset and use "Global" if not cropping area
+spatial_extent_id <- "The1600"
+# spatial_extent_id <- "Europe" 
+# spatial_extent_id <- "Global" 
 
 
-# The summary table
-summary_col_names <- c("Quantity", "Unit")
-for(this_sim in all_simulation_Sources_list) {
-  summary_col_names <- append(summary_col_names, this_sim@name)
-}
-summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
-summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 
 
 # Standard plot formatting arguments
@@ -151,6 +148,30 @@ stats_lat <- -20
 
 
 ```
+
+
+
+``` {r silent preamble and preparation}
+
+
+# version label for labelling saved data
+version_label <- paste(analysis_version, spatial_extent_id, sep = "_")
+
+# Prepare the (empty) summary table of global numbers
+# make the columns names and types
+summary_col_names <- c("Quantity", "Unit")
+for(this_sim in all_simulation_Sources_list) {
+  summary_col_names <- append(summary_col_names, this_sim@name)
+}
+summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
+summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
+
+# this table is completely empty, will by built benchmark-by-benchmark
+metric_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
+
+
+```
+
 
 ***
 
@@ -181,7 +202,8 @@ if(do_GCP_NBP){
   first_GCP_GUESS_year <- 1959
   last_GCP_GUESS_year <- 2015
   
-  # loop through model runs to be processed
+  # loop through model runs to be processed and store the full data 
+  all_sim_full_NBP <- list()
   for(this_sim_Source in all_simulation_Sources_list) {
     
     # check if file is present (if not don't include this run)
@@ -197,9 +219,6 @@ if(do_GCP_NBP){
                                       "cflux",
                                       first.year = first_GCP_GUESS_year,
                                       last.year = last_GCP_GUESS_year,
-                                      spatial.aggregate.method = "w.sum",
-                                      spatial.extent = spatial_extent,
-                                      spatial.extent.id = spatial_extent_id,
                                       verbose = verbose_read,
                                       quick.read = quick_read,
                                       quick.read.file = paste("cflux", version_label, sep = "_") 
@@ -207,15 +226,20 @@ if(do_GCP_NBP){
       
       if("NEE" %in% names(this_simulation_NBP)) renameLayers(this_simulation_NBP, "NEE", "NBP")
       
-      this_simulation_NBP <- layerOp(x = this_simulation_NBP, operator = "divc", layers = layers(this_simulation_NBP), new.layer = layers(this_simulation_NBP), constant = -1E12)
+      # save for possibly using later
+      all_sim_full_NBP[[this_sim_Source@id]] <- this_simulation_NBP
+      
+      # aggregate with weighted sum and adjust units
+      this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
+      this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "divc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -1E12)
       
       # store the Field in the list of all Fields for plotting later
-      all_NBP_Fields_list[[this_sim_Source@id]] <- this_simulation_NBP
+      all_NBP_Fields_list[[this_sim_Source@id]] <- this_simulation_NBP_agg
       
       # calculate yearly means of whole period
       # supressWarnings is just to stops warnings that there is no spatial or temporal data in the resulting Field
       # (all averaged away to give a single number)
-      this_simulation_NBP_ymean <- suppressWarnings(aggregateYears(this_simulation_NBP, "mean"))
+      this_simulation_NBP_ymean <- suppressWarnings(aggregateYears(this_simulation_NBP_agg, "mean"))
       
       # make a text label for putting the yearly mean on th plot and aa it to the label vector of labels
       all_NBP_labels_vector <- append(all_NBP_labels_vector, paste0(this_simulation_NBP_ymean@source@name, 
@@ -244,7 +268,44 @@ if(do_GCP_NBP){
   NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
   print(NBP_plot)
   
+  # TODO calculate R^2 on this data
   
+  # Calculate area sum based on subset, if the spatial_extent is not NULL
+  if(!is.null(spatial_extent)) {
+    
+    for(this_sim_Source in all_simulation_Sources_list) {
+      
+      # subset and aggregrage the already read data
+      # if the provided spatial yields a valid extent, use the crop function
+      possible.error <- try (extent(spatial_extent), silent=TRUE )
+      # note that data.tables *do* return a valid extent, but we don't want to crop with that here (hence the second condition)
+      if (!inherits(possible.error, "try-error") && !is.data.table(spatial.extent)) {
+        this_simulation_NBP_subset <- crop(x =  all_sim_full_NBP[[this_sim_Source@id]], y = spatial_extent, spatial.extent.id = spatial_extent_id)  
+      }
+      # else check if some gridcells to be selected with getGridcells
+      else if(is.data.frame(spatial_extent) || is.data.table(spatial_extent) || is.numeric(spatial_extent) || class(spatial_extent)[1] == "SpatialPolygonsDataFrame"){
+        this_simulation_NBP_subset <- selectGridcells(x = all_sim_full_NBP[[this_sim_Source@id]], gridcells = spatial_extent, spatial.extent.id = spatial_extent_id)
+      }
+
+      # aggregate with weighted sum and adjust units
+      this_simulation_NBP_subset_agg <- aggregateSpatial(this_simulation_NBP_subset, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
+      print(this_simulation_NBP_subset_agg)
+      
+      this_simulation_NBP_subset_agg <- layerOp(x = this_simulation_NBP_subset_agg, operator = "divc", layers = layers(this_simulation_NBP_subset_agg), new.layer = layers(this_simulation_NBP_subset_agg), constant = -1E12)
+      
+      print(this_simulation_NBP_subset_agg)
+      
+      
+      # temporal comparison
+      
+      
+      
+    } # for each simulation
+    
+  } # if spatial extent is not NULL
+  
+  # calculate the NBP sum of the subset only
+  stop()
 }
 
 ```
@@ -447,7 +508,6 @@ if(do_global_GPP){
     summary_table_lines <- makeSummaryLine(this_benchmark, summary_col_names)
     
     
-    
     ### Lists for storing the appropriate Fields and summary numbers
     all_GPP_Maps <- list()
     all_GPP_Trends <- list()
@@ -545,6 +605,11 @@ if(do_global_GPP){
     # TODO - add the data references
     summary_table <- rbind(summary_table, summary_table_lines)
     
+    # make mini metric table for this benchamrk and append to overall table
+    metric_table <- rbind(metric_table, 
+                          makeMetricTable(benchmark = this_benchmark, 
+                                          all_comparisons_list = all_GPP_comparisons, 
+                                          all_simulations_Sources_list = all_simulation_Sources_list))
     
   } # if data are available
   
@@ -918,6 +983,12 @@ if(do_global_LAI){
     # TODO - add the data references
     names(summary_table_lines) <- names(summary_table)
     summary_table <- rbind(summary_table, summary_table_lines)
+    
+    # make mini metric table for this benchamrk and append to overall table
+    metric_table <- rbind(metric_table, 
+                          makeMetricTable(benchmark = this_benchmark, 
+                                          all_comparisons_list = all_LAI_comparisons, 
+                                          all_simulations_Sources_list = all_simulation_Sources_list))
     
     
   } # if data are available
@@ -1302,6 +1373,12 @@ if(do_global_BA){
     # TODO - add the data references
     names(summary_table_lines) <- names(summary_table)
     summary_table <- rbind(summary_table, summary_table_lines)
+    
+    # make mini metric table for this benchamrk and append to overall table
+    metric_table <- rbind(metric_table, 
+                          makeMetricTable(benchmark = this_benchmark, 
+                                          all_comparisons_list = all_BA_comparisons, 
+                                          all_simulations_Sources_list = all_simulation_Sources_list))
     
     
   } # if data are available
@@ -2006,6 +2083,12 @@ if(do_Global_Biomass){
   names(summary_table_lines) <- names(summary_table)
   summary_table <- rbind(summary_table, summary_table_lines)
   
+  # make mini metric table for this benchamrk and append to overall table
+  metric_table <- rbind(metric_table, 
+                        makeMetricTable(benchmark = this_benchmark, 
+                                        all_comparisons_list = all_Biomass_comparisons, 
+                                        all_simulations_Sources_list = all_simulation_Sources_list))
+  
   
 } # if do_Global_Biomass
 
@@ -2197,6 +2280,27 @@ for(this_sim_Source in all_simulation_Sources_list) {
 
 
 ```
+
+
+## Model-data Agreement Metrics
+
+``` {r Global metrics, echo=FALSE, out.width = '100%', out.height= '150%'}
+
+
+if(nrow(metric_table) > 0) {
+  # colnames(metric_table) <- metric_col_names
+  kable(metric_table) %>% kable_styling(full_width = TRUE)
+}
+
+# save the table in each model run directory
+# loop through model runs to be processed
+for(this_sim_Source in all_simulation_Sources_list) {
+  saveRDS(metric_table, file.path(this_sim_Source@dir, paste0("summary_metric_", version_label, ".RData")))
+}
+
+
+```
+
 
 # Timing
 Total run time:

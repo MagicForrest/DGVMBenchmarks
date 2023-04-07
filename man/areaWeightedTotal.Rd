@@ -4,7 +4,12 @@
 \alias{areaWeightedTotal}
 \title{Calculate area-weighted total}
 \usage{
-areaWeightedTotal(x, area_unit = "m^2")
+areaWeightedTotal(
+  x,
+  area_unit = "m^2",
+  lon_centres = seq(-179.75, 179.75, by = 0.5),
+  lat_centres = seq(-89.75, 89.75, by = 0.5)
+)
 }
 \arguments{
 \item{x}{A spatial Field for which the area-weighted summed flux}
