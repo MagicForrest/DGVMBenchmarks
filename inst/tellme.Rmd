@@ -190,8 +190,24 @@ if(do_GCP_NBP){
   GCP_full_Field_ymean  <- suppressWarnings(aggregateYears(GCP_full_Field, "mean"))
   
   
+  this_benchmark <- new("Benchmark",
+                        id = "GCP_NBP",
+                        name = "GCP NBP",
+                        description = "Global Carbon Project Net Biome Productivity",
+                        simulation = "tellus",
+                        guess_var = "cflux",
+                        guess_layers = "NBP",
+                        unit = "kg m^-2^ y^-1^",
+                        agg.unit = "PgC y^-1^",
+                        datasets = list(GCP_full_Field),
+                        first.year = 1959,
+                        last.year = 2015,
+                        metrics = c("r2"))
+  
+  
   # make a list of all Fields to be compared  (this will also include whatever model runs are available)
-  all_NBP_Fields_list <- list("GCP" = GCP_full_Field)
+  all_NBP_Fields_list <- list()
+  all_NBP_Fields_list[[GCP_full_Field@source@name]] <- GCP_full_Field
   # and the vector of labels to eventual put on the plot
   all_NBP_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NBP"]], 3), " PgC/year"))
   
@@ -216,9 +232,9 @@ if(do_GCP_NBP){
       
       # read the data and process it into global sums
       this_simulation_NBP <- getField(source = this_crop_global_Source,
-                                      "cflux",
-                                      first.year = first_GCP_GUESS_year,
-                                      last.year = last_GCP_GUESS_year,
+                                      this_benchmark@guess_var,
+                                      first.year = this_benchmark@first.year,
+                                      last.year = this_benchmark@last.year,
                                       verbose = verbose_read,
                                       quick.read = quick_read,
                                       quick.read.file = paste("cflux", version_label, sep = "_") 
@@ -227,14 +243,14 @@ if(do_GCP_NBP){
       if("NEE" %in% names(this_simulation_NBP)) renameLayers(this_simulation_NBP, "NEE", "NBP")
       
       # save for possibly using later
-      all_sim_full_NBP[[this_sim_Source@id]] <- this_simulation_NBP
+      all_sim_full_NBP[[this_sim_Source@name]] <- this_simulation_NBP
       
       # aggregate with weighted sum and adjust units
       this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
       this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "divc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -1E12)
       
       # store the Field in the list of all Fields for plotting later
-      all_NBP_Fields_list[[this_sim_Source@id]] <- this_simulation_NBP_agg
+      all_NBP_Fields_list[[this_sim_Source@name]] <- this_simulation_NBP_agg
       
       # calculate yearly means of whole period
       # supressWarnings is just to stops warnings that there is no spatial or temporal data in the resulting Field
@@ -268,8 +284,17 @@ if(do_GCP_NBP){
   NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
   print(NBP_plot)
   
-  # TODO calculate R^2 on this data
+  # calculate R^2 on this data
+  all_NBP_temporal_comparisons <- fullTemporalComparison(benchmark = this_benchmark, 
+                                                     all_ts = all_NBP_Fields_list, 
+                                                     new_model = params$new_name,
+                                                     old_model = params$old_name) 
   
+ metric_table <- rbind(metric_table, 
+                          makeMetricTable(benchmark = this_benchmark, 
+                                          all_comparisons_list = all_NBP_temporal_comparisons, 
+                                          all_simulations_Sources_list = all_simulation_Sources_list))
+
   # Calculate area sum based on subset, if the spatial_extent is not NULL
   if(!is.null(spatial_extent)) {
     
@@ -280,32 +305,25 @@ if(do_GCP_NBP){
       possible.error <- try (extent(spatial_extent), silent=TRUE )
       # note that data.tables *do* return a valid extent, but we don't want to crop with that here (hence the second condition)
       if (!inherits(possible.error, "try-error") && !is.data.table(spatial.extent)) {
-        this_simulation_NBP_subset <- crop(x =  all_sim_full_NBP[[this_sim_Source@id]], y = spatial_extent, spatial.extent.id = spatial_extent_id)  
+        this_simulation_NBP_subset <- crop(x =  all_sim_full_NBP[[this_sim_Source@name]], y = spatial_extent, spatial.extent.id = spatial_extent_id)  
       }
       # else check if some gridcells to be selected with getGridcells
       else if(is.data.frame(spatial_extent) || is.data.table(spatial_extent) || is.numeric(spatial_extent) || class(spatial_extent)[1] == "SpatialPolygonsDataFrame"){
-        this_simulation_NBP_subset <- selectGridcells(x = all_sim_full_NBP[[this_sim_Source@id]], gridcells = spatial_extent, spatial.extent.id = spatial_extent_id)
+        this_simulation_NBP_subset <- selectGridcells(x = all_sim_full_NBP[[this_sim_Source@name]], gridcells = spatial_extent, spatial.extent.id = spatial_extent_id)
       }
-
+      
       # aggregate with weighted sum and adjust units
       this_simulation_NBP_subset_agg <- aggregateSpatial(this_simulation_NBP_subset, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
-      print(this_simulation_NBP_subset_agg)
-      
       this_simulation_NBP_subset_agg <- layerOp(x = this_simulation_NBP_subset_agg, operator = "divc", layers = layers(this_simulation_NBP_subset_agg), new.layer = layers(this_simulation_NBP_subset_agg), constant = -1E12)
       
-      print(this_simulation_NBP_subset_agg)
       
-      
-      # temporal comparison
-      
+      # TODO put into table
       
       
     } # for each simulation
     
   } # if spatial extent is not NULL
   
-  # calculate the NBP sum of the subset only
-  stop()
 }
 
 ```
@@ -2289,6 +2307,11 @@ for(this_sim_Source in all_simulation_Sources_list) {
 
 if(nrow(metric_table) > 0) {
   # colnames(metric_table) <- metric_col_names
+  
+  # substitute "r2" for something prettier in the "Metric" column
+  metric_table$Metric <- gsub(pattern = "r2", replacement = "R^2^", metric_table$Metric)
+  
+  # print the table
   kable(metric_table) %>% kable_styling(full_width = TRUE)
 }
 
