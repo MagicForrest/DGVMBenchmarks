@@ -214,9 +214,6 @@ if(do_GCP_NBP){
   
   ### Read the LPJ-GUESS data
   
-  # for now hard code the first and last years
-  first_GCP_GUESS_year <- 1959
-  last_GCP_GUESS_year <- 2015
   
   # loop through model runs to be processed and store the full data 
   all_sim_full_NBP <- list()
@@ -247,7 +244,7 @@ if(do_GCP_NBP){
       
       # aggregate with weighted sum and adjust units
       this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
-      this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "divc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -1E12)
+      this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "mulc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -KG_TO_PG)
       
       # store the Field in the list of all Fields for plotting later
       all_NBP_Fields_list[[this_sim_Source@name]] <- this_simulation_NBP_agg
@@ -314,7 +311,7 @@ if(do_GCP_NBP){
       
       # aggregate with weighted sum and adjust units
       this_simulation_NBP_subset_agg <- aggregateSpatial(this_simulation_NBP_subset, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
-      this_simulation_NBP_subset_agg <- layerOp(x = this_simulation_NBP_subset_agg, operator = "divc", layers = layers(this_simulation_NBP_subset_agg), new.layer = layers(this_simulation_NBP_subset_agg), constant = -1E12)
+      this_simulation_NBP_subset_agg <- layerOp(x = this_simulation_NBP_subset_agg, operator = "mulc", layers = layers(this_simulation_NBP_subset_agg), new.layer = layers(this_simulation_NBP_subset_agg), constant = -KG_TO_PG)
       
       
       # TODO put into table
@@ -2274,6 +2271,25 @@ if(nrow(this_complete_df) > 0) {
   kable(this_complete_df) %>% kable_styling(full_width = TRUE)
 }
 ```
+
+
+### Soil N fluxes (Tg/y)
+
+``` {r Soil N fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
+this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                      var = "soil_nflux", 
+                                      periods = summary_periods, 
+                                      new_sim =  params$new_name, 
+                                      old_sim = params$old_name, 
+                                      spatial_extent = spatial_extent,
+                                      spatial_extent_id = spatial_extent_id,
+                                      area_unit = "ha",
+                                      unit_multiplier = KG_TO_TG)
+if(nrow(this_complete_df) > 0) {
+  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+}
+```
+
 
 
 
