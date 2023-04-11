@@ -9,7 +9,7 @@ modelSummaryTable <- function(simulations,
                               spatial_extent_id,
                               area_unit = "m^2",
                               unit_multiplier = 1,
-                              sigfigs = 4,
+                              sigfigs = 3,
                               version_label = character(0)){
   
   

@@ -7,7 +7,7 @@ output:
   toc: true
 params:
   new_directory:
-    value: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
+    value: "/home/mforrest/GuessRuns/Tellus_dev/output11690tls-3"
   new_name:
     value: "New Run"
   old_directory:
@@ -74,7 +74,7 @@ tic()
 #### DEFINE LPJ-GUESS RUNS ####
 # NOTE:
 #  The paths defined in the "dir" argument only point to the overall benchmark directory.  
-#  To actually access one of the benchmark runs (ie crop_global) you should copy these Source objects 
+#  To actually access one of the benchmark runs (ie "tellus" or "crop_global") you should copy these Source objects 
 #  and manually append the benchmark directory name to the "dir".  See the GCP code block for an example.
 
 # new
@@ -96,24 +96,24 @@ quick_read <- TRUE
 analysis_version <- "tellus_v1.2" 
 
 # do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
-verbose_read <- TRUE
+verbose_read <- FALSE
 
 # do publication plots
 doPublicationPlots <- FALSE
 
 # plot maps (turn off to save time)
-doMapPlots <- TRUE
+doMapPlots <- FALSE
 
 # switches for which benchmarks to do
-do_Global_Table <- TRUE
+do_Global_Summary_Tables <- FALSE
 do_GCP_NBP <- TRUE
-do_Biomes <- TRUE
+do_Biomes <- FALSE
 do_global_GPP <- TRUE
 do_global_LAI <- TRUE
 do_global_BA <- TRUE
 do_Global_Biomass <- TRUE
-do_Pan_Biomass <- TRUE
-do_Regrowth <- TRUE
+do_Pan_Biomass <- FALSE
+do_Regrowth <- FALSE
 
 # Summary periods
 summary_periods <- list(c(1961, 1990),
@@ -130,12 +130,12 @@ subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist
 # spatial extent (can be a raster:: extent of a a two cloum data.frame of gridcells), set to NULL for no subsetting
 spatial_extent <- subset_1600_gridcells 
 # spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
-# spatial_extent <-  NULL 
+#spatial_extent <-  NULL 
 
 # set to a string to describe the spatial subset and use "Global" if not cropping area
 spatial_extent_id <- "The1600"
 # spatial_extent_id <- "Europe" 
-# spatial_extent_id <- "Global" 
+#spatial_extent_id <- "Global" 
 
 
 
@@ -166,7 +166,7 @@ for(this_sim in all_simulation_Sources_list) {
 summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
 summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 
-# this table is completely empty, will by built benchmark-by-benchmark
+# this table is completely empty, it will by built benchmark by-benchmark
 metric_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 
 
@@ -185,6 +185,7 @@ Potential intro text about GCP, links to online description of the data, what to
 
 if(do_GCP_NBP){
   
+  
   ### Read the data and calculate the annual mean over the whole period
   GCP_full_Field <- read_GCP()
   GCP_full_Field_ymean  <- suppressWarnings(aggregateYears(GCP_full_Field, "mean"))
@@ -193,7 +194,7 @@ if(do_GCP_NBP){
   this_benchmark <- new("Benchmark",
                         id = "GCP_NBP",
                         name = "GCP NBP",
-                        description = "Global Carbon Project Net Biome Productivity",
+                        description = "Global NBP",
                         simulation = "tellus",
                         guess_var = "cflux",
                         guess_layers = "NBP",
@@ -207,9 +208,15 @@ if(do_GCP_NBP){
   
   # make a list of all Fields to be compared  (this will also include whatever model runs are available)
   all_NBP_Fields_list <- list()
+  all_NBP_global_sums <- list()
   all_NBP_Fields_list[[GCP_full_Field@source@name]] <- GCP_full_Field
   # and the vector of labels to eventual put on the plot
   all_NBP_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NBP"]], 3), " PgC/year"))
+  
+  
+  # make the line for the global summary table
+  summary_NBP_line <- makeSummaryLine(this_benchmark, summary_col_names)
+  summary_NBP_line$Data <- signif(GCP_full_Field_ymean@data[["NBP"]], 3)
   
   
   ### Read the LPJ-GUESS data
@@ -220,15 +227,15 @@ if(do_GCP_NBP){
   for(this_sim_Source in all_simulation_Sources_list) {
     
     # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir, "crop_global")
+    this_benchmark_run_dir <- file.path(this_sim_Source@dir, this_benchmark@simulation)
     if(file.exists(file.path(this_benchmark_run_dir, "cflux.out")) || file.exists(file.path(this_benchmark_run_dir, "cflux.out.gz"))) {
       
-      # make local sources pointing to the crop_global directory
-      this_crop_global_Source <- this_sim_Source
-      this_crop_global_Source@dir <- this_benchmark_run_dir
+      # make local sources pointing to the simulation subrun directory
+      this_subrun_Source <- this_sim_Source
+      this_subrun_Source@dir <- this_benchmark_run_dir
       
       # read the data and process it into global sums
-      this_simulation_NBP <- getField(source = this_crop_global_Source,
+      this_simulation_NBP <- getField(source = this_subrun_Source,
                                       this_benchmark@guess_var,
                                       first.year = this_benchmark@first.year,
                                       last.year = this_benchmark@last.year,
@@ -259,6 +266,9 @@ if(do_GCP_NBP){
                                                                     ": ", 
                                                                     signif(this_simulation_NBP_ymean@data[["NBP"]],3), 
                                                                     " PgC/year"))
+      
+      # save this to the summary table, but it *may* be over-written later is spatial subsetting was selected
+      summary_NBP_line[[this_sim_Source@name]] <- signif(this_simulation_NBP_ymean@data[["NBP"]], 3) 
     } 
     
   }
@@ -275,7 +285,7 @@ if(do_GCP_NBP){
                            sizes = 1)
   
   # make a simple data.frame to put numbers on the plot, and then add it to the plot
-  global.numbers.df <- data.frame(x= rep(as.Date(paste(first_GCP_GUESS_year), "%Y")), 
+  global.numbers.df <- data.frame(x= rep(as.Date(paste(this_benchmark@first.year), "%Y")), 
                                   y = c(6, 5, 4), 
                                   label = all_NBP_labels_vector)
   NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
@@ -283,15 +293,15 @@ if(do_GCP_NBP){
   
   # calculate R^2 on this data
   all_NBP_temporal_comparisons <- fullTemporalComparison(benchmark = this_benchmark, 
-                                                     all_ts = all_NBP_Fields_list, 
-                                                     new_model = params$new_name,
-                                                     old_model = params$old_name) 
+                                                         all_ts = all_NBP_Fields_list, 
+                                                         new_model = params$new_name,
+                                                         old_model = params$old_name) 
   
- metric_table <- rbind(metric_table, 
-                          makeMetricTable(benchmark = this_benchmark, 
-                                          all_comparisons_list = all_NBP_temporal_comparisons, 
-                                          all_simulations_Sources_list = all_simulation_Sources_list))
-
+  metric_table <- rbind(metric_table, 
+                        makeMetricTable(benchmark = this_benchmark, 
+                                        all_comparisons_list = all_NBP_temporal_comparisons, 
+                                        all_simulations_Sources_list = all_simulation_Sources_list))
+  
   # Calculate area sum based on subset, if the spatial_extent is not NULL
   if(!is.null(spatial_extent)) {
     
@@ -310,17 +320,18 @@ if(do_GCP_NBP){
       }
       
       # aggregate with weighted sum and adjust units
-      this_simulation_NBP_subset_agg <- aggregateSpatial(this_simulation_NBP_subset, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
-      this_simulation_NBP_subset_agg <- layerOp(x = this_simulation_NBP_subset_agg, operator = "mulc", layers = layers(this_simulation_NBP_subset_agg), new.layer = layers(this_simulation_NBP_subset_agg), constant = -KG_TO_PG)
-      
-      
-      # TODO put into table
-      
+      this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP_subset, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
+      this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "mulc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -KG_TO_PG)
+      summary_NBP_line[[this_sim_Source@name]] <- signif(suppressWarnings(aggregateYears(this_simulation_NBP_agg,"mean"))@data[["NBP"]], 3)
       
     } # for each simulation
     
   } # if spatial extent is not NULL
   
+  
+  # save the summary line to the table
+  summary_table <- rbind(summary_table, summary_NBP_line)
+  names(summary_table) <- summary_col_names
 }
 
 ```
@@ -568,13 +579,13 @@ if(do_global_GPP){
       this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
       if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
         
-        # make local sources pointing to the crop_global directory
-        this_crop_global_Source <- this_sim_Source
-        this_crop_global_Source@dir <- this_benchmark_run_dir
+        # make local sources pointing to the simulation subrun directory
+        this_subrun_Source <- this_sim_Source
+        this_subrun_Source@dir <- this_benchmark_run_dir
         
         # read the full data and
         suppressWarnings(
-          this_simulation_GPP <- getField(source = this_crop_global_Source,
+          this_simulation_GPP <- getField(source = this_subrun_Source,
                                           this_benchmark@guess_var,
                                           spatial.extent = spatial_extent,
                                           spatial.extent.id = spatial_extent_id,
@@ -617,7 +628,6 @@ if(do_global_GPP){
     all_GPP_comparisons <- fullSpatialComparison(this_benchmark, all_GPP_Maps, all_GPP_Trends, all_GPP_Seasonal, params$new_name, params$old_name)
     
     # save the summary table line 
-    # TODO - add the data references
     summary_table <- rbind(summary_table, summary_table_lines)
     
     # make mini metric table for this benchamrk and append to overall table
@@ -949,13 +959,13 @@ if(do_global_LAI){
       this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
       if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
         
-        # make local sources pointing to the crop_global directory
-        this_crop_global_Source <- this_sim_Source
-        this_crop_global_Source@dir <- this_benchmark_run_dir
+        # make local sources pointing to the simulation subrun directory
+        this_subrun_Source <- this_sim_Source
+        this_subrun_Source@dir <- this_benchmark_run_dir
         
         # read the full data and
         suppressWarnings(
-          this_simulation_LAI <- getField(source = this_crop_global_Source,
+          this_simulation_LAI <- getField(source = this_subrun_Source,
                                           this_benchmark@guess_var,
                                           spatial.extent = spatial_extent,
                                           spatial.extent.id = spatial_extent_id,
@@ -1219,7 +1229,7 @@ if(do_global_BA){
   # Currently only got one burnt area dataset, but code as a list of data source for future flexibility
   BA_data_Fields <- list()
   
-  #### MODIS LAI SETTINGS AND DATA ####
+  #### GFED4 BA SETTINGS AND DATA ####
   
   GFED4_BA_monthly_dir <- "monthly_ba"
   GFED4_BA_monthly_file.name <- "GFED4.0_monthly_1996-2016.nc"
@@ -1261,8 +1271,8 @@ if(do_global_BA){
                           name = "Global Burnt Area",
                           description = "Global burnt area",
                           simulation = "tellus",
-                          guess_var = "mburned_area",
-                          guess_layers = "mburned_area",
+                          guess_var = "monthly_burned_area",
+                          guess_layers = "monthly_burned_area",
                           unit = "fraction",
                           agg.unit = "Mha",
                           datasets = BA_data_Fields,
@@ -1335,13 +1345,13 @@ if(do_global_BA){
       this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
       if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
         
-        # make local sources pointing to the crop_global directory
-        this_crop_global_Source <- this_sim_Source
-        this_crop_global_Source@dir <- this_benchmark_run_dir
+        # make local sources pointing to the simulation subrun directory
+        this_subrun_Source <- this_sim_Source
+        this_subrun_Source@dir <- this_benchmark_run_dir
         
         # read the full data and
         suppressWarnings(
-          this_simulation_BA <- getField(source = this_crop_global_Source,
+          this_simulation_BA <- getField(source = this_subrun_Source,
                                          this_benchmark@guess_var,
                                          spatial.extent = spatial_extent,
                                          spatial.extent.id = spatial_extent_id,
@@ -1664,16 +1674,16 @@ if(do_Pan_Biomass){
   for(this_sim_Source in all_simulation_Sources_list) {
     
     # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir, "crop_global")
+    this_benchmark_run_dir <- file.path(this_sim_Source@dir, this_benchmark@simulation)
     if(file.exists(file.path(this_benchmark_run_dir, paste0(guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(guess_var, ".out.gz")))) {
       
-      # make local sources pointing to the crop_global directory
-      this_crop_global_Source <- this_sim_Source
-      this_crop_global_Source@dir <- this_benchmark_run_dir
+      # make local sources pointing to the simulation subrun directory
+      this_subrun_Source <- this_sim_Source
+      this_subrun_Source@dir <- this_benchmark_run_dir
       
       # read the full data and
       suppressWarnings(
-        this_simulation_Field <- getField(source = this_crop_global_Source,
+        this_simulation_Field <- getField(source = this_subrun_Source,
                                           guess_var,
                                           first.year = dataset_first_year, # TODO +/-3
                                           last.year = dataset_last_year,
@@ -1687,7 +1697,7 @@ if(do_Pan_Biomass){
       layerOp(this_simulation_Field, "+", c("VegC", "LitterC", "SoilC"), "Total")
       
       # save
-      all_Model_Biomass_Fields[[this_crop_global_Source@name]]  <- this_simulation_Field
+      all_Model_Biomass_Fields[[this_subrun_Source@name]]  <- this_simulation_Field
       
       # remove to save memory
       rm(this_simulation_Field)
@@ -1800,7 +1810,7 @@ if(do_Regrowth){
     this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
     if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
       
-      # make local sources pointing to the crop_global directory
+      # make local sources pointing to the simulation subrun directory
       this_regrowth_Source <- this_sim_Source
       this_regrowth_Source@dir <- this_benchmark_run_dir
       
@@ -2186,17 +2196,19 @@ if(do_Global_Biomass & doMapPlots){
 ###  C Fluxes (Pg C/y)
 
 ``` {r C fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
-this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
-                                      var = "cflux", 
-                                      periods = summary_periods, 
-                                      new_sim =  params$new_name, 
-                                      old_sim = params$old_name, 
-                                      spatial_extent = spatial_extent,
-                                      spatial_extent_id = spatial_extent_id,
-                                      area_unit = "m^2",
-                                      unit_multiplier = KG_TO_PG)
-if(nrow(this_complete_df) > 0) {
-  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+if(do_Global_Summary_Tables) {
+  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                        var = "cflux", 
+                                        periods = summary_periods, 
+                                        new_sim =  params$new_name, 
+                                        old_sim = params$old_name, 
+                                        spatial_extent = spatial_extent,
+                                        spatial_extent_id = spatial_extent_id,
+                                        area_unit = "m^2",
+                                        unit_multiplier = KG_TO_PG)
+  if(nrow(this_complete_df) > 0) {
+    kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+  }
 }
 ```
 
@@ -2205,17 +2217,19 @@ if(nrow(this_complete_df) > 0) {
 ###  N Fluxes (Tg N/y)
 
 ``` {r N fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
-this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
-                                      var = "nflux", 
-                                      periods = summary_periods, 
-                                      new_sim =  params$new_name, 
-                                      old_sim = params$old_name, 
-                                      spatial_extent = spatial_extent,
-                                      spatial_extent_id = spatial_extent_id,
-                                      area_unit = "ha",
-                                      unit_multiplier = KG_TO_TG)
-if(nrow(this_complete_df) > 0) {
-  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+if(do_Global_Summary_Tables) {
+  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                        var = "nflux", 
+                                        periods = summary_periods, 
+                                        new_sim =  params$new_name, 
+                                        old_sim = params$old_name, 
+                                        spatial_extent = spatial_extent,
+                                        spatial_extent_id = spatial_extent_id,
+                                        area_unit = "ha",
+                                        unit_multiplier = KG_TO_TG)
+  if(nrow(this_complete_df) > 0) {
+    kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+  }
 }
 ```
 
@@ -2223,34 +2237,38 @@ if(nrow(this_complete_df) > 0) {
 ###  C Pools (Pg C)
 
 ``` {r C pools table, echo=FALSE, out.width = '100%', out.height= '150%'}
-this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
-                                      var = "cpool", 
-                                      periods = summary_periods, 
-                                      new_sim =  params$new_name, 
-                                      old_sim = params$old_name, 
-                                      spatial_extent = spatial_extent,
-                                      spatial_extent_id = spatial_extent_id,
-                                      area_unit = "m^2",
-                                      unit_multiplier = KG_TO_PG)
-if(nrow(this_complete_df) > 0) {
-  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+if(do_Global_Summary_Tables) {
+  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                        var = "cpool", 
+                                        periods = summary_periods, 
+                                        new_sim =  params$new_name, 
+                                        old_sim = params$old_name, 
+                                        spatial_extent = spatial_extent,
+                                        spatial_extent_id = spatial_extent_id,
+                                        area_unit = "m^2",
+                                        unit_multiplier = KG_TO_PG)
+  if(nrow(this_complete_df) > 0) {
+    kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+  }
 }
 ```
 
 ###  N Pools (Pg N)
 
 ``` {r N pools table, echo=FALSE, out.width = '100%', out.height= '150%'}
-this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
-                                      var = "npool", 
-                                      periods = summary_periods, 
-                                      new_sim =  params$new_name, 
-                                      old_sim = params$old_name, 
-                                      spatial_extent = spatial_extent,
-                                      spatial_extent_id = spatial_extent_id,
-                                      area_unit = "m^2",
-                                      unit_multiplier = KG_TO_PG)
-if(nrow(this_complete_df) > 0) {
-  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+if(do_Global_Summary_Tables) {
+  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                        var = "npool", 
+                                        periods = summary_periods, 
+                                        new_sim =  params$new_name, 
+                                        old_sim = params$old_name, 
+                                        spatial_extent = spatial_extent,
+                                        spatial_extent_id = spatial_extent_id,
+                                        area_unit = "m^2",
+                                        unit_multiplier = KG_TO_PG)
+  if(nrow(this_complete_df) > 0) {
+    kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+  }
 }
 ```
 
@@ -2258,38 +2276,21 @@ if(nrow(this_complete_df) > 0) {
 ### Run-off (km^3^ H~2~O/y)
 
 ``` {r Total runoff table, echo=FALSE, out.width = '100%', out.height= '150%'}
-this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
-                                      var = "tot_runoff", 
-                                      periods = summary_periods, 
-                                      new_sim =  params$new_name, 
-                                      old_sim = params$old_name, 
-                                      spatial_extent = spatial_extent,
-                                      spatial_extent_id = spatial_extent_id,
-                                      area_unit = "m^2",
-                                      unit_multiplier = KG_TO_PG)
-if(nrow(this_complete_df) > 0) {
-  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+if(do_Global_Summary_Tables) {
+  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                        var = "tot_runoff", 
+                                        periods = summary_periods, 
+                                        new_sim =  params$new_name, 
+                                        old_sim = params$old_name, 
+                                        spatial_extent = spatial_extent,
+                                        spatial_extent_id = spatial_extent_id,
+                                        area_unit = "m^2",
+                                        unit_multiplier = KG_TO_PG)
+  if(nrow(this_complete_df) > 0) {
+    kable(this_complete_df) %>% kable_styling(full_width = TRUE)
+  }
 }
 ```
-
-
-### Soil N fluxes (Tg/y)
-
-``` {r Soil N fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
-this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
-                                      var = "soil_nflux", 
-                                      periods = summary_periods, 
-                                      new_sim =  params$new_name, 
-                                      old_sim = params$old_name, 
-                                      spatial_extent = spatial_extent,
-                                      spatial_extent_id = spatial_extent_id,
-                                      area_unit = "ha",
-                                      unit_multiplier = KG_TO_TG)
-if(nrow(this_complete_df) > 0) {
-  kable(this_complete_df) %>% kable_styling(full_width = TRUE)
-}
-```
-
 
 
 
@@ -2299,6 +2300,32 @@ TABLE FORMATTING: see here: [https://rmarkdown.rstudio.com/lesson-7.html](https:
 
 
 ``` {r Global summary, echo=FALSE, out.width = '100%', out.height= '150%'}
+
+
+# get the global soil N2O flux for the summary table
+# for 2000-2010 to compare to the IPCC AR5 values
+this_soil_N2O_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+                                      var = "soil_nflux", 
+                                      periods = list(c(2000,2010)), 
+                                      new_sim =  params$new_name, 
+                                      old_sim = params$old_name, 
+                                      spatial_extent = spatial_extent,
+                                      spatial_extent_id = spatial_extent_id,
+                                      area_unit = "ha",
+                                      unit_multiplier = KG_TO_TG)
+
+summary_N2O_line <- as.list(rep("-", length(summary_col_names)))
+names(summary_N2O_line) <- summary_col_names
+summary_N2O_line$Dataset <- "IPCC AR5"
+summary_N2O_line$Quantity <- "Soil N~2~0 Emissions"
+summary_N2O_line$Unit <- "Tg N y^-1^"
+summary_N2O_line$Data <- 11 # uncertainty +/- 3 could be incorporated somehow
+for(this_sim in all_simulation_Sources_list) {
+  summary_N2O_line[[this_sim@name]] <- this_soil_N2O_df[which(this_soil_N2O_df$Source == this_sim@name), "N2O"]
+}
+
+names(summary_N2O_line) <- names(summary_table)
+summary_table <- rbind(summary_table, summary_N2O_line)
 
 
 if(nrow(summary_table) > 0) {

@@ -53,7 +53,7 @@ read_GCP <- function(data_file,
   # define the GCP data source
   # note that the "format" and "dir" arguments is arbitrary because we are short-cutting DGVMTools's normal means for reading in data 
   GCP_Source <- defineSource(id = "GCP",
-                             name = "Global Carbon Project",
+                             name = "GCP NBP",
                              dir = input_dir,
                              format = GUESS)
   
