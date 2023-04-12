@@ -102,18 +102,18 @@ verbose_read <- FALSE
 doPublicationPlots <- FALSE
 
 # plot maps (turn off to save time)
-doMapPlots <- FALSE
+doMapPlots <- TRUE
 
 # switches for which benchmarks to do
-do_Global_Summary_Tables <- FALSE
+do_Global_Summary_Tables <- TRUE
 do_GCP_NBP <- TRUE
-do_Biomes <- FALSE
+do_Biomes <- TRUE
 do_global_GPP <- TRUE
 do_global_LAI <- TRUE
 do_global_BA <- TRUE
 do_Global_Biomass <- TRUE
-do_Pan_Biomass <- FALSE
-do_Regrowth <- FALSE
+do_Pan_Biomass <- TRUE
+do_Regrowth <- TRUE
 
 # Summary periods
 summary_periods <- list(c(1961, 1990),
@@ -128,14 +128,14 @@ subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist
 # it will be ignored for benchmarks such as the regrowth and Pan forest biomass benchmarks
 
 # spatial extent (can be a raster:: extent of a a two cloum data.frame of gridcells), set to NULL for no subsetting
-spatial_extent <- subset_1600_gridcells 
+#spatial_extent <- subset_1600_gridcells 
 # spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
-#spatial_extent <-  NULL 
+spatial_extent <-  NULL 
 
 # set to a string to describe the spatial subset and use "Global" if not cropping area
-spatial_extent_id <- "The1600"
+#spatial_extent_id <- "The1600"
 # spatial_extent_id <- "Europe" 
-#spatial_extent_id <- "Global" 
+spatial_extent_id <- "Global" 
 
 
 
@@ -2317,8 +2317,8 @@ this_soil_N2O_df <- modelSummaryTable(simulations = all_simulation_Sources_list,
 summary_N2O_line <- as.list(rep("-", length(summary_col_names)))
 names(summary_N2O_line) <- summary_col_names
 summary_N2O_line$Dataset <- "IPCC AR5"
-summary_N2O_line$Quantity <- "Soil N~2~0 Emissions"
-summary_N2O_line$Unit <- "Tg N y^-1^"
+summary_N2O_line$Quantity <- "Soil N~2~O Emissions"
+summary_N2O_line$Unit <- "TgN y^-1^"
 summary_N2O_line$Data <- 11 # uncertainty +/- 3 could be incorporated somehow
 for(this_sim in all_simulation_Sources_list) {
   summary_N2O_line[[this_sim@name]] <- this_soil_N2O_df[which(this_soil_N2O_df$Source == this_sim@name), "N2O"]
