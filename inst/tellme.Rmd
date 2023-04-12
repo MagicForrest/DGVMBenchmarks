@@ -43,8 +43,12 @@ library(pals)
 library(knitr)
 library(dplyr)
 library(kableExtra)
-
 library(tictoc)
+
+# for "reasons" this helps RMarkdown find the right Helvetica font when rendering from the commandline on some systems 
+library(showtext) 
+showtext_auto()
+
 
 # conversion factors
 KG_TO_PG <- 1/1e+12
