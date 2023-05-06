@@ -3,6 +3,7 @@
 export(FLUXNET)
 export(ICOS)
 export(areaWeightedTotal)
+export(benchmark_GCP)
 export(calcLinearTrend)
 export(fullSpatialComparison)
 export(fullTemporalComparison)

@@ -20,7 +20,77 @@ params:
     value: "/data/mforrest/LandUseLandCover/LUH2_GCP2019/lu_1549_2019_luh2_aggregate_sum2x2_midpoint_nourban_gcp2019_2019_10_22.txt"
 ---
 
+```{r benchmark selection and script parameters, echo=FALSE}
+
+#### Here select the benchmarks to do ####
+do_Global_Summary_Tables <- FALSE
+do_GCP_NBP <- TRUE
+do_Biomes <- FALSE
+do_global_GPP <- FALSE
+do_global_LAI <- FALSE
+do_global_BA <- FALSE
+do_Global_Biomass <- FALSE
+do_Pan_Biomass <- FALSE
+do_Regrowth <- FALSE
+do_FLUXNET <- FALSE
+
+#  **** SPECIAL SUBSETTING FOR STEFAN'S GLOBAL RETUNING  ****
+subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_16_random.csv", package = "DGVMBenchmarks"), header = TRUE, flush = TRUE)
+#  **** END SPECIAL SUBSETTING ****
+
+
+#### Here define the global script parameters ####
+script_settings <- list(
+  
+  # version string (for making quick read files)
+  analysis_version = "tellus_v1.3", 
+  
+  # quick read switch 
+  quick_read = TRUE,
+  
+  # do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
+  verbose_read = FALSE,
+  
+  # do publication plots
+  doPublicationPlots = FALSE,
+  
+  # plot maps (turn off to save time if they are not needed)
+  doMapPlots = TRUE,
+  
+  # summary periods
+  summary_periods = list(c(1961, 1990),
+                         c(1990, 2000)),
+  
+  # Spatial extent - note that this only applies to some benchmarks - typically the spatially explicit global ones
+  # it will be ignored for benchmarks such as the regrowth and Pan forest biomass benchmarks
+  # spatial extent (can be a raster:: extent or a two column data.frame of gridcells), set to NULL for no subsetting
+  spatial_extent =  NULL,
+  # spatial_extent <- subset_1600_gridcells 
+  # spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
+  
+  # set to a string to describe the spatial subset and use "Global" if not cropping area
+  spatial_extent_id = "Global", 
+  #spatial_extent_id <- "The1600"
+  # spatial_extent_id <- "Europe" 
+  
+  # Standard plot formatting arguments
+  num_cols = 1,
+  map_overlay = "coastlines",
+  stats_lon = -130,
+  stats_lat = -20
+  
+)
+
+
+settings <- script_settings
+```
+
+
+
 ```{r setup, include=FALSE}
+
+#### GLOBAL SET 
+
 # knitr options
 knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE,
@@ -86,70 +156,58 @@ new_simulation_Source <- defineSource(name = params$new_name,
                                       dir = params$new_directory,
                                       format = GUESS)
 
-
 # reference run
 old_simulation_Source <- defineSource(name = params$old_name,
                                       dir = params$old_directory,
                                       format = GUESS)
 
 # combine into a list for looping later
-all_simulation_Sources_list <- list(old_simulation_Source, new_simulation_Source)
+script_settings$simulation_sources <- list(old_simulation_Source, new_simulation_Source)
 
-# quick read switch and version label (for making quick read files)
-quick_read <- TRUE
-analysis_version <- "tellus_v1.2" 
-
-# do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
-verbose_read <- FALSE
-
-# do publication plots
-doPublicationPlots <- FALSE
-
-# plot maps (turn off to save time)
-doMapPlots <- TRUE
-
-# switches for which benchmarks to do
-do_Global_Summary_Tables <- FALSE
-do_GCP_NBP <- TRUE
-do_Biomes <- FALSE
-do_global_GPP <- FALSE
-do_global_LAI <- FALSE
-do_global_BA <- FALSE
-do_Global_Biomass <- FALSE
-do_Pan_Biomass <- FALSE
-do_Regrowth <- FALSE
-do_FLUXNET <- FALSE
-
-# Summary periods
-summary_periods <- list(c(1961, 1990),
-                        c(1990, 2000))
+simulation_sources <- list(old_simulation_Source, new_simulation_Source)
 
 
-#  **** SPECIAL SUBSETTING FOR STEFAN'S GLOBAL RETUNING  ****
-subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_16_random.csv", package = "DGVMBenchmarks"), header = TRUE, flush = TRUE)
-#  **** END SPECIAL SUBSETTING ****
-
-# Spatial extent - note that this only applies to some benchmarks - typically the spatially explicit global ones
-# it will be ignored for benchmarks such as the regrowth and Pan forest biomass benchmarks
-
-# spatial extent (can be a raster:: extent of a a two cloum data.frame of gridcells), set to NULL for no subsetting
-#spatial_extent <- subset_1600_gridcells 
-# spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
-spatial_extent <-  NULL 
-
-# set to a string to describe the spatial subset and use "Global" if not cropping area
-#spatial_extent_id <- "The1600"
-# spatial_extent_id <- "Europe" 
-spatial_extent_id <- "Global" 
-
-
-
-
-# Standard plot formatting arguments
-num_cols <- 1
-map_overlay <- "coastlines"
-stats_lon <- -130
-stats_lat <- -20
+# 
+# # quick read switch and version label (for making quick read files)
+# settings$quick_read <- TRUE
+# settings$analysis_version <- "tellus_v1.2" 
+# 
+# # do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
+# settings$verbose_read <- FALSE
+# 
+# # do publication plots
+# settings$doPublicationPlots <- FALSE
+# 
+# # plot maps (turn off to save time)
+# settings$doMapPlots <- TRUE
+# 
+# # Summary periods
+# settings$summary_periods <- list(c(1961, 1990),
+#                         c(1990, 2000))
+# 
+# 
+# #  **** SPECIAL SUBSETTING FOR STEFAN'S GLOBAL RETUNING  ****
+# subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_16_random.csv", package = "DGVMBenchmarks"), header = TRUE, flush = TRUE)
+# #  **** END SPECIAL SUBSETTING ****
+# 
+# # Spatial extent - note that this only applies to some benchmarks - typically the spatially explicit global ones
+# # it will be ignored for benchmarks such as the regrowth and Pan forest biomass benchmarks
+# 
+# # spatial extent (can be a raster:: extent of a a two cloum data.frame of gridcells), set to NULL for no subsetting
+# #spatial_extent <- subset_1600_gridcells 
+# # spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
+# spatial_extent <-  NULL 
+# 
+# # set to a string to describe the spatial subset and use "Global" if not cropping area
+# #spatial_extent_id <- "The1600"
+# # spatial_extent_id <- "Europe" 
+# spatial_extent_id <- "Global" 
+# 
+# # Standard plot formatting arguments
+# settings$num_cols <- 1
+# settings$map_overlay <- "coastlines"
+# settings$stats_lon <- -130
+# settings$stats_lat <- -20
 
 
 ```
@@ -160,12 +218,12 @@ stats_lat <- -20
 
 
 # version label for labelling saved data
-version_label <- paste(analysis_version, spatial_extent_id, sep = "_")
+version_label <- paste(settings$analysis_version, settings$spatial_extent_id, sep = "_")
 
 # Prepare the (empty) summary table of global numbers
 # make the columns names and types
 summary_col_names <- c("Quantity", "Unit")
-for(this_sim in all_simulation_Sources_list) {
+for(this_sim in simulation_sources) {
   summary_col_names <- append(summary_col_names, this_sim@name)
 }
 summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
@@ -173,6 +231,13 @@ summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 
 # this table is completely empty, it will by built benchmark by-benchmark
 metric_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
+
+# this list contains tables that gets passed in and out of each benchmark
+overall_tables <- list(
+  totals = summary_table,
+  metrics = metric_table
+)
+
 
 
 ```
@@ -188,155 +253,14 @@ Potential intro text about GCP, links to online description of the data, what to
 
 ```{r gcp, fig.height=5}
 
+
 if(do_GCP_NBP){
   
+  overall_tables <- benchmark_GCP(simulation_sources = simulation_sources,
+                                  settings = script_settings,
+                                  params = params,
+                                  tables_list = overall_tables)
   
-  ### Read the data and calculate the annual mean over the whole period
-  GCP_full_Field <- read_GCP()
-  GCP_full_Field_ymean  <- suppressWarnings(aggregateYears(GCP_full_Field, "mean"))
-  
-  
-  this_benchmark <- new("Benchmark",
-                        id = "GCP_NBP",
-                        name = "GCP NBP",
-                        description = "Global NBP",
-                        simulation = "tellus",
-                        guess_var = "cflux",
-                        guess_layers = "NBP",
-                        unit = "kg m^-2^ y^-1^",
-                        agg.unit = "PgC y^-1^",
-                        datasets = list(GCP_full_Field),
-                        first.year = 1959,
-                        last.year = 2015,
-                        metrics = c("r2"))
-  
-  
-  # make a list of all Fields to be compared  (this will also include whatever model runs are available)
-  all_NBP_Fields_list <- list()
-  all_NBP_global_sums <- list()
-  all_NBP_Fields_list[[GCP_full_Field@source@name]] <- GCP_full_Field
-  # and the vector of labels to eventual put on the plot
-  all_NBP_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NBP"]], 3), " PgC/year"))
-  
-  
-  # make the line for the global summary table
-  summary_NBP_line <- makeSummaryLine(this_benchmark, summary_col_names)
-  summary_NBP_line$Data <- signif(GCP_full_Field_ymean@data[["NBP"]], 3)
-  
-  
-  ### Read the LPJ-GUESS data
-  
-  
-  # loop through model runs to be processed and store the full data 
-  all_sim_full_NBP <- list()
-  for(this_sim_Source in all_simulation_Sources_list) {
-    
-    # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir, this_benchmark@simulation)
-    if(file.exists(file.path(this_benchmark_run_dir, "cflux.out")) || file.exists(file.path(this_benchmark_run_dir, "cflux.out.gz"))) {
-      
-      # make local sources pointing to the simulation subrun directory
-      this_subrun_Source <- this_sim_Source
-      this_subrun_Source@dir <- this_benchmark_run_dir
-      
-      # read the data and process it into global sums
-      this_simulation_NBP <- getField(source = this_subrun_Source,
-                                      this_benchmark@guess_var,
-                                      first.year = this_benchmark@first.year,
-                                      last.year = this_benchmark@last.year,
-                                      verbose = verbose_read,
-                                      quick.read = quick_read,
-                                      quick.read.file = paste("cflux", version_label, sep = "_") 
-      )
-      
-      if("NEE" %in% names(this_simulation_NBP)) renameLayers(this_simulation_NBP, "NEE", "NBP")
-      
-      # save for possibly using later
-      all_sim_full_NBP[[this_sim_Source@name]] <- this_simulation_NBP
-      
-      # aggregate with weighted sum and adjust units
-      this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
-      this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "mulc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -KG_TO_PG)
-      
-      # store the Field in the list of all Fields for plotting later
-      all_NBP_Fields_list[[this_sim_Source@name]] <- this_simulation_NBP_agg
-      
-      # calculate yearly means of whole period
-      # supressWarnings is just to stops warnings that there is no spatial or temporal data in the resulting Field
-      # (all averaged away to give a single number)
-      this_simulation_NBP_ymean <- suppressWarnings(aggregateYears(this_simulation_NBP_agg, "mean"))
-      
-      # make a text label for putting the yearly mean on th plot and aa it to the label vector of labels
-      all_NBP_labels_vector <- append(all_NBP_labels_vector, paste0(this_simulation_NBP_ymean@source@name, 
-                                                                    ": ", 
-                                                                    signif(this_simulation_NBP_ymean@data[["NBP"]],3), 
-                                                                    " PgC/year"))
-      
-      # save this to the summary table, but it *may* be over-written later is spatial subsetting was selected
-      summary_NBP_line[[this_sim_Source@name]] <- signif(this_simulation_NBP_ymean@data[["NBP"]], 3) 
-    } 
-    
-  }
-  
-  
-  # plot all together
-  NBP_plot <- plotTemporal(all_NBP_Fields_list, 
-                           col.by = "Source", 
-                           layers = "NBP", 
-                           title = "Global NBP", 
-                           subtitle = NULL, 
-                           y.label = "Global NBP (PgC/year)",
-                           text.multiplier = 1.5, 
-                           sizes = 1)
-  
-  # make a simple data.frame to put numbers on the plot, and then add it to the plot
-  global.numbers.df <- data.frame(x= rep(as.Date(paste(this_benchmark@first.year), "%Y")), 
-                                  y = c(6, 5, 4), 
-                                  label = all_NBP_labels_vector)
-  NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
-  print(NBP_plot)
-  
-  # calculate R^2 on this data
-  all_NBP_temporal_comparisons <- fullTemporalComparison(benchmark = this_benchmark, 
-                                                         all_ts = all_NBP_Fields_list, 
-                                                         new_model = params$new_name,
-                                                         old_model = params$old_name) 
-  
-  metric_table <- rbind(metric_table, 
-                        makeMetricTable(benchmark = this_benchmark, 
-                                        all_comparisons_list = all_NBP_temporal_comparisons, 
-                                        all_simulations_Sources_list = all_simulation_Sources_list))
-  
-  # Calculate area sum based on subset, if the spatial_extent is not NULL
-  if(!is.null(spatial_extent)) {
-    
-    for(this_sim_Source in all_simulation_Sources_list) {
-      
-      # subset and aggregrage the already read data
-      # if the provided spatial yields a valid extent, use the crop function
-      possible.error <- try (extent(spatial_extent), silent=TRUE )
-      # note that data.tables *do* return a valid extent, but we don't want to crop with that here (hence the second condition)
-      if (!inherits(possible.error, "try-error") && !is.data.table(spatial.extent)) {
-        this_simulation_NBP_subset <- crop(x =  all_sim_full_NBP[[this_sim_Source@name]], y = spatial_extent, spatial.extent.id = spatial_extent_id)  
-      }
-      # else check if some gridcells to be selected with getGridcells
-      else if(is.data.frame(spatial_extent) || is.data.table(spatial_extent) || is.numeric(spatial_extent) || class(spatial_extent)[1] == "SpatialPolygonsDataFrame"){
-        this_simulation_NBP_subset <- selectGridcells(x = all_sim_full_NBP[[this_sim_Source@name]], gridcells = spatial_extent, spatial.extent.id = spatial_extent_id)
-      }
-      
-      # aggregate with weighted sum and adjust units
-      this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP_subset, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
-      this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "mulc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -KG_TO_PG)
-      summary_NBP_line[[this_sim_Source@name]] <- signif(suppressWarnings(aggregateYears(this_simulation_NBP_agg,"mean"))@data[["NBP"]], 3)
-      
-    } # for each simulation
-    
-  } # if spatial extent is not NULL
-  
-  
-  # save the summary line to the table
-  summary_table <- rbind(summary_table, summary_NBP_line)
-  names(summary_table) <- summary_col_names
 }
 
 ```
@@ -395,12 +319,12 @@ if(do_Biomes){
     suppressWarnings(
       Biome_Map_Fields_list[[this_dataset$name]] <- getField(source = this_source,
                                                              quant = this_dataset$id,
-                                                             spatial.extent = spatial_extent,
-                                                             spatial.extent.id = spatial_extent_id,  
+                                                             spatial.extent = settings$spatial_extent,
+                                                             spatial.extent.id = settings$spatial_extent_id,  
                                                              first.year = this_dataset$first_year,
                                                              last.year = this_dataset$last_year,
                                                              year.aggregate.method = "mean",
-                                                             verbose = verbose_read,
+                                                             verbose = settings$verbose_read,
                                                              quick.read = FALSE,
                                                              quick.read.file = paste(this_benchmark$guess_var, version_label, sep = "_")))
     
@@ -412,7 +336,7 @@ if(do_Biomes){
   
   #### DERIVE BIOMES FROM LPJ-GUESS DATA ####
   # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
+  for(this_sim_Source in simulation_sources) {
     
     # check if file is present (if not don't include this run)
     got_simulation <- FALSE
@@ -431,12 +355,12 @@ if(do_Biomes){
       suppressWarnings(
         Biome_Map_Fields_list[[this_sim_Source@id]] <- getScheme(source = temp_simulation_Source,
                                                                  scheme = Smith2014BiomeScheme,
-                                                                 spatial.extent = spatial_extent,
-                                                                 spatial.extent.id = spatial_extent_id,  
+                                                                 spatial.extent = settings$spatial_extent,
+                                                                 spatial.extent.id = settings$spatial_extent_id,  
                                                                  first.year = this_dataset$first_year,
                                                                  last.year = this_dataset$last_year,
                                                                  year.aggregate.method = "mean",
-                                                                 quick.read = quick_read,
+                                                                 quick.read = settings$quick_read,
                                                                  quick.read.file = paste(this_benchmark$guess_var,version_label, sep = "_"))
       )
       
@@ -449,11 +373,11 @@ if(do_Biomes){
   } # for each model run
   
   
-  if(doMapPlots) {
+  if(settings$doMapPlots) {
     suppressWarnings(biome_plot <- plotSpatial(Biome_Map_Fields_list, 
-                                               ncol = num_cols, 
+                                               ncol = settings$num_cols, 
                                                text.multiplier = 1.3, 
-                                               map.overlay = map_overlay, 
+                                               map.overlay = settings$map_overlay, 
                                                title = NULL))
     biome_plot <- biome_plot + theme(legend.position = "bottom",
                                      legend.text=element_text(size=rel(0.9)),
@@ -499,10 +423,10 @@ if(do_global_GPP){
   } else {
     GPP_data_Fields[[GOSIF_GPP_Source@name]] <- getField(source = GOSIF_GPP_Source,
                                                          quant = "mgpp",
-                                                         spatial.extent = spatial_extent,
-                                                         spatial.extent.id = spatial_extent_id,
+                                                         spatial.extent = settings$spatial_extent,
+                                                         spatial.extent.id = settings$spatial_extent_id,
                                                          file.name = GOSIF_GPP_monthly_file.name,
-                                                         verbose = verbose_read)
+                                                         verbose = settings$verbose_read)
   }
   
   
@@ -578,7 +502,7 @@ if(do_global_GPP){
     #### READ LPJ-GUESS DATA ####
     
     # loop through model runs to be processed
-    for(this_sim_Source in all_simulation_Sources_list) {
+    for(this_sim_Source in simulation_sources) {
       
       # check if file is present (if not don't include this run)
       this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
@@ -592,12 +516,12 @@ if(do_global_GPP){
         suppressWarnings(
           this_simulation_GPP <- getField(source = this_subrun_Source,
                                           this_benchmark@guess_var,
-                                          spatial.extent = spatial_extent,
-                                          spatial.extent.id = spatial_extent_id,
+                                          spatial.extent = settings$spatial_extent,
+                                          spatial.extent.id = settings$spatial_extent_id,
                                           first.year = this_benchmark@first.year,
                                           last.year = this_benchmark@last.year,
-                                          verbose = verbose_read,
-                                          quick.read = quick_read,
+                                          verbose = settings$verbose_read,
+                                          quick.read = settings$quick_read,
                                           quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
         )
         
@@ -639,7 +563,7 @@ if(do_global_GPP){
     metric_table <- rbind(metric_table, 
                           makeMetricTable(benchmark = this_benchmark, 
                                           all_comparisons_list = all_GPP_comparisons, 
-                                          all_simulations_Sources_list = all_simulation_Sources_list))
+                                          simulation_sources = simulation_sources))
     
   } # if data are available
   
@@ -650,13 +574,13 @@ if(do_global_GPP){
 
 ### Absolute values
 ```{r}
-if(do_global_GPP & doMapPlots){  
+if(do_global_GPP & settings$doMapPlots){  
   
   # plot all absolute values together
   GPP_abs_values_plot <- plotSpatial(all_GPP_Maps, 
-                                     ncol = num_cols, 
+                                     ncol = settings$num_cols, 
                                      legend.title = expression(kgC~m^{"-2"}~year^{"-1"}),
-                                     map.overlay = map_overlay, 
+                                     map.overlay = settings$map_overlay, 
                                      title = "Absolute GPP values",
                                      subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
@@ -665,7 +589,7 @@ if(do_global_GPP & doMapPlots){
   for(this_panel in names(all_GPP_totals))  total_label_df <- rbind(total_label_df,
                                                                     list(label = paste(round(all_GPP_totals[[this_panel]], 1), "PgC/year"), 
                                                                          Facet = this_panel, 
-                                                                         x = stats_lon, y = stats_lat),
+                                                                         x = settings$stats_lon, y = settings$stats_lat),
                                                                     stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_GPP_totals))
   GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
@@ -677,12 +601,12 @@ if(do_global_GPP & doMapPlots){
 ### Differences
 
 ```{r}
-if(do_global_GPP & doMapPlots){  
+if(do_global_GPP & settings$doMapPlots){  
   
   GPP_diff_values_plot <- plotSpatialComparison(all_GPP_comparisons[["Values"]], 
-                                                ncol = num_cols, 
+                                                ncol = settings$num_cols, 
                                                 legend.title = expression(Delta~kgC~m^{"-2"}~year^{"-1"}),
-                                                map.overlay = map_overlay, 
+                                                map.overlay = settings$map_overlay, 
                                                 title = "GPP biases", 
                                                 facet.order = names(all_GPP_comparisons[["Values"]]),
                                                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
@@ -695,7 +619,7 @@ if(do_global_GPP & doMapPlots){
       metric_label_df <- rbind(metric_label_df,
                                list(label = paste(this_metric, "=", round(all_GPP_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
                                     Facet = comparison_name, 
-                                    x = stats_lon, y = stats_lat - lat_offset),
+                                    x = settings$stats_lon, y = settings$stats_lat - lat_offset),
                                stringsAsFactors = FALSE)  
     }
     metric_label_df$Facet <- factor(metric_label_df$Facet, levels = names(all_GPP_comparisons[["Values"]]))
@@ -715,18 +639,18 @@ if(do_global_GPP & doMapPlots){
 
 ### Trend value
 ```{r}
-if(do_global_GPP & doMapPlots) {
+if(do_global_GPP & settings$doMapPlots) {
   
   suppressWarnings( print(
     plotSpatial(all_GPP_Trends, 
                 layers = "Trend", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
                 limits = c(-0.2,0.2),
                 drop.cuts = FALSE,
                 title = "Trend in GPP", 
                 legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
-                map.overlay = map_overlay, 
+                map.overlay = settings$map_overlay, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
   
 }
@@ -734,17 +658,17 @@ if(do_global_GPP & doMapPlots) {
 
 ### Trend significance
 ```{r}
-if(do_global_GPP & doMapPlots) {
+if(do_global_GPP & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatial(all_GPP_Trends, 
                 layers = "p.value", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = viridis::turbo(6), 
                 cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
                 drop.cuts = FALSE,
                 title = "Significance in GPP Trends",
                 legend.title =  "p value",
-                map.overlay = map_overlay, 
+                map.overlay = settings$map_overlay, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 
@@ -752,31 +676,31 @@ if(do_global_GPP & doMapPlots) {
 
 ### Trend Differences
 ```{r}
-if(do_global_GPP & doMapPlots) {
+if(do_global_GPP & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Trend"]], 
-                          ncol = num_cols, 
+                          ncol = settings$num_cols, 
                           drop.cuts = NULL,
                           title = "Difference Trend in GPP", 
                           legend.title =  expression(Delta~gC~m^{"-2"}~month^{"-2"}),
-                          map.overlay = map_overlay,                
+                          map.overlay = settings$map_overlay,                
                           subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Significant Trends
 ```{r}
-if(do_global_GPP & doMapPlots) {
+if(do_global_GPP & settings$doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_GPP_Trends, 
                 layers = "Significant_Trend", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
                 limits = c(-0.2,0.2),
                 drop.cuts = FALSE,
                 title = "Significant Trend in GPP (p-value < 0.05)", 
                 legend.title = expression(gC~m^{"-2"}~month^{"-2"}),
-                map.overlay = map_overlay, 
+                map.overlay = settings$map_overlay, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -788,29 +712,29 @@ Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **S
 
 ### Seasonal phase
 ```{r}
-if(do_global_GPP & doMapPlots) {
+if(do_global_GPP & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           type = "values",
                           cuts = 0:12, 
                           override.cols = pals::ocean.phase(12),
-                          ncol = num_cols,
-                          map.overlay = map_overlay,   
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Phase differences
 ```{r}
-if(do_global_GPP & doMapPlots){
+if(do_global_GPP & settings$doMapPlots){
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           cuts = seq(-6,6), 
                           symmetric.scale = FALSE,
-                          ncol = num_cols,
-                          map.overlay = map_overlay,    
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,    
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -818,23 +742,23 @@ if(do_global_GPP & doMapPlots){
 
 ### Seasonal concentration
 ```{r}
-if(do_global_GPP & doMapPlots) {
+if(do_global_GPP & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
                           type = "values",
-                          ncol = num_cols,
-                          map.overlay = map_overlay,            
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,            
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Concentration differences
 ```{r}
-if(do_global_GPP & doMapPlots) {
+if(do_global_GPP & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_GPP_comparisons[["Seasonal"]], 
-                          ncol = num_cols,
-                          map.overlay = map_overlay,           
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,           
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -870,10 +794,10 @@ if(do_global_LAI){
   } else {
     LAI_data_Fields[[MODIS_LAI_Source@name]] <- getField(source = MODIS_LAI_Source,
                                                          quant = "mlai",
-                                                         spatial.extent = spatial_extent,
-                                                         spatial.extent.id = spatial_extent_id,
+                                                         spatial.extent = settings$spatial_extent,
+                                                         spatial.extent.id = settings$spatial_extent_id,
                                                          file.name = MODIS_LAI_monthly_file.name,
-                                                         verbose = verbose_read)
+                                                         verbose = setting$verbose_read)
   }
   
   
@@ -958,7 +882,7 @@ if(do_global_LAI){
     #### READ LPJ-GUESS DATA ####
     
     # loop through model runs to be processed
-    for(this_sim_Source in all_simulation_Sources_list) {
+    for(this_sim_Source in simulation_sources) {
       
       # check if file is present (if not don't include this run)
       this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
@@ -972,12 +896,12 @@ if(do_global_LAI){
         suppressWarnings(
           this_simulation_LAI <- getField(source = this_subrun_Source,
                                           this_benchmark@guess_var,
-                                          spatial.extent = spatial_extent,
-                                          spatial.extent.id = spatial_extent_id,
+                                          spatial.extent = settings$spatial_extent,
+                                          spatial.extent.id = settings$spatial_extent_id,
                                           first.year = this_benchmark@first.year,
                                           last.year = this_benchmark@last.year,  
-                                          verbose = verbose_read,
-                                          quick.read = quick_read,
+                                          verbose = setting$verbose_read,
+                                          quick.read = settings$quick_read,
                                           quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
         )
         
@@ -1018,7 +942,7 @@ if(do_global_LAI){
     metric_table <- rbind(metric_table, 
                           makeMetricTable(benchmark = this_benchmark, 
                                           all_comparisons_list = all_LAI_comparisons, 
-                                          all_simulations_Sources_list = all_simulation_Sources_list))
+                                          simulation_sources = simulation_sources))
     
     
   } # if data are available
@@ -1032,12 +956,12 @@ if(do_global_LAI){
 
 ### Absolute values
 ```{r}
-if(do_global_LAI & doMapPlots){  
+if(do_global_LAI & settings$doMapPlots){  
   # plot all absolute values together
   LAI_abs_values_plot <- plotSpatial(all_LAI_Maps, 
-                                     ncol = num_cols, 
+                                     ncol = settings$num_cols, 
                                      legend.title = expression(m^{"2"}~m^{"-2"}),
-                                     map.overlay = map_overlay,  
+                                     map.overlay = settings$map_overlay,  
                                      title = "Absolute LAI values",
                                      limits = c(0,8),
                                      subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
@@ -1047,7 +971,7 @@ if(do_global_LAI & doMapPlots){
   for(this_panel in names(all_LAI_totals))  total_label_df <- rbind(total_label_df,
                                                                     list(label = paste(round(all_LAI_totals[[this_panel]], 1), "M m^2"), 
                                                                          Facet = this_panel, 
-                                                                         x = stats_lon, y = stats_lat),
+                                                                         x = settings$stats_lon, y = settings$stats_lat),
                                                                     stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_LAI_totals))
   LAI_abs_values_plot  <- LAI_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
@@ -1058,11 +982,11 @@ if(do_global_LAI & doMapPlots){
 ### Differences
 
 ```{r}
-if(do_global_LAI & doMapPlots){  
+if(do_global_LAI & settings$doMapPlots){  
   LAI_diff_values_plot <- plotSpatialComparison(all_LAI_comparisons[["Values"]], 
-                                                ncol = num_cols, 
+                                                ncol = settings$num_cols, 
                                                 legend.title = expression(Delta~m^{"2"}~m^{"-2"}),
-                                                map.overlay = map_overlay,             
+                                                map.overlay = settings$map_overlay,             
                                                 title = "LAI biases", 
                                                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
@@ -1074,7 +998,7 @@ if(do_global_LAI & doMapPlots){
       metric_label_df <- rbind(metric_label_df,
                                list(label = paste(this_metric, "=", round(all_LAI_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
                                     Facet = comparison_name, 
-                                    x = stats_lon, y = stats_lat - lat_offset),
+                                    x = settings$stats_lon, y = settings$stats_lat - lat_offset),
                                stringsAsFactors = FALSE)  
     }
     metric_label_df$Facet <- factor( metric_label_df$Facet, names(all_LAI_comparisons[["Values"]]))
@@ -1093,34 +1017,34 @@ if(do_global_LAI & doMapPlots){
 
 ### Trend value
 ```{r}
-if(do_global_LAI & doMapPlots) {
+if(do_global_LAI & settings$doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_LAI_Trends, 
                 layers = "Trend", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
                 limits = c(-0.01,0.01),
                 drop.cuts = FALSE,
                 title = "Trend in LAI", 
                 legend.title = expression(m^{"2"}~m^{"-2"}~month^{"-2"}),
-                map.overlay = map_overlay,                  
+                map.overlay = settings$map_overlay,                  
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Trend significance
 ```{r}
-if(do_global_LAI & doMapPlots) {
+if(do_global_LAI & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatial(all_LAI_Trends, 
                 layers = "p.value", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = viridis::turbo(6), 
                 cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
                 drop.cuts = FALSE,
                 title = "Significance in LAI Trends",
                 legend.title =  "p value",
-                map.overlay = map_overlay,                   
+                map.overlay = settings$map_overlay,                   
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 
@@ -1128,14 +1052,14 @@ if(do_global_LAI & doMapPlots) {
 
 ### Trend Differences
 ```{r}
-if(do_global_LAI & doMapPlots) {
+if(do_global_LAI & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Trend"]], 
-                          ncol = num_cols, 
+                          ncol = settings$num_cols, 
                           drop.cuts = NULL,
                           title = "Difference Trend in LAI", 
                           legend.title =  expression(m^{"2"}~m^{"-2"}~month^{"-2"}),
-                          map.overlay = map_overlay,          
+                          map.overlay = settings$map_overlay,          
                           subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
   
 }
@@ -1144,17 +1068,17 @@ if(do_global_LAI & doMapPlots) {
 
 ### Significant Trends
 ```{r}
-if(do_global_LAI & doMapPlots) {
+if(do_global_LAI & settings$doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_LAI_Trends, 
                 layers = "Significant_Trend", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
                 limits = c(-0.01,0.01),
                 drop.cuts = FALSE,
                 title = "Significant Trend in GPP (p-value < 0.05)", 
                 legend.title = expression(expression(m^{"2"}~m^{"-2"}~month^{"-2"})),
-                map.overlay = map_overlay, 
+                map.overlay = settings$map_overlay, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1165,29 +1089,29 @@ Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **S
 
 ### Seasonal phase
 ```{r}
-if(do_global_LAI & doMapPlots) {
+if(do_global_LAI & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           type = "values",
                           cuts = 0:12, 
                           override.cols = pals::ocean.phase(12),
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                   
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Phase differences
 ```{r}
-if(do_global_LAI & doMapPlots){
+if(do_global_LAI & settings$doMapPlots){
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           cuts = seq(-6,6), 
                           symmetric.scale = FALSE,
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                              
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                              
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1195,23 +1119,23 @@ if(do_global_LAI & doMapPlots){
 
 ### Seasonal concentration
 ```{r}
-if(do_global_LAI & doMapPlots) {
+if(do_global_LAI & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
                           type = "values",
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                          
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                          
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Concentration differences
 ```{r}
-if(do_global_LAI & doMapPlots) {
+if(do_global_LAI & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_LAI_comparisons[["Seasonal"]], 
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                       
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                       
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1249,9 +1173,9 @@ if(do_global_BA){
   } else {
     BA_data_Fields[[GFED4_BA_Source@name]] <- suppressWarnings(getField(source = GFED4_BA_Source,
                                                                         quant = "burned_area_fraction",
-                                                                        spatial.extent = spatial_extent,
-                                                                        spatial.extent.id = spatial_extent_id,
-                                                                        verbose = verbose_read,
+                                                                        spatial.extent = settings$spatial_extent,
+                                                                        spatial.extent.id = settings$spatial_extent_id,
+                                                                        verbose = setting$verbose_read,
                                                                         file.name = GFED4_BA_monthly_file.name))
   }
   
@@ -1344,7 +1268,7 @@ if(do_global_BA){
     #### READ LPJ-GUESS DATA ####
     
     # loop through model runs to be processed
-    for(this_sim_Source in all_simulation_Sources_list) {
+    for(this_sim_Source in simulation_sources) {
       
       # check if file is present (if not don't include this run)
       this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
@@ -1358,12 +1282,12 @@ if(do_global_BA){
         suppressWarnings(
           this_simulation_BA <- getField(source = this_subrun_Source,
                                          this_benchmark@guess_var,
-                                         spatial.extent = spatial_extent,
-                                         spatial.extent.id = spatial_extent_id,
+                                         spatial.extent = settings$spatial_extent,
+                                         spatial.extent.id = settings$spatial_extent_id,
                                          first.year = this_benchmark@first.year,
                                          last.year = this_benchmark@last.year,
-                                         verbose = verbose_read,
-                                         quick.read = quick_read,
+                                         verbose = setting$verbose_read,
+                                         quick.read = settings$quick_read,
                                          quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
         )
         
@@ -1408,7 +1332,7 @@ if(do_global_BA){
     metric_table <- rbind(metric_table, 
                           makeMetricTable(benchmark = this_benchmark, 
                                           all_comparisons_list = all_BA_comparisons, 
-                                          all_simulations_Sources_list = all_simulation_Sources_list))
+                                          simulation_sources = simulation_sources))
     
     
   } # if data are available
@@ -1422,13 +1346,13 @@ if(do_global_BA){
 
 ### Absolute values
 ```{r}
-if(do_global_BA & doMapPlots){  
+if(do_global_BA & settings$doMapPlots){  
   # plot all absolute values together
   BA_abs_values_plot <- suppressWarnings(
     plotSpatial(all_BA_Maps, 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 legend.title = "fraction",
-                map.overlay = map_overlay,  
+                map.overlay = settings$map_overlay,  
                 title = "Absolute burnt fraction values",
                 cuts = ba.cuts,
                 cols = ba.cols,
@@ -1440,7 +1364,7 @@ if(do_global_BA & doMapPlots){
   for(this_panel in names(all_BA_totals))  total_label_df <- rbind(total_label_df,
                                                                    list(label = paste(round(all_BA_totals[[this_panel]], 1), this_benchmark@agg.unit), 
                                                                         Facet = this_panel, 
-                                                                        x = stats_lon, y = stats_lat),
+                                                                        x = settings$stats_lon, y = settings$stats_lat),
                                                                    stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_BA_totals))
   BA_abs_values_plot  <- BA_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
@@ -1451,11 +1375,11 @@ if(do_global_BA & doMapPlots){
 ### Differences
 
 ```{r}
-if(do_global_BA & doMapPlots){  
+if(do_global_BA & settings$doMapPlots){  
   BA_diff_values_plot <- plotSpatialComparison(all_BA_comparisons[["Values"]], 
-                                               ncol = num_cols, 
+                                               ncol = settings$num_cols, 
                                                legend.title = expression(Delta~"fraction"),
-                                               map.overlay = map_overlay,             
+                                               map.overlay = settings$map_overlay,             
                                                title = "BA biases", 
                                                subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
@@ -1467,7 +1391,7 @@ if(do_global_BA & doMapPlots){
       metric_label_df <- rbind(metric_label_df,
                                list(label = paste(this_metric, "=", round(all_BA_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
                                     Facet = comparison_name, 
-                                    x = stats_lon, y = stats_lat - lat_offset),
+                                    x = settings$stats_lon, y = settings$stats_lat - lat_offset),
                                stringsAsFactors = FALSE)  
     }
     metric_label_df$Facet <- factor( metric_label_df$Facet, names(all_BA_comparisons[["Values"]]))
@@ -1486,34 +1410,34 @@ if(do_global_BA & doMapPlots){
 
 ### Trend value
 ```{r}
-if(do_global_BA & doMapPlots) {
+if(do_global_BA & settings$doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_BA_Trends, 
                 layers = "Trend", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
                 limits = c(-0.3,0.3),
                 drop.cuts = FALSE,
                 title = "Trend in BA", 
                 legend.title =  expression('%'~year^{"-1"}),
-                map.overlay = map_overlay,                  
+                map.overlay = settings$map_overlay,                  
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Trend significance
 ```{r}
-if(do_global_BA & doMapPlots) {
+if(do_global_BA & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatial(all_BA_Trends, 
                 layers = "p.value", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = viridis::turbo(6), 
                 cuts = c(0, 0.001, 0.01, 0.05, 0.1, 0.5, 1.0),
                 drop.cuts = FALSE,
                 title = "Significance in BA Trends",
                 legend.title =  "p value",
-                map.overlay = map_overlay,                   
+                map.overlay = settings$map_overlay,                   
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 
@@ -1521,14 +1445,14 @@ if(do_global_BA & doMapPlots) {
 
 ### Trend Differences
 ```{r}
-if(do_global_BA & doMapPlots) {
+if(do_global_BA & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Trend"]], 
-                          ncol = num_cols, 
+                          ncol = settings$num_cols, 
                           drop.cuts = NULL,
                           title = "Difference Trend in BA", 
                           legend.title =  expression(Delta ~ '%'~year^{"-1"}),
-                          map.overlay = map_overlay,          
+                          map.overlay = settings$map_overlay,          
                           subtitle =paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
   
 }
@@ -1537,17 +1461,17 @@ if(do_global_BA & doMapPlots) {
 
 ### Significant Trends
 ```{r}
-if(do_global_BA & doMapPlots) {
+if(do_global_BA & settings$doMapPlots) {
   suppressWarnings( print(
     plotSpatial(all_BA_Trends, 
                 layers = "Significant_Trend", 
-                ncol = num_cols, 
+                ncol = settings$num_cols, 
                 cols = rev(RColorBrewer::brewer.pal(11, "RdBu")), 
                 limits = c(-0.3,0.3),
                 drop.cuts = FALSE,
                 title = "Significant Trend in burnt area (p-value < 0.05)", 
                 legend.title = expression('%'~year^{"-1"}),
-                map.overlay = map_overlay, 
+                map.overlay = settings$map_overlay, 
                 subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1558,30 +1482,30 @@ Definition of seasonal concentration and phase follow Kelley *et al.* 2013.  **S
 
 ### Seasonal phase
 ```{r}
-if(do_global_BA & doMapPlots) {
+if(do_global_BA & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           type = "values",
                           cuts = 0:12, 
                           override.cols = pals::ocean.phase(12),
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                   
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                   
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Phase differences
 ```{r}
-if(do_global_BA & doMapPlots){
+if(do_global_BA & settings$doMapPlots){
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
                           do.phase = TRUE,
                           override.cols =  colorRampPalette(colors = c("black", "blue", "white", "red", "black"))(11),
                           cuts = c(-6, -4.5, -3.5, -2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 6.0),
                           symmetric.scale = FALSE,
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                              
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                              
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1589,23 +1513,23 @@ if(do_global_BA & doMapPlots){
 
 ### Seasonal concentration
 ```{r}
-if(do_global_BA & doMapPlots ) {
+if(do_global_BA & settings$doMapPlots ) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
                           type = "values",
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                          
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                          
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
 
 ### Concentration differences
 ```{r}
-if(do_global_BA & doMapPlots) {
+if(do_global_BA & settings$doMapPlots) {
   suppressWarnings(print(
     plotSpatialComparison(all_BA_comparisons[["Seasonal"]], 
-                          ncol = num_cols,
-                          map.overlay = map_overlay,                       
+                          ncol = settings$num_cols,
+                          map.overlay = settings$map_overlay,                       
                           subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))))
 }
 ```
@@ -1676,7 +1600,7 @@ if(do_Pan_Biomass){
   all_Model_Biomass_Fields <- list()
   
   # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
+  for(this_sim_Source in simulation_sources) {
     
     # check if file is present (if not don't include this run)
     this_benchmark_run_dir <- file.path(this_sim_Source@dir, this_benchmark@simulation)
@@ -1692,8 +1616,8 @@ if(do_Pan_Biomass){
                                           guess_var,
                                           first.year = dataset_first_year, # TODO +/-3
                                           last.year = dataset_last_year,
-                                          verbose = verbose_read,
-                                          quick.read = quick_read,
+                                          verbose = setting$verbose_read,
+                                          quick.read = settings$quick_read,
                                           quick.read.file = paste(guess_var, version_label, sep = "_"))
       )
       
@@ -1737,7 +1661,7 @@ if(do_Pan_Biomass){
     else{this_region_gridcells <- regions_dt[, .(Lon, Lat)]}
     
     # for each simulation
-    for(this_sim_Source in all_simulation_Sources_list) {
+    for(this_sim_Source in simulation_sources) {
       
       this_sim_region <- selectGridcells(all_Model_Biomass_Fields[[this_sim_Source@name]], this_region_gridcells, as.character(this_region))
       this_sim_region_summed <- aggregateSpatial(this_sim_region, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)    
@@ -1809,7 +1733,7 @@ if(do_Regrowth){
   # read the model output
   # loop through model runs to be processed
   all_Regrowth_Fields <- list()
-  for(this_sim_Source in all_simulation_Sources_list) {
+  for(this_sim_Source in simulation_sources) {
     
     # check if file is present (if not don't include this run)
     this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
@@ -1823,8 +1747,8 @@ if(do_Regrowth){
       suppressWarnings(
         this_simulation_regrowth <- getField(source = this_regrowth_Source,
                                              this_benchmark@guess_var,
-                                             verbose = verbose_read,
-                                             quick.read = quick_read,
+                                             verbose = setting$verbose_read,
+                                             quick.read = settings$quick_read,
                                              quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
       )
       
@@ -1886,7 +1810,7 @@ Maybe some description and data references etc here.
 if(do_FLUXNET){
   
   all_fluxnet_fluxes <-c("GPP", "NEE", "Reco")
-
+  
   # read the FLUXNET data
   fluxnet_src <- defineSource(id = "FLUXNET",
                               format = FLUXNET,
@@ -1924,7 +1848,7 @@ if(do_FLUXNET){
   # read the model output
   # loop through model runs to be processed
   all_FLUXNET_Fields <- list()
-  for(this_sim_Source in all_simulation_Sources_list) {
+  for(this_sim_Source in simulation_sources) {
     
     # check if file is present (if not don't include this run)
     this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
@@ -1942,8 +1866,8 @@ if(do_FLUXNET){
         suppressWarnings(
           this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
                                               this_benchmark@guess_var,
-                                              verbose = verbose_read,
-                                              quick.read = quick_read,
+                                              verbose = setting$verbose_read,
+                                              quick.read = settings$quick_read,
                                               quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
         )
         
@@ -1955,8 +1879,8 @@ if(do_FLUXNET){
       suppressWarnings(
         this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
                                             this_benchmark@guess_var,
-                                            verbose = verbose_read,
-                                            quick.read = quick_read,
+                                            verbose = setting$verbose_read,
+                                            quick.read = settings$quick_read,
                                             quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
       )
       
@@ -2061,9 +1985,9 @@ if(do_Global_Biomass){
     suppressWarnings(
       this_data_Field <- getField(source = data_Source,
                                   quant = this_benchmark@guess_var,
-                                  spatial.extent = spatial_extent,
-                                  spatial.extent.id = spatial_extent_id,
-                                  verbose = verbose_read,
+                                  spatial.extent = settings$spatial_extent,
+                                  spatial.extent.id = settings$spatial_extent_id,
+                                  verbose = setting$verbose_read,
                                   file.name = liu_biomass$this_data_file_name)
     )
     
@@ -2102,7 +2026,7 @@ if(do_Global_Biomass){
   
   
   # loop through model runs to be processed
-  for(this_sim_Source in all_simulation_Sources_list) {
+  for(this_sim_Source in simulation_sources) {
     
     # check if file is present (if not don't include this run)
     this_benchmark_run_dir <- file.path(this_sim_Source@dir, this_benchmark@simulation)
@@ -2114,13 +2038,13 @@ if(do_Global_Biomass){
       suppressWarnings(
         this_cmass <- getField(source = temp_simulation_Source,
                                quant = this_benchmark@guess_var,
-                               spatial.extent = spatial_extent,
-                               spatial.extent.id = spatial_extent_id,
+                               spatial.extent = settings$spatial_extent,
+                               spatial.extent.id = settings$spatial_extent_id,
                                first.year = this_dataset$first_year,
                                last.year = this_dataset$last_year,
                                year.aggregate.method = "mean",
-                               verbose = verbose_read,
-                               quick.read = quick_read,
+                               verbose = setting$verbose_read,
+                               quick.read = settings$quick_read,
                                quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"),
                                layers = this_benchmark@guess_layers)
       )
@@ -2129,12 +2053,12 @@ if(do_Global_Biomass){
       suppressWarnings(
         this_biomes <- getScheme(source = temp_simulation_Source,
                                  scheme = Smith2014BiomeScheme,
-                                 spatial.extent = spatial_extent,
-                                 spatial.extent.id = spatial_extent_id,
+                                 spatial.extent = settings$spatial_extent,
+                                 spatial.extent.id = settings$spatial_extent_id,
                                  first.year = this_dataset$first_year,
                                  last.year = this_dataset$last_year,
                                  year.aggregate.method = "mean",
-                                 quick.read = quick_read,
+                                 quick.read = settings$quick_read,
                                  quick.read.file = paste(this_benchmark@guess_var,version_label, sep = "_"))
       )
       
@@ -2249,7 +2173,7 @@ if(do_Global_Biomass){
   metric_table <- rbind(metric_table, 
                         makeMetricTable(benchmark = this_benchmark, 
                                         all_comparisons_list = all_Biomass_comparisons, 
-                                        all_simulations_Sources_list = all_simulation_Sources_list))
+                                        simulation_sources = simulation_sources))
   
   
 } # if do_Global_Biomass
@@ -2263,12 +2187,12 @@ if(do_Global_Biomass){
 
 ### Absolute values
 ```{r}
-if(do_Global_Biomass & doMapPlots){  
+if(do_Global_Biomass & settings$doMapPlots){  
   # plot all absolute values together
   Biomass_abs_values_plot <- plotSpatial(all_Biomass_Maps, 
-                                         ncol = num_cols, 
+                                         ncol = settings$num_cols, 
                                          legend.title = expression(kg~m^{"-2"}),
-                                         map.overlay = map_overlay,  
+                                         map.overlay = settings$map_overlay,  
                                          title = "Absolute Biomass values",
                                          limits = c(0,25),
                                          subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
@@ -2278,7 +2202,7 @@ if(do_Global_Biomass & doMapPlots){
   for(this_panel in names(all_Biomass_totals))  total_label_df <- rbind(total_label_df,
                                                                         list(label = paste(round(all_Biomass_totals[[this_panel]], 1), this_benchmark@agg.unit), 
                                                                              Facet = this_panel, 
-                                                                             x = stats_lon, y = stats_lat),
+                                                                             x = settings$stats_lon, y = settings$stats_lat),
                                                                         stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_Biomass_totals))
   Biomass_abs_values_plot  <- Biomass_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 2.5)
@@ -2289,11 +2213,11 @@ if(do_Global_Biomass & doMapPlots){
 ### Differences
 
 ```{r}
-if(do_Global_Biomass & doMapPlots){  
+if(do_Global_Biomass & settings$doMapPlots){  
   Biomass_diff_values_plot <- plotSpatialComparison(all_Biomass_comparisons[["Values"]], 
-                                                    ncol = num_cols, 
+                                                    ncol = settings$num_cols, 
                                                     legend.title = expression(Delta~kg~m^{"-2"}),
-                                                    map.overlay = map_overlay,             
+                                                    map.overlay = settings$map_overlay,             
                                                     title = "Biomass biases", 
                                                     subtitle = paste(this_benchmark@first.year, this_benchmark@last.year, sep = "-"))
   
@@ -2305,7 +2229,7 @@ if(do_Global_Biomass & doMapPlots){
       metric_label_df <- rbind(metric_label_df,
                                list(label = paste(this_metric, "=", round(all_Biomass_comparisons[["Values"]][[comparison_name]]@stats[[this_metric]], 2)), 
                                     Facet = comparison_name, 
-                                    x = stats_lon, y = stats_lat - lat_offset),
+                                    x = settings$stats_lon, y = settings$stats_lat - lat_offset),
                                stringsAsFactors = FALSE)  
     }
     metric_label_df$Facet <- factor( metric_label_df$Facet, names(all_Biomass_comparisons[["Values"]]))
@@ -2334,13 +2258,14 @@ if(do_Global_Biomass & doMapPlots){
 
 ``` {r C fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
 if(do_Global_Summary_Tables) {
-  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+  this_complete_df <- modelSummaryTable(simulations = simulation_sources, 
+                                        settings = settings,
                                         var = "cflux", 
-                                        periods = summary_periods, 
+                                        periods = settings$summary_periods, 
                                         new_sim =  params$new_name, 
                                         old_sim = params$old_name, 
-                                        spatial_extent = spatial_extent,
-                                        spatial_extent_id = spatial_extent_id,
+                                        spatial_extent = settings$spatial_extent,
+                                        spatial_extent_id = settings$spatial_extent_id,
                                         area_unit = "m^2",
                                         unit_multiplier = KG_TO_PG)
   if(nrow(this_complete_df) > 0) {
@@ -2355,13 +2280,14 @@ if(do_Global_Summary_Tables) {
 
 ``` {r N fluxes table, echo=FALSE, out.width = '100%', out.height= '150%'}
 if(do_Global_Summary_Tables) {
-  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+  this_complete_df <- modelSummaryTable(simulations = simulation_sources, 
+                                        settings = settings,
                                         var = "nflux", 
-                                        periods = summary_periods, 
+                                        periods = settings$summary_periods, 
                                         new_sim =  params$new_name, 
                                         old_sim = params$old_name, 
-                                        spatial_extent = spatial_extent,
-                                        spatial_extent_id = spatial_extent_id,
+                                        spatial_extent = settings$spatial_extent,
+                                        spatial_extent_id = settings$spatial_extent_id,
                                         area_unit = "ha",
                                         unit_multiplier = KG_TO_TG)
   if(nrow(this_complete_df) > 0) {
@@ -2375,13 +2301,14 @@ if(do_Global_Summary_Tables) {
 
 ``` {r C pools table, echo=FALSE, out.width = '100%', out.height= '150%'}
 if(do_Global_Summary_Tables) {
-  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+  this_complete_df <- modelSummaryTable(simulations = simulation_sources,
+                                        settings = settings,
                                         var = "cpool", 
-                                        periods = summary_periods, 
+                                        periods = settings$summary_periods, 
                                         new_sim =  params$new_name, 
                                         old_sim = params$old_name, 
-                                        spatial_extent = spatial_extent,
-                                        spatial_extent_id = spatial_extent_id,
+                                        spatial_extent = settings$spatial_extent,
+                                        spatial_extent_id = settings$spatial_extent_id,
                                         area_unit = "m^2",
                                         unit_multiplier = KG_TO_PG)
   if(nrow(this_complete_df) > 0) {
@@ -2394,13 +2321,14 @@ if(do_Global_Summary_Tables) {
 
 ``` {r N pools table, echo=FALSE, out.width = '100%', out.height= '150%'}
 if(do_Global_Summary_Tables) {
-  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+  this_complete_df <- modelSummaryTable(simulations = simulation_sources, 
+                                        settings = settings,
                                         var = "npool", 
-                                        periods = summary_periods, 
+                                        periods = settings$summary_periods, 
                                         new_sim =  params$new_name, 
                                         old_sim = params$old_name, 
-                                        spatial_extent = spatial_extent,
-                                        spatial_extent_id = spatial_extent_id,
+                                        spatial_extent = settings$spatial_extent,
+                                        spatial_extent_id = settings$spatial_extent_id,
                                         area_unit = "m^2",
                                         unit_multiplier = KG_TO_PG)
   if(nrow(this_complete_df) > 0) {
@@ -2414,13 +2342,13 @@ if(do_Global_Summary_Tables) {
 
 ``` {r Total runoff table, echo=FALSE, out.width = '100%', out.height= '150%'}
 if(do_Global_Summary_Tables) {
-  this_complete_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+  this_complete_df <- modelSummaryTable(simulations = simulation_sources, 
                                         var = "tot_runoff", 
-                                        periods = summary_periods, 
+                                        periods = settings$summary_periods, 
                                         new_sim =  params$new_name, 
                                         old_sim = params$old_name, 
-                                        spatial_extent = spatial_extent,
-                                        spatial_extent_id = spatial_extent_id,
+                                        spatial_extent = settings$spatial_extent,
+                                        spatial_extent_id = settings$spatial_extent_id,
                                         area_unit = "m^2",
                                         unit_multiplier = KG_TO_PG)
   if(nrow(this_complete_df) > 0) {
@@ -2438,16 +2366,20 @@ TABLE FORMATTING: see here: [https://rmarkdown.rstudio.com/lesson-7.html](https:
 
 ``` {r Global summary, echo=FALSE, out.width = '100%', out.height= '150%'}
 
+# retrieve the metrics table from the list
+summary_table <- overall_tables[["totals"]]
+
 
 # get the global soil N2O flux for the summary table
 # for 2000-2010 to compare to the IPCC AR5 values
-this_soil_N2O_df <- modelSummaryTable(simulations = all_simulation_Sources_list, 
+this_soil_N2O_df <- modelSummaryTable(simulations = simulation_sources, 
+                                      settings = settings,
                                       var = "soil_nflux", 
                                       periods = list(c(2000,2010)), 
                                       new_sim =  params$new_name, 
                                       old_sim = params$old_name, 
-                                      spatial_extent = spatial_extent,
-                                      spatial_extent_id = spatial_extent_id,
+                                      spatial_extent = settings$spatial_extent,
+                                      spatial_extent_id = settings$spatial_extent_id,
                                       area_unit = "ha",
                                       unit_multiplier = KG_TO_TG)
 
@@ -2457,7 +2389,7 @@ summary_N2O_line$Dataset <- "IPCC AR5"
 summary_N2O_line$Quantity <- "Soil N~2~O Emissions"
 summary_N2O_line$Unit <- "TgN y^-1^"
 summary_N2O_line$Data <- 11 # uncertainty +/- 3 could be incorporated somehow
-for(this_sim in all_simulation_Sources_list) {
+for(this_sim in simulation_sources) {
   summary_N2O_line[[this_sim@name]] <- this_soil_N2O_df[which(this_soil_N2O_df$Source == this_sim@name), "N2O"]
 }
 
@@ -2472,7 +2404,7 @@ if(nrow(summary_table) > 0) {
 
 # save the table in each model run directory
 # loop through model runs to be processed
-for(this_sim_Source in all_simulation_Sources_list) {
+for(this_sim_Source in simulation_sources) {
   saveRDS(summary_table, file.path(this_sim_Source@dir, paste0("summary_totals_", version_label, ".RData")))
 }
 
@@ -2484,6 +2416,8 @@ for(this_sim_Source in all_simulation_Sources_list) {
 
 ``` {r Global metrics, echo=FALSE, out.width = '100%', out.height= '150%'}
 
+# retrieve the metrics table from the list
+metric_table <- overall_tables[["metrics"]]
 
 if(nrow(metric_table) > 0) {
   # colnames(metric_table) <- metric_col_names
@@ -2497,7 +2431,7 @@ if(nrow(metric_table) > 0) {
 
 # save the table in each model run directory
 # loop through model runs to be processed
-for(this_sim_Source in all_simulation_Sources_list) {
+for(this_sim_Source in simulation_sources) {
   saveRDS(metric_table, file.path(this_sim_Source@dir, paste0("summary_metric_", version_label, ".RData")))
 }
 

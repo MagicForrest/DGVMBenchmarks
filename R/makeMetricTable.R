@@ -12,14 +12,14 @@
 #' @return A list which forms the lines of a benchmarking summary table
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}
 
-makeMetricTable <- function(benchmark, all_comparisons_list, all_simulations_Sources_list, signif = 3) {
+makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources, signif = 3) {
  
   
   # Prepare the (empty) table of benchmarking metrics
   col_names <- c("Dataset", "Metric")
   col_types <- c("character", "character")
   
-  for(this_sim in all_simulation_Sources_list) {
+  for(this_sim in simulation_sources) {
     col_names <- append(col_names, this_sim@name)
     col_types <- append(col_types, "numeric")
   }
@@ -51,7 +51,7 @@ makeMetricTable <- function(benchmark, all_comparisons_list, all_simulations_Sou
   
   # read the scores from the 
   for(this_dataset in benchmark@datasets) {
-    for(this_sim_Source in all_simulation_Sources_list) {
+    for(this_sim_Source in simulation_sources) {
       for(this_metric in benchmark@metrics){
         metric_table[which(metric_table$Metric == this_metric), gsub(pattern = " ", replacement = ".", x = this_sim_Source@name)] <- signif(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]]@stats[[this_metric]],3)
       }
