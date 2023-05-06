@@ -4,7 +4,12 @@
 \alias{makeMetricTable}
 \title{Make metric table lines}
 \usage{
-makeMetricTable(benchmark, all_comparisons_list, all_simulations_Sources_list)
+makeMetricTable(
+  benchmark,
+  all_comparisons_list,
+  all_simulations_Sources_list,
+  signif = 3
+)
 }
 \arguments{
 \item{benchmark}{An object of class Benchmark}

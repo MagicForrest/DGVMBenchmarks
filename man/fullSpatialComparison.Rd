@@ -25,7 +25,7 @@ fullTemporalComparison(
 )
 }
 \arguments{
-\item{benchmark}{An object of class Benchmark which described the benchmark to be performed.  Needed only for its "guess_var" and "datasets" slots.}
+\item{benchmark}{An object of class Benchmark which described the benchmark to be performed.  Needed only for its "guess_layers" and "datasets" slots.}
 
 \item{all_maps}{A list of all spatial values Fields to be compared (both data and simulations, which of these are data are identified from the benchmark argument)}
 
@@ -33,7 +33,9 @@ fullTemporalComparison(
 
 \item{all_seasonal}{A list of all seasonal Fields to be compared (structure as above))}
 
-\item{new_model, old_model}{Characters strings defing the new and old model runs from a "new minus old" comparisons)}
+\item{new_model, old_model}{Characters strings defiinng the new and old model runs from a "new minus old" comparisons)}
+
+\item{all_ts}{A list of all spatial values Fields to be compared (both data and simulations, which of these are data are identified from the benchmark argument)}
 }
 \value{
 A list'o'lists
