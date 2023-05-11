@@ -99,10 +99,8 @@ getField_FLUXNET <- function(source,
                                        Year = as.integer(stringr::str_sub(site.data$TIMESTAMP, 1, 4)),
                                        Day = as.integer(stringr::str_sub(site.data$TIMESTAMP, 7, 8)),
                                        ymd = site.data$TIMESTAMP,
-                                       Lon_FLUXNET = as.numeric(lon),
-                                       Lat_FLUXNET = as.numeric(lat),
-                                       Lon = round((as.numeric(lon) + 0.25) * 2) / 2 - 0.25,
-                                       Lat = round((as.numeric(lat) + 0.25) * 2) / 2 - 0.25)
+                                       Lon = as.numeric(lon),
+                                       Lat = as.numeric(lat))
 
       # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
       # umolCO2/m^2/s to kgC/m^2
@@ -189,10 +187,8 @@ getField_FLUXNET <- function(source,
                                        Year = as.integer(stringr::str_sub(site.data$TIMESTAMP, 1, 4)),
                                        Day = as.integer(stringr::str_sub(site.data$TIMESTAMP, 7, 8)),
                                        ymd = site.data$TIMESTAMP,
-                                       Lon_FLUXNET = as.numeric(lon),
-                                       Lat_FLUXNET = as.numeric(lat),
-                                       Lon = round((as.numeric(lon) + 0.25) * 2) / 2 - 0.25,
-                                       Lat = round((as.numeric(lat) + 0.25) * 2) / 2 - 0.25)
+                                       Lon = as.numeric(lon),
+                                       Lat = as.numeric(lat))
       
       # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
       # divides by a 1000 to convert gC/m^2 to kgC/m^2
@@ -244,6 +240,8 @@ getField_FLUXNET <- function(source,
       site.data.selected <- cbind(site.data.selected, to.cbind)
       setnames(site.data.selected, "to.cbind", quant@name)
       
+      site.data.selected$Day <- as.integer(lubridate::yday(lubridate::ymd(site.data.selected$ymd)))
+      
       # remove leap days and / or convert day to day
       if (rm.leap == TRUE) {
         indx <- which(site.data.selected$Day == 60 & leap_year(site.data.selected$Year))
@@ -289,14 +287,12 @@ getField_FLUXNET <- function(source,
   
   # select the required columns for the current quantity
   if (quant@id %in% variables.cfluxes) {
-    FLUXNET.cfluxes %>% select(Year, Day, Lon, Lat, Lon_FLUXNET, Lat_FLUXNET, quant@id) -> quant.data
+    FLUXNET.cfluxes %>% select(Year, Day, Lon, Lat, quant@id) -> quant.data
   }
   
   # creating a data table with the lon/lat
-  gridcells <- data.table(Lon = as.numeric(round((unique(FLUXNET.cfluxes$Lon_FLUXNET) + 0.25) * 2) / 2 - 0.25),
-                          Lat = as.numeric(round((unique(FLUXNET.cfluxes$Lat_FLUXNET) + 0.25) * 2) / 2 - 0.25),
-                          Lon_FLUXNET = as.numeric(unique(FLUXNET.cfluxes$Lon_FLUXNET)),
-                          Lat_FLUXNET = as.numeric(unique(FLUXNET.cfluxes$Lat_FLUXNET)),
+  gridcells <- data.table(Lon = as.numeric(unique(FLUXNET.cfluxes$Lon)),
+                          Lat = as.numeric(unique(FLUXNET.cfluxes$Lat)),
                           Code = unique(FLUXNET.cfluxes$Code),
                           Name = unique(FLUXNET.cfluxes$Name))
   field.id <-
