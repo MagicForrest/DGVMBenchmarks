@@ -24,7 +24,7 @@ params:
 
 #### Here select the benchmarks to do ####
 do_Global_Summary_Tables <- FALSE
-do_GCP_NBP <- TRUE
+do_GCP_NBP <- FALSE
 do_Biomes <- FALSE
 do_global_GPP <- FALSE
 do_global_LAI <- FALSE
@@ -1847,70 +1847,70 @@ if(do_FLUXNET){
   
   # # read the model output
   # # loop through model runs to be processed
-  # all_FLUXNET_Fields <- list()
-  # for(this_sim_Source in simulation_sources) {
-  #   
-  #   # check if file is present (if not don't include this run)
-  #   this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
-  #   if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
-  #     
-  #     # make local sources pointing to the simulation subrun directory
-  #     this_FLUXNET_Source <- this_sim_Source
-  #     this_FLUXNET_Source@dir <- this_benchmark_run_dir
-  #     
-  #     
-  #     for(this_flux_name in all_fluxnet_fluxes){
-  #       
-  #       
-  #       # read the full data and
-  #       suppressWarnings(
-  #         this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
-  #                                             this_benchmark@guess_var,
-  #                                             verbose = setting$verbose_read,
-  #                                             quick.read = settings$quick_read,
-  #                                             quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
-  #       )
-  #       
-  #       
-  #     }
-  #     
-  #     
-  #     # read the full data and
-  #     suppressWarnings(
-  #       this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
-  #                                           this_benchmark@guess_var,
-  #                                           verbose = setting$verbose_read,
-  #                                           quick.read = settings$quick_read,
-  #                                           quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
-  #     )
-  #     
-  #     
-  #     #merge with gridcell to find disturbance year, needed to reconstruct stand age
-  #     model_joined <- inner_join(this_simulation_regrowth@data, gridlist)
-  #     
-  #     #introduce some new variables, Age, age-bins and summary stats:
-  #     model_joined <- model_joined %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
-  #     model_regr <- model_joined %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
-  #     age <- model_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
-  #     age_bins <- age %>% group_by(Lat,Lon) %>% mutate(new_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
-  #     #remove entries where the number of sites which achieve this stand age is lower than 10.
-  #     counts_filtered <- age_bins %>% group_by(Biome,Age) %>% mutate(count= n()) %>% filter(count > 10) 
-  #     
-  #     
-  #     #summary stats on bins:
-  #     regrowth_mod_full <- counts_filtered %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
-  #                                                                                     AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
-  #                                                                                     AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
-  #                                                                                     bin_centres =  floor(mean(Age))) 
-  #     
-  #     
-  #     regrowth_mod_full$Source <- this_regrowth_Source@name
-  #     regrowth_full_dt <- rbindlist(list(regrowth_full_dt, regrowth_mod_full), fill = TRUE)
-  #     
-  #   } # if output file exists
-  #   
-  # } # for each simulation
-  # 
+  all_FLUXNET_Fields <- list()
+  for(this_sim_Source in simulation_sources) {
+
+    # check if file is present (if not don't include this run)
+    this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
+    if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
+
+      # make local sources pointing to the simulation subrun directory
+      this_FLUXNET_Source <- this_sim_Source
+      this_FLUXNET_Source@dir <- this_benchmark_run_dir
+
+
+      for(this_flux_name in all_fluxnet_fluxes){
+
+
+        # read the full data and
+        suppressWarnings(
+          this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
+                                              this_benchmark@guess_var,
+                                              verbose = setting$verbose_read,
+                                              quick.read = settings$quick_read,
+                                              quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+        )
+
+
+      }
+
+# 
+#       # read the full data and
+#       suppressWarnings(
+#         this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
+#                                             this_benchmark@guess_var,
+#                                             verbose = setting$verbose_read,
+#                                             quick.read = settings$quick_read,
+#                                             quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+#       )
+# 
+# 
+#       #merge with gridcell to find disturbance year, needed to reconstruct stand age
+#       model_joined <- inner_join(this_simulation_regrowth@data, gridlist)
+# 
+#       #introduce some new variables, Age, age-bins and summary stats:
+#       model_joined <- model_joined %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
+#       model_regr <- model_joined %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
+#       age <- model_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
+#       age_bins <- age %>% group_by(Lat,Lon) %>% mutate(new_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
+#       #remove entries where the number of sites which achieve this stand age is lower than 10.
+#       counts_filtered <- age_bins %>% group_by(Biome,Age) %>% mutate(count= n()) %>% filter(count > 10)
+# 
+# 
+#       #summary stats on bins:
+#       regrowth_mod_full <- counts_filtered %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
+#                                                                                       AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
+#                                                                                       AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
+#                                                                                       bin_centres =  floor(mean(Age)))
+# 
+# 
+#       regrowth_mod_full$Source <- this_regrowth_Source@name
+#       regrowth_full_dt <- rbindlist(list(regrowth_full_dt, regrowth_mod_full), fill = TRUE)
+
+    } # if output file exists
+
+  } # for each simulation
+
   # # set bin centres
   # regrowth_full_dt[, bin_centres := as.numeric(as.character(bin_centres))]
   # 

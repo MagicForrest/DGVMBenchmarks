@@ -16,6 +16,7 @@ getField_FLUXNET(
   day.night.method = "NT",
   first.year,
   last.year,
+  rm.leap = TRUE,
   data.cleaning = TRUE,
   qc.threshold = 0.5,
   ...
@@ -45,7 +46,9 @@ getField_FLUXNET(
 
 \item{last.year}{Optional, will exclude data beyond this year}
 
-\item{data.cleaning}{A logical, set to true to conduct data cleaning on FLUXNET2015 data}
+\item{rm.leap}{A logical, set to true to remove leap days}
+
+\item{data.cleaning}{A logical, set to true to apply data cleaning on FLUXNET2015 data}
 
 \item{qc.threshold}{Optional, set to a value between 0 and 1 below which data will be set to NA. Default is 0.5. Set to NULL to omit this from data cleaning}
 }
