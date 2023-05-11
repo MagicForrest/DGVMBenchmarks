@@ -32,7 +32,7 @@ do_global_BA <- FALSE
 do_Global_Biomass <- FALSE
 do_Pan_Biomass <- FALSE
 do_Regrowth <- FALSE
-do_FLUXNET <- FALSE
+do_FLUXNET <- TRUE
 
 #  **** SPECIAL SUBSETTING FOR STEFAN'S GLOBAL RETUNING  ****
 subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_16_random.csv", package = "DGVMBenchmarks"), header = TRUE, flush = TRUE)
@@ -1845,83 +1845,83 @@ if(do_FLUXNET){
                         last.year = 150,
                         metrics = character(0))
   
-  # read the model output
-  # loop through model runs to be processed
-  all_FLUXNET_Fields <- list()
-  for(this_sim_Source in simulation_sources) {
-    
-    # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
-    if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
-      
-      # make local sources pointing to the simulation subrun directory
-      this_FLUXNET_Source <- this_sim_Source
-      this_FLUXNET_Source@dir <- this_benchmark_run_dir
-      
-      
-      for(this_flux_name in all_fluxnet_fluxes){
-        
-        
-        # read the full data and
-        suppressWarnings(
-          this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
-                                              this_benchmark@guess_var,
-                                              verbose = setting$verbose_read,
-                                              quick.read = settings$quick_read,
-                                              quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
-        )
-        
-        
-      }
-      
-      
-      # read the full data and
-      suppressWarnings(
-        this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
-                                            this_benchmark@guess_var,
-                                            verbose = setting$verbose_read,
-                                            quick.read = settings$quick_read,
-                                            quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
-      )
-      
-      
-      #merge with gridcell to find disturbance year, needed to reconstruct stand age
-      model_joined <- inner_join(this_simulation_regrowth@data, gridlist)
-      
-      #introduce some new variables, Age, age-bins and summary stats:
-      model_joined <- model_joined %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
-      model_regr <- model_joined %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
-      age <- model_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
-      age_bins <- age %>% group_by(Lat,Lon) %>% mutate(new_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
-      #remove entries where the number of sites which achieve this stand age is lower than 10.
-      counts_filtered <- age_bins %>% group_by(Biome,Age) %>% mutate(count= n()) %>% filter(count > 10) 
-      
-      
-      #summary stats on bins:
-      regrowth_mod_full <- counts_filtered %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
-                                                                                      AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
-                                                                                      AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
-                                                                                      bin_centres =  floor(mean(Age))) 
-      
-      
-      regrowth_mod_full$Source <- this_regrowth_Source@name
-      regrowth_full_dt <- rbindlist(list(regrowth_full_dt, regrowth_mod_full), fill = TRUE)
-      
-    } # if output file exists
-    
-  } # for each simulation
-  
-  # set bin centres
-  regrowth_full_dt[, bin_centres := as.numeric(as.character(bin_centres))]
-  
-  # and finally plot
-  regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGcwood_kgCm2_med,
-                                                                                 col = Source)) +
-    geom_errorbar(aes(ymin=AGcwood_kgCm2_10, ymax=AGcwood_kgCm2_90, col = Source)) +
-    facet_wrap(~Biome, ncol = 2, scales = "fixed" ) +
-    labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) # + geom_hline(yintercept = 10, col = "grey")
-  
-  print(regrowth_plot)
+  # # read the model output
+  # # loop through model runs to be processed
+  # all_FLUXNET_Fields <- list()
+  # for(this_sim_Source in simulation_sources) {
+  #   
+  #   # check if file is present (if not don't include this run)
+  #   this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
+  #   if(file.exists(file.path(this_benchmark_run_dir, paste0(this_benchmark@guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_benchmark@guess_var, ".out.gz")))) {
+  #     
+  #     # make local sources pointing to the simulation subrun directory
+  #     this_FLUXNET_Source <- this_sim_Source
+  #     this_FLUXNET_Source@dir <- this_benchmark_run_dir
+  #     
+  #     
+  #     for(this_flux_name in all_fluxnet_fluxes){
+  #       
+  #       
+  #       # read the full data and
+  #       suppressWarnings(
+  #         this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
+  #                                             this_benchmark@guess_var,
+  #                                             verbose = setting$verbose_read,
+  #                                             quick.read = settings$quick_read,
+  #                                             quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+  #       )
+  #       
+  #       
+  #     }
+  #     
+  #     
+  #     # read the full data and
+  #     suppressWarnings(
+  #       this_simulation_FLUXNET <- getField(source = this_regrowth_Source,
+  #                                           this_benchmark@guess_var,
+  #                                           verbose = setting$verbose_read,
+  #                                           quick.read = settings$quick_read,
+  #                                           quick.read.file = paste(this_benchmark@guess_var, version_label, sep = "_"))
+  #     )
+  #     
+  #     
+  #     #merge with gridcell to find disturbance year, needed to reconstruct stand age
+  #     model_joined <- inner_join(this_simulation_regrowth@data, gridlist)
+  #     
+  #     #introduce some new variables, Age, age-bins and summary stats:
+  #     model_joined <- model_joined %>% select(Lat,Lon,Year,Total,Forest_sum,Natural_sum,distyear,Biome)
+  #     model_regr <- model_joined %>% group_by(Lat,Lon) %>% filter(Year >= distyear)
+  #     age <- model_regr %>% group_by(Lat,Lon) %>% mutate(Age = Year - distyear)
+  #     age_bins <- age %>% group_by(Lat,Lon) %>% mutate(new_bin = cut(Age, breaks=seq(0,300,10),include.lowest = TRUE,ordered_result = TRUE))
+  #     #remove entries where the number of sites which achieve this stand age is lower than 10.
+  #     counts_filtered <- age_bins %>% group_by(Biome,Age) %>% mutate(count= n()) %>% filter(count > 10) 
+  #     
+  #     
+  #     #summary stats on bins:
+  #     regrowth_mod_full <- counts_filtered %>% group_by(new_bin, Biome) %>% summarise(AGcwood_kgCm2_med = median(Total),
+  #                                                                                     AGcwood_kgCm2_10 = quantile(Total, c(.10) ),
+  #                                                                                     AGcwood_kgCm2_90 = quantile(Total, c(.90) ),
+  #                                                                                     bin_centres =  floor(mean(Age))) 
+  #     
+  #     
+  #     regrowth_mod_full$Source <- this_regrowth_Source@name
+  #     regrowth_full_dt <- rbindlist(list(regrowth_full_dt, regrowth_mod_full), fill = TRUE)
+  #     
+  #   } # if output file exists
+  #   
+  # } # for each simulation
+  # 
+  # # set bin centres
+  # regrowth_full_dt[, bin_centres := as.numeric(as.character(bin_centres))]
+  # 
+  # # and finally plot
+  # regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGcwood_kgCm2_med,
+  #                                                                                col = Source)) +
+  #   geom_errorbar(aes(ymin=AGcwood_kgCm2_10, ymax=AGcwood_kgCm2_90, col = Source)) +
+  #   facet_wrap(~Biome, ncol = 2, scales = "fixed" ) +
+  #   labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) # + geom_hline(yintercept = 10, col = "grey")
+  # 
+  # print(regrowth_plot)
   
 }
 ```
