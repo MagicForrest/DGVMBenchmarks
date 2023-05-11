@@ -53,13 +53,13 @@ read_GCP <- function(data_file,
   # define the GCP data source
   # note that the "format" and "dir" arguments is arbitrary because we are short-cutting DGVMTools's normal means for reading in data 
   GCP_Source <- defineSource(id = "GCP",
-                             name = "Global Carbon Project",
+                             name = "GCP NBP",
                              dir = input_dir,
                              format = GUESS)
   
   # calculate the residual 
-  GCP_full_dt[, NEE := `fossil emissions excluding carbonation` - `atmospheric growth` - `ocean sink` - `cement carbonation sink`]
-  #GCP_full_dt[, NEE := get(land_sink_col_name) + get(imbalance_col_name) - get(luc_col_name)]
+  GCP_full_dt[, NBP := `fossil emissions excluding carbonation` - `atmospheric growth` - `ocean sink` - `cement carbonation sink`]
+  #GCP_full_dt[, NBP := get(land_sink_col_name) + get(imbalance_col_name) - get(luc_col_name)]
   
  
   # hack this into a DGVMTools::Field object

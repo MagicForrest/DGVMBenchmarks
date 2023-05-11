@@ -1,11 +1,11 @@
-#' Full Spatial Comparison
+#' Full Temporal Comparison
 #' 
 #' SOme blah
-#' @param benchmark An object of class Benchmark which described the benchmark to be performed.  Needed only for its "guess_var" and "datasets" slots.
-#' @param all_maps A list of all spatial values Fields to be compared (both data and simulations, which of these are data are identified from the benchmark argument)
+#' @param benchmark An object of class Benchmark which described the benchmark to be performed.  Needed only for its "guess_layers" and "datasets" slots.
+#' @param all_ts A list of all spatial values Fields to be compared (both data and simulations, which of these are data are identified from the benchmark argument)
 #' @param all_trends A list of all trend Fields to be compared (structure as above))
 #' @param all_seasonal A list of all seasonal Fields to be compared (structure as above))
-#' @param new_model,old_model Characters strings defing the new and old model runs from a "new minus old" comparisons)
+#' @param new_model,old_model Characters strings defiinng the new and old model runs from a "new minus old" comparisons)
 #' 
 #' @name fullSpatialComparison
 #' @rdname fullSpatialComparison
@@ -15,7 +15,7 @@
 #' @return A list'o'lists
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}
 
-fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_seasonal = NULL, new_model = NULL, old_model = NULL) {
+fullTemporalComparison <- function(benchmark, all_ts, all_trends = NULL, all_seasonal = NULL, new_model = NULL, old_model = NULL) {
   
   # determine the dataset names
   all_datasets <- c()
@@ -25,7 +25,7 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
   
   # determine the simulation names
   all_sims <- c()
-  for(this_field in all_maps) {
+  for(this_field in all_ts) {
     if(!this_field@source@name %in% all_datasets) all_sims <- append(all_sims,this_field@source@name)
   }
   
@@ -42,11 +42,13 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
       comparision_name <- paste0(this_sim, " - ", this_dataset)
       
       #### SPATIAL VALUES COMPARISONS ####
+      print(this_sim)
+      print(names(all_ts))
       suppressWarnings(
-        spatial_comparisons_list[[comparision_name]] <- compareLayers(field1 = all_maps[[this_sim]],
-                                                                      field2 = all_maps[[this_dataset]],
-                                                                      layers1 =  benchmark@guess_var, 
-                                                                      layers2 = benchmark@guess_var, 
+        spatial_comparisons_list[[comparision_name]] <- compareLayers(field1 = all_ts[[this_sim]],
+                                                                      field2 = all_ts[[this_dataset]],
+                                                                      layers1 =  benchmark@guess_layers, 
+                                                                      layers2 = benchmark@guess_layers, 
                                                                       show.stats = FALSE))
         
        
@@ -67,13 +69,13 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
       if(!missing(all_seasonal) & !is.null(all_seasonal)) {
         this_simulation_only_positive <- layerOp(all_seasonal[[this_sim]],
                                                  operator = function(x){pmax(x,0)},
-                                                 layers = benchmark@guess_var, 
-                                                 new.layer = benchmark@guess_var)
+                                                 layers = benchmark@guess_layers, 
+                                                 new.layer = benchmark@guess_layers)
         suppressWarnings(
           seasonal_comparisons_list[[comparision_name]] <- compareLayers(field1 = this_simulation_only_positive,
                                                                          field2 = all_seasonal[[this_dataset]],
-                                                                         layers1 = benchmark@guess_var,
-                                                                         layers2 = benchmark@guess_var, 
+                                                                         layers1 = benchmark@guess_layers,
+                                                                         layers2 = benchmark@guess_layers, 
                                                                          do.seasonality = TRUE, 
                                                                          show.stats = FALSE))
       }
@@ -90,10 +92,10 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
     
     #### SPATIAL VALUES COMPARISONS ####
     suppressWarnings(
-      spatial_comparisons_list[[comparision_name]] <- compareLayers(field1 = all_maps[[new_model]],
-                                                                    field2 = all_maps[[old_model]],
-                                                                    layers1 =  benchmark@guess_var, 
-                                                                    layers2 = benchmark@guess_var, 
+      spatial_comparisons_list[[comparision_name]] <- compareLayers(field1 = all_ts[[new_model]],
+                                                                    field2 = all_ts[[old_model]],
+                                                                    layers1 =  benchmark@guess_layers, 
+                                                                    layers2 = benchmark@guess_layers, 
                                                                     show.stats = FALSE))
     
     #### TRENDS COMPARISONS ####
@@ -111,20 +113,20 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
       # before doing comparison, set all (incorrectly) negative GPPs to zero
       this_simulation1_only_positive <- layerOp(all_seasonal[[new_model]],
                                                 operator = function(x){pmax(x,0)},
-                                                layers = benchmark@guess_var, 
-                                                new.layer = benchmark@guess_var)
+                                                layers = benchmark@guess_layers, 
+                                                new.layer = benchmark@guess_layers)
       
       this_simulation2_only_positive <- layerOp(all_seasonal[[old_model]],
                                                 operator = function(x){pmax(x,0)},
-                                                layers = benchmark@guess_var, 
-                                                new.layer = benchmark@guess_var)
+                                                layers = benchmark@guess_layers, 
+                                                new.layer = benchmark@guess_layers)
       
       
       suppressWarnings(
         seasonal_comparisons_list[[comparision_name]] <- compareLayers(field1 = this_simulation1_only_positive,
                                                                        field2 = this_simulation2_only_positive,
-                                                                       layers1 = benchmark@guess_var,
-                                                                       layers2 = benchmark@guess_var, 
+                                                                       layers1 = benchmark@guess_layers,
+                                                                       layers2 = benchmark@guess_layers, 
                                                                        do.seasonality = TRUE, 
                                                                        show.stats = FALSE))
     }

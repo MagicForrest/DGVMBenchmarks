@@ -16,7 +16,7 @@
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}
 #' 
 
-areaWeightedTotal <- function(x, area_unit = "m^2") {
+areaWeightedTotal <- function(x, area_unit = "m^2", lon_centres = seq(-179.75, 179.75, by = 0.5), lat_centres = seq(-89.75, 89.75, by = 0.5) ) {
   
   # for handling layer names of summed layers
   summed_prefix <- "Area_summed"
@@ -30,7 +30,7 @@ areaWeightedTotal <- function(x, area_unit = "m^2") {
   
   # suppress warnings because of potential warning when setting keys after averaging away all dimensions
   suppressWarnings(
-    addArea(x, area_unit) %>%
+    addArea(x, area_unit, lon_centres = lon_centres, lat_centres = lat_centres) %>%
       multiplyAllByArea(summed_prefix) %>%
       selectLayers(all_summed_layers) %>% 
       aggregateSpatial(method = "sum"))
