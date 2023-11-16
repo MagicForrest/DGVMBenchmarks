@@ -102,14 +102,14 @@ benchmark_GCP <- function(simulation_sources,
                            title = "Global NBP", 
                            subtitle = NULL, 
                            y.label = "Global NBP (PgC/year)",
-                           text.multiplier = 1.5, 
+                           text.multiplier = 2.5, 
                            sizes = 1)
   
   # make a simple data.frame to put numbers on the plot, and then add it to the plot
   global.numbers.df <- data.frame(x= rep(as.Date(paste(this_benchmark@first.year), "%Y")), 
                                   y = c(6, 5, 4), 
                                   label = all_NBP_labels_vector)
-  NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 6, hjust = 0, col = "black")
+  NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 8, hjust = 0, col = "black")
   print(NBP_plot)
   
   # calculate R^2 on this data
@@ -128,7 +128,7 @@ benchmark_GCP <- function(simulation_sources,
     
     for(this_sim_Source in settings$all_simulation_Sources_list) {
       
-      # subset and aggregrage the already read data
+      # subset and aggregate the already read data
       # if the provided spatial yields a valid extent, use the crop function
       possible.error <- try (extent(settings$spatial_extent), silent=TRUE )
       # note that data.tables *do* return a valid extent, but we don't want to crop with that here (hence the second condition)
