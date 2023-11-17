@@ -23,16 +23,16 @@ params:
 ```{r benchmark selection and script parameters, echo=FALSE}
 
 #### Here select the benchmarks to do ####
-do_Global_Summary_Tables <- TRUE
-do_GCP_NBP <- TRUE
-do_Biomes <- TRUE
-do_global_GPP <- TRUE
-do_global_LAI <- TRUE
-do_global_BA <- TRUE
-do_Global_Biomass <- TRUE
-do_Pan_Biomass <- TRUE
-do_Regrowth <- TRUE
-do_FLUXNET <- FALSE
+do_Global_Summary_Tables <- FALSE
+do_GCP_NBP <- FALSE
+do_Biomes <- FALSE
+do_global_GPP <- FALSE
+do_global_LAI <- FALSE
+do_global_BA <- FALSE
+do_Global_Biomass <- FALSE
+do_Pan_Biomass <- FALSE
+do_Regrowth <- FALSE
+do_FLUXNET <- TRUE
 
 #  **** SPECIAL SUBSETTING FOR STEFAN'S GLOBAL RETUNING  ****
 subset_1600_gridcells <- read.table(system.file("extdata", "Gridlist", "gridlist_16_random.csv", package = "DGVMBenchmarks"), header = TRUE, flush = TRUE)
@@ -1856,6 +1856,8 @@ if(do_FLUXNET){
     #print(plotTemporal(all_fluxnet_temp_Fields))
   }
   
+  
+  # combine all requested variables into one Field
   FLUXNET_data_field <- copy(all_fluxnet_temp_Fields[[1]])
   if(length(names(all_fluxnet_temp_Fields)) > 1){
     for(this_temp_flux in names(all_fluxnet_temp_Fields)[2:length(names(all_fluxnet_temp_Fields))]){
@@ -1864,9 +1866,7 @@ if(do_FLUXNET){
     }
   }
   
-  
-  
-  # define the benchmark
+  # define the benhmark
   this_benchmark <- new("Benchmark",
                         id = "FLUXNET",
                         name = "FLUXNET",
@@ -1882,17 +1882,13 @@ if(do_FLUXNET){
                         metrics = character(0))
   
   # # read the model output
-  # # loop through model runs to be processed
   all_FLUXNET_Fields <- list()
   all_FLUXNET_Fields[["FLUXNET"]] <- FLUXNET_data_field
+  #  # # loop through model runs to be processed
   
   for(this_sim_Source in simulation_sources) {
     
-    # check if file is present (if not don't include this run)
-    this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
-    
     this_sim_all_layers_list <- list()
-    
     for(this_fluxnet_flux in this_benchmark@guess_layers) {
       
       if(this_fluxnet_flux == "GPP") {
@@ -1909,17 +1905,15 @@ if(do_FLUXNET){
       }
       
       
+      # check if file is present (if not don't include this run)
+      this_benchmark_run_dir <- file.path(this_sim_Source@dir,this_benchmark@simulation)
       if(file.exists(file.path(this_benchmark_run_dir, paste0(this_guess_var, ".out"))) || file.exists(file.path(this_benchmark_run_dir,  paste0(this_guess_var, ".out.gz")))) {
-        
-        
         
         # make local sources pointing to the simulation subrun directory
         this_FLUXNET_Source <- this_sim_Source
         this_FLUXNET_Source@dir <- this_benchmark_run_dir
         
-        
         for(this_flux_name in all_fluxnet_fluxes){
-          
           
           # read the full data and
           suppressWarnings(
@@ -1941,14 +1935,42 @@ if(do_FLUXNET){
     
     
     
-    # combine the individual modelled Fields (for GPP, NEE and Reco) into a sinlge field and save it 
+    # combine the individual modelled Fields (for GPP, NEE and Reco) into a single Field and save it 
     this_sim_field <- copy(this_sim_all_layers_list[[1]])
     if(length(names(this_sim_all_layers_list)) > 1){
       for(this_temp_flux in names(this_sim_all_layers_list)[2:length(names(this_sim_all_layers_list))]){
         this_sim_field <- copyLayers(from = this_sim_all_layers_list[[this_temp_flux]], to = this_sim_field, layer.names = this_temp_flux )
       }
     }
+    
+    # some lons and lats don't match from the LPJ-GUESS fluxnet gridlist with the FLUXNET data, so manually correct them here 
+    correction_df <- data.frame(
+      site = c("CH-Lae", "DE-Gri", "DE-Hai", "DE-Tha", "FI-Sod"),
+      lons_old = c(8.3650, 13.5126, 10.4530, 13.5652, 26.6378 ),
+      lons_new = c(8.36439, 13.51253, 10.45217, 13.56515, 26.63859),   
+      lats_old = c(47.4781, 50.9500, 51.0792, 50.9624, 67.3619),
+      lats_new = c(47.47833, 50.94947, 51.07921, 50.96256, 67.36239)
+    )    
+    
+    temp_dt <- copy(this_sim_field@data)
+    print(sort(unique(temp_dt[["Lon"]])))
+    prev <- sort(unique(temp_dt[["Lon"]]))
+    for(this_rowindex in 1:nrow(correction_df)){
+      #print( temp_dt[ Lon == correction_df[this_rowindex, "lons_old"] & Lat == correction_df[this_rowindex, "lats_old"], ])
+      # 
+      temp_dt[ Lon == correction_df[this_rowindex, "lons_old"] & Lat == correction_df[this_rowindex, "lats_old"],  c("Lon", "Lat") := list(correction_df[this_rowindex, "lons_new"], correction_df[this_rowindex, "lats_new"] )]
+      
+      
+    }
+    print(sort(unique(temp_dt[["Lon"]])))
+    print(sort(unique(temp_dt[["Lon"]])) - prev)
+    this_sim_field@data <- temp_dt
+    
     all_FLUXNET_Fields[[this_sim_Source@name]] <- this_sim_field
+    
+    
+    
+    
     
   } # for each simulation
   
@@ -1982,33 +2004,45 @@ if(do_FLUXNET){
   temp_data_Field@data <- temp_data_Field@data[ , Lat := round(Lat, decimal_places)]
   all_FLUXNET_Fields[["New Run"]] <- temp_data_Field
   
-  # CH-Lae, DE-Gri, DE-Tha, DK-Sor, FI-Hyy, FI-Sod, FR-Fon, FR-LBr, FR-Peu, IT-Col, IT-Lav, IT-MBo, IT-Noe, IT-Ren, IT-Sro, RU-Cok, RU-Fyo, US-Blo, US-Ha1, US-Los, US-MMS, US-Me2(??), US-NR1, US-PFa, 
   
-  # Loop across all sites
-  matched_sites <- 0
-  for(site_number in 1:nrow(all_FLUXNET_Fields[["FLUXNET"]]@spatial.extent)){
+  for(this_name in names(all_FLUXNET_Fields)){
     
-    this_site <- all_FLUXNET_Fields[["FLUXNET"]]@spatial.extent[site_number ,]
-    print(this_site$Code)
     
-    matched <- 0
-    for(this_Field in all_FLUXNET_Fields){
-      tada <- selectGridcells(this_Field, c(this_site$Lon, this_site$Lat), spatial.extent.id = this_site$Name)@data
-      if(nrow(tada) > 0 ) {
-        matched <- matched +1
+    # CH-Lae, DE-Gri, DE-Tha, DK-Sor, FI-Hyy, FI-Sod, FR-Fon, FR-LBr, FR-Peu, IT-Col, IT-Lav, IT-MBo, IT-Noe, IT-Ren, IT-Sro, RU-Cok, RU-Fyo, US-Blo, US-Ha1, US-Los, US-MMS, US-Me2(??), US-NR1, US-PFa, 
+    
+    # Loop across all sites
+    matched_sites <- 0
+    for(site_number in 1:nrow(all_FLUXNET_Fields[["FLUXNET"]]@spatial.extent)){
+      
+      this_site <- all_FLUXNET_Fields[["FLUXNET"]]@spatial.extent[site_number ,]
+      print(this_site$Code)
+      
+      matched <- 0
+      for(this_Field in all_FLUXNET_Fields){
+        tada <- selectGridcells(this_Field, c(this_site$Lon, this_site$Lat), spatial.extent.id = this_site$Name)@data
+        if(nrow(tada) > 0 ) {
+          matched <- matched +1
+        }
       }
+      # 
+      # for(this_Field in all_FLUXNET_Fields){
+      #   print(this_Field)
+      # }
+      
+      
+      if(matched ==3){
+        print("   ******  Got model")
+        matched_sites <- matched_sites +1
+      }
+      
+      
+      # print(plotTemporal(all_FLUXNET_Fields, layers = "GPP", gridcells = c(this_site$Lon, this_site$Lat)))
+      
     }
-    if(matched ==3){
-      print("   ******  Got model")
-      matched_sites <- matched_sites +1
-    }
-    
-    
-    # print(plotTemporal(all_FLUXNET_Fields, layers = "GPP", gridcells = c(this_site$Lon, this_site$Lat)))
+    print(paste("Numbers sites with model data = ", matched_sites))
+    # now plot...
     
   }
-  print(paste("Numbers sites with model data = ", matched_sites))
-  # now plot...
   
 }
 ```
