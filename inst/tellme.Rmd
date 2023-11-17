@@ -78,8 +78,8 @@ script_settings <- list(
   map_overlay = "coastlines",
   stats_lon = -130,
   stats_lat = -20,
-  map_text_multiplier = 2.5
-  
+  map_text_multiplier = 2.5,
+  map_annotation_text_size =7
 )
 
 
@@ -596,7 +596,7 @@ if(do_global_GPP & settings$doMapPlots){
                                                                          x = settings$stats_lon, y = settings$stats_lat),
                                                                     stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_GPP_totals))
-  GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+  GPP_abs_values_plot  <- GPP_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
   suppressWarnings(print(GPP_abs_values_plot))
   
 }
@@ -628,7 +628,7 @@ if(do_global_GPP & settings$doMapPlots){
                                stringsAsFactors = FALSE)  
     }
     metric_label_df$Facet <- factor(metric_label_df$Facet, levels = names(all_GPP_comparisons[["Values"]]))
-    GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+    GPP_diff_values_plot  <- GPP_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
     lat_offset <- lat_offset + 10  
   }
   
@@ -988,7 +988,7 @@ if(do_global_LAI & settings$doMapPlots){
                                                                          x = settings$stats_lon, y = settings$stats_lat),
                                                                     stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_LAI_totals))
-  LAI_abs_values_plot  <- LAI_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+  LAI_abs_values_plot  <- LAI_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
   suppressWarnings(print(LAI_abs_values_plot))
 }
 ```
@@ -1018,7 +1018,7 @@ if(do_global_LAI & settings$doMapPlots){
     }
     metric_label_df$Facet <- factor( metric_label_df$Facet, names(all_LAI_comparisons[["Values"]]))
     
-    LAI_diff_values_plot  <- LAI_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+    LAI_diff_values_plot  <- LAI_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
     lat_offset <- lat_offset + 10  
   }
   
@@ -1391,7 +1391,7 @@ if(do_global_BA & settings$doMapPlots){
                                                                         x = settings$stats_lon, y = settings$stats_lat),
                                                                    stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_BA_totals))
-  BA_abs_values_plot  <- BA_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+  BA_abs_values_plot  <- BA_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
   suppressWarnings(print(BA_abs_values_plot))
 }
 ```
@@ -1421,7 +1421,7 @@ if(do_global_BA & settings$doMapPlots){
     }
     metric_label_df$Facet <- factor( metric_label_df$Facet, names(all_BA_comparisons[["Values"]]))
     
-    BA_diff_values_plot  <- BA_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+    BA_diff_values_plot  <- BA_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
     lat_offset <- lat_offset + 10  
   }
   
@@ -2293,7 +2293,7 @@ if(do_Global_Biomass & settings$doMapPlots){
                                                                              x = settings$stats_lon, y = settings$stats_lat),
                                                                         stringsAsFactors = FALSE)
   total_label_df$Facet <- factor(total_label_df$Facet, levels = names(all_Biomass_totals))
-  Biomass_abs_values_plot  <- Biomass_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+  Biomass_abs_values_plot  <- Biomass_abs_values_plot  + geom_text(data = total_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
   suppressWarnings(print(Biomass_abs_values_plot))
 }
 ```
@@ -2323,7 +2323,7 @@ if(do_Global_Biomass & settings$doMapPlots){
     }
     metric_label_df$Facet <- factor( metric_label_df$Facet, names(all_Biomass_comparisons[["Values"]]))
     
-    Biomass_diff_values_plot  <- Biomass_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = 8)
+    Biomass_diff_values_plot  <- Biomass_diff_values_plot  + geom_text(data = metric_label_df,  mapping = aes(x = x, y = y, label = label), size = settings$map_annotation_text_size)
     lat_offset <- lat_offset + 10  
   }
   
