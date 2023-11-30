@@ -26,7 +26,7 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
     all_datasets <- append(all_datasets, this_dataset@source@name)
   }
 
-  if(length(Benchmark@datasets[[1]]) != 0){
+  if(length(benchmark@datasets[[1]]) != 0){
   # determine the simulation names
   all_sims <- c()
   for(this_field in all_maps) {
@@ -81,7 +81,7 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
     }
   }
   }
-  if(length(Benchmark@guess_layers) < 2){
+  if(length(benchmark@guess_layers) < 2){
   # also do a new minus old model comparison if values supplied
   if(!is.null(old_model) && !is.null(new_model)) {
 
@@ -132,8 +132,8 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
   }
   }
   # If you want to compare multiple layers of the field e.g. pft´s
-  if(length(Benchmark@guess_layers) > 1){
-    for (layer in Benchmark@guess_layers){
+  if(length(benchmark@guess_layers) > 1){
+    for (layer in benchmark@guess_layers){
       spatial_comparisons_list[layer] <- compareLayers(field1 = all_maps[[1]],
                                                        field2 = all_maps[[2]],
                                                        layers1 = layer,
