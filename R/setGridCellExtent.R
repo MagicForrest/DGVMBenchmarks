@@ -12,34 +12,34 @@
 setGridCellExtent <- function(input){
 
 if (input[["Directory"]][["spatial_extent_id"]] == "Spain"){
-spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_spain.txt", package = "TellMeEurope"), header = TRUE)
+spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_spain.txt", package = "DGVMBenchmarks"), header = TRUE)
 }
   else if (input[["Directory"]][["spatial_extent_id"]] == "France"){
-  spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_france.txt", package = "TellMeEurope"), header = TRUE)
+  spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_france.txt", package = "DGVMBenchmarks"), header = TRUE)
   }
     else if (input[["Directory"]][["spatial_extent_id"]] == "Switzerland"){
-    spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_switzerland.txt", package = "TellMeEurope"), header = TRUE)
+    spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_switzerland.txt", package = "DGVMBenchmarks"), header = TRUE)
     }
       else if (input[["Directory"]][["spatial_extent_id"]] == "Germany"){
-      spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_belgium.txt", package = "TellMeEurope"), header = TRUE)
+      spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_belgium.txt", package = "DGVMBenchmarks"), header = TRUE)
       }
         else if (input[["Directory"]][["spatial_extent_id"]] == "Czech Republic"){
-        spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_czech.txt", package = "TellMeEurope"), header = TRUE)
+        spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_czech.txt", package = "DGVMBenchmarks"), header = TRUE)
         }
           else if (input[["Directory"]][["spatial_extent_id"]] == "Poland"){
-          spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_poland.txt", package = "TellMeEurope"), header = TRUE)
+          spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_poland.txt", package = "DGVMBenchmarks"), header = TRUE)
           }
             else if (input[["Directory"]][["spatial_extent_id"]] == "Belgium"){
-            spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_belgium.txt", package = "TellMeEurope"), header = TRUE)
+            spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_belgium.txt", package = "DGVMBenchmarks"), header = TRUE)
             }
               else if (input[["Directory"]][["spatial_extent_id"]] == "Netherlands"){
-              spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_netherlands.txt", package = "TellMeEurope"), header = TRUE)
+              spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_netherlands.txt", package = "DGVMBenchmarks"), header = TRUE)
               }
                 else if (input[["Directory"]][["spatial_extent_id"]] == "Sweden"){
-                spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_sweden.txt", package = "TellMeEurope"), header = TRUE)
+                spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_sweden.txt", package = "DGVMBenchmarks"), header = TRUE)
                 }
                   else if (input[["Directory"]][["spatial_extent_id"]] == "Finland"){
-                  spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_finland.txt", package = "TellMeEurope"), header = TRUE)
+                  spatial_extent <- read.table(system.file("extdata","gridlists", "gridlist_finland.txt", package = "DGVMBenchmarks"), header = TRUE)
                   }
                     else if (input[["Directory"]][["spatial_extent_id"]] == "Europe"){
                     spatial_extent <- raster::extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72))
