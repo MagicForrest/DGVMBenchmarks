@@ -1,0 +1,192 @@
+Directory:
+  New: "C:/Users/Admin/Documents/tellus/simulations_061923/230615_optimal_new_reineke"
+  Data: ""
+  Old: "C:/Users/Admin/Documents/tellus/simulations_061923/230617_trunk"
+  Format: "GUESS"
+  Simulation_name: ["european_complications", "profound"]
+  spatial_extent_id: "Full"
+  custom_xmax: 
+  custom_xmin:
+  custom_ymax:
+  custom_ymin:
+  gridlist:
+
+Switches:
+  do_plots: TRUE
+  do_agpp: TRUE
+  do_cmass: TRUE
+  do_stem_density: TRUE
+  do_qdbh: TRUE
+  do_woody_growth: TRUE
+  do_profound: F
+  do_cmass_pft: T
+
+AGPP:
+  File_name: "agpp_twin_2001-2010"
+  Unit: "kg/m2/y"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Limits: [-1, 1]
+  Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
+  Axis_lim: [0, 3]
+  Layer: "Forest_sum"
+  Dataset_name: "LRF-GPP"
+  Dataset_longname: "Light Response Function GPP (LRF-GPP)"
+  Dataset_source: "Tagesson, T, et al.(2021).https://doi.org/10.1111/gcb.15424"
+  Dataset_description: "This dataset is sponsored by Torbern Tagesson"
+
+CMASS:
+  File_name: "cmass_plus10cm_sts_ext_patch_mean_twin_2010-2010"
+  Unit: "kg/m2"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2001
+  Last_year: 2010
+  Limits: [-15, 18]
+  Breaks: [-15, -10, -5, 0, 5, 10, 15]
+  Axis_lim: [0, 30]
+  Layer: "Forest_sum"
+  Dataset_name: "NFI"
+  Dataset_longname: "National Forest Inventory (NFI)"
+  Dataset_source: "Susanne Suvanto"
+  Dataset_description: "Biomass estimate based on national forest inventory data"
+
+W_GROWTH:
+  File_name: "cmass_wood_inc_plus10cm_sts_ext_patch_mean_twin_2001-2010"
+  Unit: "kg/m2/y"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2001
+  Last_year: 2010
+  Limits: [-1, 0.4]
+  Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
+  Axis_lim: [0, 1]
+  Layer: "Forest_sum"
+  Dataset_name: "NFI"
+  Dataset_longname: "National Forest Inventory (NFI)"
+  Dataset_source: "Susanne Suvanto"
+  Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
+
+STEM_DENSITY:
+  File_name: "dens_plus10cm_sts_ext_patch_mean_twin_2010-2010"
+  Unit: "indiv/ha"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Limits: [-1000, 1000]
+  Breaks: [-1000, -750, -500, -250, 0, 250, 500, 750, 1000]
+  Axis_lim: [0, 1500]
+  Layer: "Forest_sum"
+  Dataset_name: "NFI"
+  Dataset_longname: "National Forest Inventory (NFI)"
+  Dataset_source: "Susanne Suvanto"
+  Dataset_description: "Stem density from NFI data compiled from tmp5"
+
+QDBH:
+  File_name: "diam_g_plus10cm_sts_ext_patch_mean_twin_2010-2010"
+  Unit: "cm"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Limits: [-30, 30]
+  Breaks: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+  Axis_lim: [0, 60]
+  Layer: "Forest_sum"
+  Dataset_name: "NFI"
+  Dataset_longname: "National Forest Inventory (NFI)"
+  Dataset_source: "Susanne Suvanto"
+  Dataset_description: "QDBH estimated from NFI measurments"
+
+CMASS_pft:
+  File_name: "cmass_landscape_forest"
+  Unit: "kg/m2"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2000
+  Last_year: 2010
+  Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
+  Dataset_name: "NFI"
+  Dataset_longname: "National Forest Inventory (NFI)"
+  Dataset_source: "Susanne Suvanto"
+  Dataset_description: "Biomass estimate based on national forest inventory data"
+
+Profound_lai:
+  File_name: "lai"
+  Unit: "m2^m2"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Layer: "Forest_sum"
+  Dataset_name: "Profound"
+  Dataset_longname: "ProfoundData"
+  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+  Dataset_description: "Site stand data from the ProfoundData database"
+  
+Profound_cmass:
+  File_name: "cmass"
+  Unit: "kg/m2"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Layer: "Forest_sum"
+  Dataset_name: "Profound"
+  Dataset_longname: "ProfoundData"
+  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+  Dataset_description: "Site stand data from the ProfoundData database"
+  
+Profound_dens:
+  File_name: "densnew"
+  Unit: "indiv/ha"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Layer: "Forest_sum"
+  Dataset_name: "Profound"
+  Dataset_longname: "ProfoundData"
+  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+  Dataset_description: "Site stand data from the ProfoundData database"
+
+Profound_diam_g_plus10cm_sts_ext_st_mean:
+  File_name: "diam_g_plus10cm_sts_ext_st_mean"
+  Unit: "cm"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Layer: "Forest_sum"
+  Dataset_name: "Profound"
+  Dataset_longname: "ProfoundData"
+  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+  Dataset_description: "Site stand data from the ProfoundData database"
+  
+Profound_diam_plus10cm_sts_ext_st_mean:
+  File_name: "diam_plus10cm_sts_ext_st_mean"
+  Unit: "cm"
+  Id: ""
+  Name: ""
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Layer: "Forest_sum"
+  Dataset_name: "Profound"
+  Dataset_longname: "ProfoundData"
+  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+  Dataset_description: "Site stand data from the ProfoundData database"
+  

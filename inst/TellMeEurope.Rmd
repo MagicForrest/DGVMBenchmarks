@@ -1,0 +1,567 @@
+---
+title: "TellME Europe DGVMTools Benchmarking"
+author: "Karl Piltz"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true  # Optional: Table of Contents
+    toc_depth: 2  # Optional: Adjust TOC depth
+    toc_float: true  # Optional: Floating TOC
+---
+```{r setup, include=FALSE}
+library(ggplot2)
+theme_set(theme_bw())
+library(DGVMBenchmarks)
+library(DGVMTools)
+library(knitr)
+library(dplyr)
+library(kableExtra)
+library(tictoc)
+library(ggpubr)
+library(TellMeEurope)
+library(yaml)
+library(showtext) 
+showtext_auto()
+# start timer
+tic()
+```
+# Settings {.tabset}
+
+## Hide settings
+
+## Show settings
+```{r settings,  echo=T, warning=FALSE}
+source("C:/Users/Admin/Documents/tellus/Rscripts/for package/profound_config.R")
+# plot maps (turn off to save time)
+do_plots <- input[["Switches"]][["do_plots"]]
+# switches for which benchmarks to do
+do_agpp <- input[["Switches"]][["do_agpp"]]
+do_cmass <- input[["Switches"]][["do_cmass"]]
+do_stem_density <- input[["Switches"]][["do_stem_density"]]
+do_qdbh <- input[["Switches"]][["do_qdbh"]]
+do_woody_growth <- input[["Switches"]][["do_woody_growth"]]
+do_profound <- input[["Switches"]][["do_profound"]]
+do_cmass_pft <- input[["Switches"]][["do_cmass_pft"]]
+```
+***
+# AGPP {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["AGPP"]][["Dataset_description"]])
+```
+
+## AGPP difference Plots 
+```{r Difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_agpp){
+benchmark_name <- "AGPP"
+if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+    
+Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], first.year = as.numeric(input[[benchmark_name]][["First_year"]]), last.year = as.numeric(input[[benchmark_name]][["Last_year"]]), spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
+Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]}
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[1]],
+                      spatial_extent_id = input[["Directory"]][["spatial_extent_id"]],
+                      spatial.extent = spatial.extent,
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      agg.unit = input[[benchmark_name]][["Unit"]],
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+                      last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+                      limits = list(input[[benchmark_name]][["Limits"]]),
+                      breaks = list(input[[benchmark_name]][["Breaks"]]),
+                      ax_limits = list(input[[benchmark_name]][["Axis_lim"]]),
+                      metrics = c("r2","NME","RMSE"))
+
+tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names,do_plots = do_plots)
+summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
+metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
+all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+}
+```
+
+## AGPP Scatterplots 
+```{r AGPP_SCATTER, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+```
+
+# Cmass {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["CMASS"]][["Dataset_description"]])
+```
+
+## Cmass Difference plots
+```{r Cmass, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_cmass){
+  benchmark_name <- "CMASS"
+  if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+    
+Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
+Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[1]],
+                      spatial_extent_id = input[["Directory"]][["spatial_extent_id"]],
+                      spatial.extent = spatial.extent,
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      agg.unit = input[[benchmark_name]][["Unit"]],
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+                      last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+                      limits = list(input[[benchmark_name]][["Limits"]]),
+                      breaks = list(input[[benchmark_name]][["Breaks"]]),
+                      ax_limits = list(input[[benchmark_name]][["Axis_lim"]]),
+                      metrics = c("r2","NME","RMSE"))
+
+tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
+summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
+metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
+all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+}
+```
+
+## Cmass Scatterplots
+```{r cmass scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if(do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+```
+
+# Stem Density {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["STEM_DENSITY"]][["Dataset_description"]])
+```
+
+## Difference 
+```{r Stemdensity, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_stem_density){
+benchmark_name <- "STEM_DENSITY"
+if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+    
+Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
+Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[1]],
+                      spatial_extent_id = input[["Directory"]][["spatial_extent_id"]],
+                      spatial.extent = spatial.extent,
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      agg.unit = input[[benchmark_name]][["Unit"]],
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+                      last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+                      limits = list(input[[benchmark_name]][["Limits"]]),
+                      breaks = list(input[[benchmark_name]][["Breaks"]]),
+                      ax_limits = list(input[[benchmark_name]][["Axis_lim"]]),
+                      metrics = c("r2","NME","RMSE"))
+
+tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
+summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
+metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
+all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+}
+```
+
+## Stem Density Scatterplots
+```{r Stemdensity scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if(do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+```
+
+# QDBH {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["QDBH"]][["Dataset_description"]])
+```
+
+## QDBH Difference
+```{r QDBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_qdbh){
+benchmark_name <- "QDBH"
+if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+    
+Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
+Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[1]],
+                      spatial_extent_id = input[["Directory"]][["spatial_extent_id"]],
+                      spatial.extent = spatial.extent,
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      agg.unit = input[[benchmark_name]][["Unit"]],
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+                      last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+                      limits = list(input[[benchmark_name]][["Limits"]]),
+                      breaks = list(input[[benchmark_name]][["Breaks"]]),
+                      ax_limits = list(input[[benchmark_name]][["Axis_lim"]]),
+                      metrics = c("r2","NME","RMSE"))
+
+tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
+summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
+metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
+all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+}
+```
+
+## QDBH Scatterplots
+```{r QDBH Scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if(do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+```
+
+# Woody Growth {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["W_GROWTH"]][["Dataset_description"]])
+```
+
+## Woody Growth Difference
+```{r Woody growth difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_woody_growth){
+benchmark_name <- "W_GROWTH" 
+if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+    
+Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
+Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[1]],
+                      spatial_extent_id = input[["Directory"]][["spatial_extent_id"]],
+                      spatial.extent = spatial.extent,
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      agg.unit = input[[benchmark_name]][["Unit"]],
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+                      last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+                      limits = list(input[[benchmark_name]][["Limits"]]),
+                      breaks = list(input[[benchmark_name]][["Breaks"]]),
+                      ax_limits = list(input[[benchmark_name]][["Axis_lim"]]),
+                      metrics = c("r2","NME","RMSE"))
+
+tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
+summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
+metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
+all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+}
+```
+
+## Woody Growth Scatter
+```{r Woody growth scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if(do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+```
+
+# pft {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["CMASS_pft"]][["Dataset_description"]])
+```
+
+## pft cmass
+
+```{r pft cmass difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
+if (do_cmass_pft){
+benchmark_name <- "CMASS_pft" 
+if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+    
+Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
+Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[1]],
+                      spatial_extent_id = input[["Directory"]][["spatial_extent_id"]],
+                      spatial.extent = spatial.extent,
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      agg.unit = input[[benchmark_name]][["Unit"]],
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+                      last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+                      limits = list(input[[benchmark_name]][["Limits"]]),
+                      breaks = list(input[[benchmark_name]][["Breaks"]]),
+                      ax_limits = list(input[[benchmark_name]][["Axis_lim"]]),
+                      metrics = c("r2","NME","RMSE"))
+
+ TellMeEurope::fullSpatialBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list, do_plots = do_plots)
+# summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
+# metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
+# all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+}
+```
+
+# Summary table spatial mean
+```{r Summary table, echo=FALSE, message=FALSE, warning=FALSE}
+ if(nrow(summary_table) > 0) {
+   kable(summary_table) %>% kable_styling(full_width = TRUE)}
+```
+
+# Model-data Agreement Metrics 
+```{r Metric table, echo=FALSE, message=FALSE, warning=FALSE}
+if(nrow(metric_table) > 0) {
+   #substitute "r2" for something prettier in the "Metric" column
+  metric_table$Metric <- gsub(pattern = "r2", replacement = "R^2^", metric_table$Metric)
+  metric_table$`New Model Run` <- as.numeric(metric_table$`New Model Run`)
+  metric_table$`New Model Run` <- sprintf("%.3f", metric_table$`New Model Run`)
+   #print the table
+  kable(metric_table) %>% kable_styling(full_width = TRUE)}
+```
+
+# Profound {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["Profound"]][["Dataset_description"]])
+```
+
+## LAI
+```{r Profound LAI, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_profound){
+benchmark_name <- "Profound_lai"
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+
+    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[2]],
+                      
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      
+                      
+                      metrics = c("r2","NME","RMSE"))
+
+Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list)
+  
+}
+```
+
+## CMASS
+```{r Profound CMASS, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_profound){
+benchmark_name <- "Profound_cmass"
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+
+    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[2]],
+                      
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      
+                      
+                      metrics = c("r2","NME","RMSE"))
+
+Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list)
+  
+}
+```
+
+## DENSITY
+```{r Profound DENS, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_profound){
+benchmark_name <- "Profound_dens"
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+
+    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[2]],
+                      
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      
+                      
+                      metrics = c("r2","NME","RMSE"))
+
+Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list)
+  
+}
+```
+
+## QDBH
+```{r Profound QDBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_profound){
+benchmark_name <- "Profound_diam_g_plus10cm_sts_ext_st_mean"
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+
+    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[2]],
+                      
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      
+                      
+                      metrics = c("r2","NME","RMSE"))
+
+Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list)
+  
+}
+```
+
+## DBH
+```{r Profound DBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_profound){
+benchmark_name <- "Profound_diam_plus10cm_sts_ext_st_mean"
+this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
+if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+    this_data_Source <- all_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+
+    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+
+this_benchmark <- new("Benchmark",
+                      id = input[[benchmark_name]][["Id"]],
+                      name = input[[benchmark_name]][["Name"]],
+                      description = input[[benchmark_name]][["Description"]],
+                      file_name = input[[benchmark_name]][["File_name"]],
+                      simulation = input[["Directory"]][["Simulation_name"]][[2]],
+                      
+                      guess_var = input[[benchmark_name]][["Layer"]],
+                      guess_layers = input[[benchmark_name]][["Layer"]], 
+                      unit = input[[benchmark_name]][["Unit"]],
+                      
+                      datasets = list(Data.year.mean),
+                      dataset_source = input[[benchmark_name]][["Dataset_source"]],
+                      
+                      
+                      metrics = c("r2","NME","RMSE"))
+
+Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list)
+  
+}
+```
+
+## Profound metric table
+```{r Profound Metric table, echo=FALSE, message=FALSE, warning=FALSE}
+if(nrow(Profound_table) > 0) {
+   #substitute "r2" for something prettier in the "Metric" column
+  Profound_table$Metric <- gsub(pattern = "r2", replacement = "R^2^", Profound_table$Metric)
+  Profound_table$`New Model Run` <- as.numeric(Profound_table$`New Model Run`)
+  Profound_table$`New Model Run` <- sprintf("%.3f", Profound_table$`New Model Run`)
+  Profound_table$`Old Model Run` <- as.numeric(Profound_table$`Old Model Run`)
+  Profound_table$`Old Model Run` <- sprintf("%.3f", Profound_table$`Old Model Run`)
+   #print the table
+  kable(Profound_table) %>% kable_styling(full_width = TRUE)}
+```
+
+
+# Timing
+Total run time:
+``` {r time,echo=FALSE,message=FALSE}
+# report total run time
+toc()
+```
