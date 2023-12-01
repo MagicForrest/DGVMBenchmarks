@@ -59,18 +59,25 @@ this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["
 if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
     this_data_Source <- all_datasets[[1]]
     this_data_Source@dir <- this_dataset_run_dir
-    
+
 Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], first.year = as.numeric(input[[benchmark_name]][["First_year"]]), last.year = as.numeric(input[[benchmark_name]][["Last_year"]]), spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
 Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]}
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
+field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
 
+all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
-tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark1,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names,do_plots = do_plots)
-summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
-metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
-all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+
+summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
+#tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark1,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names,do_plots = do_plots)
+#summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
+#metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
+#all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
 }
 ```
 
