@@ -2,7 +2,7 @@
 % Please edit documentation in R/createBenchmark.R
 \name{createBenchmark}
 \alias{createBenchmark}
-\title{Title}
+\title{Create benchmark}
 \usage{
 createBenchmark(
   benchmark_name,
@@ -31,7 +31,7 @@ default is NULL which use the full extent of your fields.}
 the current benchmark class on which further analysis will be based.
 }
 \description{
-Title
+Create benchmark
 }
 \examples{
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)

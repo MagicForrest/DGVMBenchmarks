@@ -1,4 +1,4 @@
-#' Title
+#' Create benchmark
 #'
 #' @param benchmark_name The name of the current benchmark, 
 #' should follow the benchmark object name from ins file.
