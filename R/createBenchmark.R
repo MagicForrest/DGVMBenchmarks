@@ -17,7 +17,7 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 createBenchmark <- function(benchmark_name, input, simulation, Data.year.mean, spatial.extent = NULL ) {
   
-  new("Benchmark",
+  this_benchmark <- new("Benchmark",
       id = input[[benchmark_name]][["Id"]],
       name = input[[benchmark_name]][["Name"]],
       description = input[[benchmark_name]][["Description"]],
@@ -38,5 +38,6 @@ createBenchmark <- function(benchmark_name, input, simulation, Data.year.mean, s
       ax_limits = list(input[[benchmark_name]][["Axis_lim"]]),
       metrics = c("r2","NME","RMSE")
   )
+  return(this_benchmark)
 }
 
