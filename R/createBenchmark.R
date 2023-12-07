@@ -17,7 +17,7 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 createBenchmark <- function(benchmark_name, input, simulation, Data.year.mean, spatial.extent){
   
-  this_benchmark <- new("Benchmark",
+  this_benchmark <- new("benchmark",
       id = input[[benchmark_name]][["Id"]],
       name = input[[benchmark_name]][["Name"]],
       description = input[[benchmark_name]][["Description"]],
