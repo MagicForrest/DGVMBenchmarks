@@ -16,6 +16,31 @@
 #' @examples this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 createBenchmark <- function(benchmark_name, input, simulation, Data.year.mean, spatial.extent) {
+  ## Inizialise the Benchmark class, to further customize your own benchmark add slot to use later. ##
+  setClass(
+    "Benchmark",
+    slots = list(
+      id = "character",
+      name = "character",
+      description = "character",
+      file_name = "character",
+      simulation = "character",
+      spatial_extent_id = "character",
+      spatial.extent = "ANY",
+      guess_var = "character",
+      guess_layers = "character",
+      unit = "character",
+      agg.unit = "character",
+      datasets = "list",
+      dataset_source = "character",
+      first.year = "numeric",
+      last.year = "numeric",
+      limits = "list",
+      breaks = "list",
+      ax_limits = "list",
+      metrics = "character"
+    )
+  )
   
   this_benchmark <- new("Benchmark",
       id = input[[benchmark_name]][["Id"]],
