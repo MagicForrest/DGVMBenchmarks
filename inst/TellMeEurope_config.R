@@ -22,7 +22,7 @@ metric_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 Profound_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 ## Inizialise the Benchmark class, to further customize your own benchmark add slot to use later. ##
 setClass(
-  "Benchmark",
+  "benchmark",
   slots = list(
     id = "character",
     name = "character",
