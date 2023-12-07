@@ -133,16 +133,29 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
   }
   }
   # If you want to compare multiple layers of the field e.g. pft´s
-  if(length(benchmark@guess_layers) > 1){
-    for (layer in benchmark@guess_layers){
-      spatial_comparisons_list[layer] <- compareLayers(field1 = all_maps[[1]],
-                                                       field2 = all_maps[[2]],
-                                                       layers1 = layer,
-                                                       layers2 = layer)
+  if(length(benchmark@guess_layers) > 1 && length(all_datasets) != 0) {
+    for(this_sim in all_sims) {
+      for(this_dataset in all_datasets) {
+        for (layer in benchmark@guess_layers){
+          spatial_comparisons_list[layer] <- compareLayers(field1 = all_maps[[this_sim]],
+                                                          field2 = all_maps[[this_dataset]],
+                                                          layers1 = layer,
+                                                          layers2 = layer)
 
+    }
+      }
     }
   }
 
+  if(length(benchmark@guess_layers) > 1 && length(all_datasets) == 0) {
+    for (layer in benchmark@guess_layers){
+      spatial_comparisons_list[layer] <- compareLayers(field1 = all_maps[[1]],
+                                                        field2 = all_maps[[2]],
+                                                        layers1 = layer,
+                                                        layers2 = layer)
+          
+        }
+      }
   return(list(
     "Values" = spatial_comparisons_list,
     "Trend" = trend_comparisons_list,
