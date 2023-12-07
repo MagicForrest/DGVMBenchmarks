@@ -15,7 +15,7 @@ buildSummaryTable <- function(benchmark = this_benchmark, all_sim_full, summary_
   names(summary_line) <- summary_col_names
   if(length(benchmark@datasets[[1]]) != 0){
     for(this_dataset in benchmark@datasets) {
-      if(summary_table_lines$Dataset == "-"){summary_table_line$Dataset <- this_dataset@source@name}
+      if(summarylines$Dataset == "-"){summaryline$Dataset <- this_dataset@source@name}
     }}
   
   if(length(benchmark@datasets[[1]]) == 0){
