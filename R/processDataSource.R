@@ -19,13 +19,13 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     return(Data.year.mean)
   } else{
   # If dataset is present, check if directory and file path is valid.
-  this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
+  this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
   
   if (dir.exists(this_dataset_run_dir) &&
       file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
        file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz")))) {
         
-        this_data_Source <- all_datasets[[dataset]]
+        this_data_Source <- all_datasets[[1]]
         this_data_Source@dir <- file.path(this_dataset_run_dir)
         
         # If path valid and file exists, process field built from instruction file.
