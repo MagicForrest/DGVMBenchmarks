@@ -12,7 +12,7 @@
 #'
 #' @examples Data.year.mean <- processDataSource(all_datasets, input, benchmark_name, simulation = 1)
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
-processDataSource <- function(all_datasets, input, benchmark_name, simulation, dataset = 1) {
+processDataSource <- function(all_datasets, input, benchmark_name, simulation, spatial.extent, dataset = 1) {
   # If no dataset present, Data.year.mean is set to empty list.
   if (length(all_datasets) == 0) {
     Data.year.mean <- all_datasets
@@ -22,8 +22,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, d
   this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
   
   if (dir.exists(this_dataset_run_dir) &&
-      (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
-       file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz"))))) {
+      file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
+       file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz")))) {
         
         this_data_Source <- all_datasets[[dataset]]
         this_data_Source@dir <- file.path(this_dataset_run_dir)
