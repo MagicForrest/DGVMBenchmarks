@@ -17,31 +17,33 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
   if (length(all_datasets) == 0) {
     Data.year.mean <- all_datasets
     return(Data.year.mean)
-  } else{
-  # If dataset is present, check if directory and file path is valid.
-  this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
-  
-  if (dir.exists(this_dataset_run_dir) &&
-      file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
-       file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz")))) {
-        
-        this_data_Source <- all_datasets[[1]]
-        this_data_Source@dir <- file.path(this_dataset_run_dir)
-        
-        # If path valid and file exists, process field built from instruction file.
-        Data.year.mean <- DGVMTools::getField(source = this_data_Source,
-                                              quant = input[[benchmark_name]][["File_name"]],
-                                              layers = input[[benchmark_name]][["Layer"]],
-                                              first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
-                                              last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
-                                              spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],
-                                              spatial.extent = spatial.extent,
-                                              year.aggregate.method = "mean")
-        
-        Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
-        return(Data.year.mean)
-        }
-      }
+  } else {
+    # If the dataset is present, check if the directory and file path are valid.
+    this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
+    
+    if (dir.exists(this_dataset_run_dir) &&
+        (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
+         file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz"))))) {
+      
+      this_data_Source <- all_datasets[[dataset]]
+      this_data_Source@dir <- file.path(this_dataset_run_dir)
+      
+      # If the path is valid and the file exists, process the field built from the instruction file.
+      Data.year.mean <- DGVMTools::getField(
+        source = this_data_Source,
+        quant = input[[benchmark_name]][["File_name"]],
+        layers = input[[benchmark_name]][["Layer"]],
+        first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+        last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+        spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],
+        spatial.extent = spatial.extent,
+        year.aggregate.method = "mean"
+      )
+      
+      Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
+      return(Data.year.mean)
+    }
+  }
 }
 
 
