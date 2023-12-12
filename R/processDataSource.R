@@ -33,8 +33,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
         source = this_data_Source,
         quant = input[[benchmark_name]][["File_name"]],
         layers = input[[benchmark_name]][["Layer"]],
-        first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
-        last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+        #first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
+        #last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
         spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],
         spatial.extent = spatial.extent,
         year.aggregate.method = "mean"
