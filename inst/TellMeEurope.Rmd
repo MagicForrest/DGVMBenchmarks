@@ -69,10 +69,11 @@ all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
-#tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark1,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names,do_plots = do_plots)
-#summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
-#metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
-#all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+
+if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -91,14 +92,7 @@ cat(input[["CMASS"]][["Dataset_description"]])
 ```{r Cmass, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_cmass){
   benchmark_name <- "CMASS"
-  if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
-this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-    
-Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
-Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+  Data.year.mean <- processDataSource(all_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
@@ -111,11 +105,10 @@ all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
-
-# tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
-# summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
-# metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
-# all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -134,14 +127,8 @@ cat(input[["STEM_DENSITY"]][["Dataset_description"]])
 ```{r Stemdensity, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_stem_density){
 benchmark_name <- "STEM_DENSITY"
-if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
-this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-    
-Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
-Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+Data.year.mean <- processDataSource(all_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
@@ -154,11 +141,10 @@ all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
-
-# tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
-# summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
-# metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
-# all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -177,14 +163,8 @@ cat(input[["QDBH"]][["Dataset_description"]])
 ```{r QDBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_qdbh){
 benchmark_name <- "QDBH"
-if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
-this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-    
-Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
-Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+Data.year.mean <- processDataSource(all_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
@@ -197,11 +177,10 @@ all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
-
-# tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
-# summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
-# metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
-# all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -220,14 +199,8 @@ cat(input[["W_GROWTH"]][["Dataset_description"]])
 ```{r Woody growth difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_woody_growth){
 benchmark_name <- "W_GROWTH" 
-if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
-this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-    
-Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
-Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]} 
+
+Data.year.mean <- processDataSource(all_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
@@ -241,10 +214,10 @@ if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_compariso
 
 summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
 
-# tables <- TellMeEurope::Full_Benchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list,summary_col_names = summary_col_names, do_plots = do_plots)
-# summary_table <- tables[[1]] # Holds complete summary table line built in Full_Benchmark
-# metric_table <- tables[[2]]  # Holds complete metric table line built in Full_Benchmark
-# all_sim_full <- tables[[3]]  # Holds all simulations processed in Full_Benchmark
+if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -264,14 +237,8 @@ cat(input[["CMASS_pft"]][["Dataset_description"]])
 ```{r pft cmass difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
 if (do_cmass_pft){
 benchmark_name <- "CMASS_pft" 
-if(length(all_datasets) == 0){Data.year.mean <- all_datasets}else{
-this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[1]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz")))){
-    this_data_Source <- all_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-    
-Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]],layers = input[[benchmark_name]][["Layer"]], spatial.extent.id = input[["Directory"]][["spatial_extent_id"]], spatial.extent = spatial.extent, year.aggregate.method = "mean")
-Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]}else{Data.year.mean <- list()}} 
+
+Data.year.mean <- processDataSource(all_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
@@ -282,10 +249,6 @@ all_Fields_list <- field_lists[[2]]
 all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}}
-
-#summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)}
-
- # TellMeEurope::fullSpatialBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_simulation_Sources_list, do_plots = do_plots)}
 ```
 
 # Summary table spatial mean
@@ -315,12 +278,13 @@ cat(input[["Profound"]][["Dataset_description"]])
 ```{r Profound LAI, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
 benchmark_name <- "Profound_lai"
-this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
 
-    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+ this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
+ if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
+     this_data_Source <- all_datasets[[1]]
+     this_data_Source@dir <- this_dataset_run_dir
+ 
+     Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
     Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
@@ -372,6 +336,7 @@ Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark
 ```{r Profound QDBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
 benchmark_name <- "Profound_diam_g_plus10cm_sts_ext_st_mean"
+
 this_dataset_run_dir <- file.path(all_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
 if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
     this_data_Source <- all_datasets[[1]]
