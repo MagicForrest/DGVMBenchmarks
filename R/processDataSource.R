@@ -6,13 +6,13 @@
 #' @param benchmark_name name of current benchmark needed to direct input file
 #' @param simulation integer telling which simulation to use from the input list
 #' @param dataset can be changed if multiple datasets are used. Default is 1.
-#'
+#' @param layer Default = NULL (Selects all layers in dataset) overwrite with your input input[[benchmark_name]][["Layer"]]
 #' @return Data.year.mean (fully processed dataset field)
 #' @export
 #'
 #' @examples Data.year.mean <- processDataSource(all_datasets, input, benchmark_name, simulation = 1)
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
-processDataSource <- function(all_datasets, input, benchmark_name, simulation, spatial.extent, dataset = 1) {
+processDataSource <- function(all_datasets, input, benchmark_name, simulation, spatial.extent, layer = NULL, dataset = 1) {
   # If no dataset present, Data.year.mean is set to empty list.
   if (length(all_datasets) == 0) {
     Data.year.mean <- all_datasets
@@ -32,7 +32,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
       Data.year.mean <- DGVMTools::getField(
         source = this_data_Source,
         quant = input[[benchmark_name]][["File_name"]],
-        layers = input[[benchmark_name]][["Layer"]],
+        layers = layer, #input[[benchmark_name]][["Layer"]],
         #first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
         #last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
         spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],

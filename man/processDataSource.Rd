@@ -5,7 +5,15 @@
 \title{Process the current dataset to be used in benchmark.
 Checks if directory and file exists and then processes the dataset source to get field based on ins file.}
 \usage{
-processDataSource(all_datasets, input, benchmark_name, simulation, dataset = 1)
+processDataSource(
+  all_datasets,
+  input,
+  benchmark_name,
+  simulation,
+  spatial.extent,
+  layer = NULL,
+  dataset = 1
+)
 }
 \arguments{
 \item{all_datasets}{List of available datasets. (Can be empty)}
@@ -15,6 +23,8 @@ processDataSource(all_datasets, input, benchmark_name, simulation, dataset = 1)
 \item{benchmark_name}{name of current benchmark needed to direct input file}
 
 \item{simulation}{integer telling which simulation to use from the input list}
+
+\item{layer}{Default = NULL (Selects all layers in dataset) overwrite with your input input[\link{benchmark_name}][\link{"Layer"}]}
 
 \item{dataset}{can be changed if multiple datasets are used. Default is 1.}
 }
