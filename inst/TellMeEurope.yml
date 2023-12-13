@@ -1,6 +1,6 @@
 Directory:
   New: "C:/Users/Admin/Documents/tellus/simulations_061923/230615_optimal_new_reineke"
-  Data: ""
+  Data: "C:/Users/Admin/Documents/tellus/Data"
   Old: "C:/Users/Admin/Documents/tellus/simulations_061923/230617_trunk"
   Format: "GUESS"
   Simulation_name: ["european_complications", "profound"]
@@ -18,15 +18,15 @@ Switches:
   do_stem_density: TRUE
   do_qdbh: TRUE
   do_woody_growth: TRUE
-  do_profound: F
+  do_profound: T
   do_cmass_pft: T
 
 AGPP:
   File_name: "agpp_twin_2001-2010"
   Unit: "kg/m2/y"
-  Id: ""
-  Name: ""
-  Description: ""
+  Id: "AGPP"
+  Name: "AGPP"
+  Description: "Annual GPP"
   First_year: 2010
   Last_year: 2010
   Limits: [-1, 1]
@@ -35,15 +35,15 @@ AGPP:
   Layer: "Forest_sum"
   Dataset_name: "LRF-GPP"
   Dataset_longname: "Light Response Function GPP (LRF-GPP)"
-  Dataset_source: "Tagesson, T, et al.(2021).https://doi.org/10.1111/gcb.15424"
+  Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
   Dataset_description: "This dataset is sponsored by Torbern Tagesson"
 
 CMASS:
   File_name: "cmass_plus10cm_sts_ext_patch_mean_twin_2010-2010"
   Unit: "kg/m2"
-  Id: ""
-  Name: ""
-  Description: ""
+  Id: "Cmass"
+  Name: "Cmass"
+  Description: "Cmass"
   First_year: 2001
   Last_year: 2010
   Limits: [-15, 18]
@@ -52,15 +52,15 @@ CMASS:
   Layer: "Forest_sum"
   Dataset_name: "NFI"
   Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Susanne Suvanto"
+  Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
 W_GROWTH:
   File_name: "cmass_wood_inc_plus10cm_sts_ext_patch_mean_twin_2001-2010"
   Unit: "kg/m2/y"
-  Id: ""
-  Name: ""
-  Description: ""
+  Id: "W_growth"
+  Name: "W_growth"
+  Description: "Woody Growth"
   First_year: 2001
   Last_year: 2010
   Limits: [-1, 0.4]
@@ -69,15 +69,15 @@ W_GROWTH:
   Layer: "Forest_sum"
   Dataset_name: "NFI"
   Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Susanne Suvanto"
+  Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
 
 STEM_DENSITY:
   File_name: "dens_plus10cm_sts_ext_patch_mean_twin_2010-2010"
   Unit: "indiv/ha"
-  Id: ""
-  Name: ""
-  Description: ""
+  Id: "stem density"
+  Name: "stem density"
+  Description: "stem density"
   First_year: 2010
   Last_year: 2010
   Limits: [-1000, 1000]
@@ -86,15 +86,15 @@ STEM_DENSITY:
   Layer: "Forest_sum"
   Dataset_name: "NFI"
   Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Susanne Suvanto"
+  Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Stem density from NFI data compiled from tmp5"
 
 QDBH:
   File_name: "diam_g_plus10cm_sts_ext_patch_mean_twin_2010-2010"
   Unit: "cm"
-  Id: ""
-  Name: ""
-  Description: ""
+  Id: "QDBH"
+  Name: "QDBH"
+  Description: "QDBH"
   First_year: 2010
   Last_year: 2010
   Limits: [-30, 30]
@@ -103,7 +103,7 @@ QDBH:
   Layer: "Forest_sum"
   Dataset_name: "NFI"
   Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Susanne Suvanto"
+  Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "QDBH estimated from NFI measurments"
 
 CMASS_pft:
@@ -117,7 +117,7 @@ CMASS_pft:
   Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
   Dataset_name: "NFI"
   Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Susanne Suvanto"
+  Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
 Profound_lai:
