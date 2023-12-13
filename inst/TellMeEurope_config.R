@@ -1,5 +1,5 @@
 ## Read input file, set parameters ##
-input <- yaml::yaml.load_file("C:\\Users\\Admin\\Documents\\tellus\\Rscripts\\for package\\tellme_profound.yml")
+input <- yaml::yaml.load_file(file.path(system.file("TellMeEurope.yml", package = "DGVMBenchmarks")))
 ## Extract the file name and unit element from yml to define quantity and format
 format <- defineAllQuantities(input = input)
 
