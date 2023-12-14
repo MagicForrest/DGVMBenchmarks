@@ -27,6 +27,8 @@ AGPP:
   Id: "AGPP"
   Name: "AGPP"
   Description: "Annual GPP"
+  First_year_Data: NULL
+  Last_year_Data: NULL
   First_year: 2010
   Last_year: 2010
   Limits: [-1, 1]
