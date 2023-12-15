@@ -46,6 +46,8 @@ CMASS:
   Id: "Cmass"
   Name: "Cmass"
   Description: "Cmass"
+  First_year_Data: NULL
+  Last_year_Data: NULL
   First_year: 2001
   Last_year: 2010
   Limits: [-15, 18]
@@ -63,6 +65,8 @@ W_GROWTH:
   Id: "W_growth"
   Name: "W_growth"
   Description: "Woody Growth"
+  First_year_Data: NULL
+  Last_year_Data: NULL
   First_year: 2001
   Last_year: 2010
   Limits: [-1, 0.4]
@@ -80,6 +84,8 @@ STEM_DENSITY:
   Id: "stem density"
   Name: "stem density"
   Description: "stem density"
+  First_year_Data: NULL
+  Last_year_Data: NULL
   First_year: 2010
   Last_year: 2010
   Limits: [-1000, 1000]
@@ -97,6 +103,8 @@ QDBH:
   Id: "QDBH"
   Name: "QDBH"
   Description: "QDBH"
+  First_year_Data: NULL
+  Last_year_Data: NULL
   First_year: 2010
   Last_year: 2010
   Limits: [-30, 30]
@@ -114,6 +122,8 @@ CMASS_pft:
   Id: ""
   Name: ""
   Description: ""
+  First_year_Data: NULL
+  Last_year_Data: NULL
   First_year: 2000
   Last_year: 2010
   Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
