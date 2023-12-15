@@ -28,17 +28,28 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
       this_data_Source <- all_datasets[[dataset]]
       this_data_Source@dir <- file.path(this_dataset_run_dir)
       
-      # If the path is valid and the file exists, process the field built from the instruction file.
-      Data.year.mean <- DGVMTools::getField(
+      
+      if (!is.null(input[[benchmark_name]][["First_year_Data"]]) && !is.null(input[[benchmark_name]][["Last_year_Data"]])){
+        Data.year.mean <- DGVMTools::getField(
         source = this_data_Source,
         quant = input[[benchmark_name]][["File_name"]],
-        layers = layer, #input[[benchmark_name]][["Layer"]],
-        #first.year = as.numeric(input[[benchmark_name]][["First_year"]]),
-        #last.year = as.numeric(input[[benchmark_name]][["Last_year"]]),
+        layers = layer,
+        first.year = as.numeric(input[[benchmark_name]][["First_year_Data"]]),
+        last.year = as.numeric(input[[benchmark_name]][["Last_year_Data"]]),
         spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],
         spatial.extent = spatial.extent,
         year.aggregate.method = "mean"
-      )
+      )}
+        else{
+          Data.year.mean <- DGVMTools::getField(
+            source = this_data_Source,
+            quant = input[[benchmark_name]][["File_name"]],
+            layers = layer,
+            spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],
+            spatial.extent = spatial.extent,
+            year.aggregate.method = "mean")
+        
+      }
       
       Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
       return(Data.year.mean)
