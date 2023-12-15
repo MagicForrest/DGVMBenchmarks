@@ -69,7 +69,7 @@ convertUnits <- function(df, from, to, benchmark = this_benchmark) {
     conversion_factor <- 1e6
   } else if (from == "gC/m^2/year" & to == "kgC/m^2/year") {
     conversion_factor <- 0.001
-  }
+  } else {stop("Invalid conversion. Please provide valid conversion.")}
   
   df@data[[benchmark@guess_layers]] <- df@data[[benchmark@guess_layers]] / conversion_factor
   
