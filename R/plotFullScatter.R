@@ -40,4 +40,33 @@ plotFullScatter <- function(Benchmark, all_sim_full) {
       coord_fixed(ratio = 1)
     plot(densplot1)
   }
+  
+  if(length(all_sim_full) > 1) {
+  #Plot sim1 against sim2
+  # Join by gridcell only keep cells present in both Model and Reference layers
+  sim1 <- data.frame(Lat = all_sim_full[[1]]@data$Lat, Lon = all_sim_full[[1]]@data$Lon, Sim1 = all_sim_full[[1]]@data[[Benchmark@guess_layers]]) #All plots!!!!
+  sim2<- data.frame( Lat = all_sim_full[[2]]@data$Lat, Lon = all_sim_full[[2]]@data$Lon , Sim2 = all_sim_full[[2]]@data[[Benchmark@guess_layers]]) #All Plots !!!!!
+  data<-dplyr::left_join(sim2,sim1)
+  data<- na.omit(data)
+  
+  
+  #Plot dataframe as density plot
+  densplot1<-ggplot(data = data, aes(x=Sim2, y=Sim1)) +
+    geom_bin2d(bins = 30) +
+    scale_fill_continuous(type = "viridis") +
+    theme_bw()+
+    geom_point(alpha=0.08)+
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red", size=1)+
+    xlim(Benchmark@ax_limits[[1]][1], Benchmark@ax_limits[[1]][2])+
+    ylim(Benchmark@ax_limits[[1]][1], Benchmark@ax_limits[[1]][2])+
+    labs(title = paste(all_sim_full[[1]]@source@name, "vs", all_sim_full[[2]]@source@name),
+         x = paste(all_sim_full[[2]]@source@name, Benchmark@id, Benchmark@unit),
+         y = paste(all_sim_full[[1]]@source@name, Benchmark@id, Benchmark@unit)) +
+    theme(plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
+          axis.title.x = element_text(size = 25),
+          axis.title.y = element_text(size = 25),
+          axis.text = element_text(size = 15))+
+    coord_fixed(ratio = 1)
+  plot(densplot1)
+  }
 }
