@@ -57,13 +57,3 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
   }
 }
 
-
-Data.year.mean <- DGVMTools::getField(
-  source = this_data_Source,
-  quant = input[[benchmark_name]][["File_name"]],
-  layers = layer,
-  
-  spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],
-  spatial.extent = spatial.extent,
-  year.aggregate.method = "mean")
-
