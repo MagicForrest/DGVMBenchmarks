@@ -23,12 +23,18 @@ convertUnits <- function(df, from, to, benchmark = this_benchmark) {
   }
   
   
-  if (from == "indiv/ha" && to == "indiv/km2") {
+  if (from == "indiv/ha" && to == "indiv/m2") {
+    conversion_factor <- 10000
+  } else if (from == "indiv/ha" && to == "indiv/km2") {
     conversion_factor <- 0.0001
   } else if (from == "indiv/m2" && to == "indiv/ha") {
-    conversion_factor <- 10000
+    conversion_factor <- 1 / 10000
   } else if (from == "indiv/m2" && to == "indiv/km2") {
-    conversion_factor <- 1000000
+    conversion_factor <- 0.000001
+  } else if (from == "indiv/km2" && to == "indiv/ha") {
+    conversion_factor <- 1 / 0.0001
+  } else if (from == "indiv/km2" && to == "indiv/m2") {
+    conversion_factor <- 1 / 0.000001
   } else if (from == "cm" & to == "m") {
     conversion_factor <- 0.01
   } else if (from == "cm" & to == "mm") {
