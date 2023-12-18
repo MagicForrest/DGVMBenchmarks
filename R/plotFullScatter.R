@@ -16,7 +16,7 @@ plotFullScatter <- function(Benchmark, all_sim_full) {
 
         # Join by gridcell only keep cells present in both Model and Reference layers
     data_df <- data.frame(Lat = this_sim@data$Lat, Lon = this_sim@data$Lon, Sim = this_sim@data[[Benchmark@guess_layers]]) #All plots!!!!
-    data_df_obs<- data.frame( Lat = Data.year.mean@data$Lat, Lon = Data.year.mean@data$Lon , obs = Data.year.mean@data[[Benchmark@guess_layers]]) #All Plots !!!!!
+    data_df_obs<- data.frame( Lat = Benchmark@datasets[[1]]@data$Lat, Lon = Benchmark@datasets[[1]]@data$Lon , obs = Benchmark@datasets[[1]]@data[[Benchmark@guess_layers]]) #All Plots !!!!!
     data<-dplyr::left_join(data_df_obs,data_df)
     data<- na.omit(data)
 
