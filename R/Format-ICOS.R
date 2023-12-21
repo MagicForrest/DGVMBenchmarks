@@ -16,11 +16,14 @@
 #' "<quant@id>.out" (also "<quant@id>.out.gz")
 #' @param verbose A logical, set to true to give progress/debug information
 #' @param UT.threshold USTAR threshold, variable (VUT) or constant (CUT). VUT is default
-#' @param partition.method Partition method, e.g. REF, USTAR50, MEAN. REF is default
+#' @param method Method, e.g. REF, USTAR50, MEAN. REF is default
 #' @param day.night.method Nighttime (NT) or daytime (DT) partition method for GPP and Reco. Default is NT
 #' @param NEE.day.night Set to DAY or NIGHT for only daytime or nighttime NEE. Default is NULL
 #' @param first.year Optional, will exclude data before this year
 #' @param last.year Optional, will exclude data beyond this year
+#' @param rm.leap A logical, set to true to remove leap days
+#' @param data.cleaning A logical, set to true to apply data cleaning
+#' @param qc.threshold Optional, set to a value between 0 and 1 below which data will be set to NA. Default is 0.5. Set to NULL to omit this from data cleaning 
 #' @import stringr
 #' @import dplyr
 #' @import lubridate
@@ -36,18 +39,20 @@ getField_ICOS <- function(source,
                           file.name,
                           verbose,
                           UT.threshold = "VUT",
-                          partition.method = "REF",
+                          method = "REF",
                           day.night.method = "NT",
                           NEE.day.night = NULL,
                           first.year,
                           last.year,
+                          rm.leap = TRUE,
+                          data.cleaning = TRUE,
+                          qc.threshold = 0.5,
                           ...) {
   
   ### CHECK ARGUEMENTS
   if(!missing(first.year) & !missing(last.year) ) {
     if(first.year > last.year) stop("first.year cannot be greater than last.year!")
   }
-  
   
   # variables that are currently supported
   variables.cfluxes = c("GPP", "NEE", "Reco")
@@ -93,36 +98,92 @@ getField_ICOS <- function(source,
     
     
     # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
-    # adds day and night to get daily values
     # divides by a 1000 to convert gC/m^2 to kgC/m^2
     for (v in variables.cfluxes) {
       if (v == "NEE" & is.null(NEE.day.night) == T) {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
-          select(ends_with(partition.method)) %>%
+          select(ends_with(method)) %>%
         rowSums() / 1000
         
       } else if (v == "NEE" & is.null(NEE.day.night) == F) {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
-          select(contains(partition.method)) %>%
+          select(contains(method)) %>%
           select(ends_with(NEE.day.night)) %>%
         rowSums() / 1000
         
       } else {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
-          select(contains(partition.method)) %>%
+          select(contains(method)) %>%
           select(contains(day.night.method)) %>%
           rowSums() / 1000
-      }
+      } 
+      
+      # data cleaning
+      if (data.cleaning == TRUE) {
+        
+        # set negative GPP / Reco values to NA
+        if (quant@name == "GPP" | quant@name == "Reco") {
+          to.cbind[which(to.cbind < 0)] <- NA
 
+          # select diff < 50%
+          temp <- select(site.data, contains(UT.threshold)) %>%
+            select(contains(quant@name)) %>%
+            select(contains(method)) %>%
+            select(contains("DT") | contains("NT"))
+
+          colnames(temp) <- c("DT", "NT")
+
+          for (c in 1:length(to.cbind)) {
+            if (is.na(temp$DT[c]) == T | is.na(temp$NT[c]) == T) {
+              next
+            }
+            else if (temp$DT[c] == 0 & temp$NT[c] == 0) {
+              next
+            }
+            else if (100 * (abs(temp$NT[c] - temp$DT[c]) / (abs(temp$NT[c] + temp$DT[c]) / 2)) >= 50) {
+              to.cbind[c] <- NA
+            }
+          }
+        }
+
+        # set values with NEE QC below threshold as NA
+        if (is.null(qc.threshold) == FALSE) {
+          if (day.night.method == "NT" | day.night.method == "NIGHT") {
+            day.night.method.NEE <- "NIGHT"
+          } else if (day.night.method == "DT" | day.night.method == "DAY") {
+            day.night.method.NEE <- "DAY"
+          }
+          
+          nee.qc.data <- select(site.data, contains(UT.threshold)) %>%
+            select(contains("NEE")) %>% select(contains(method)) %>%
+            select(contains(day.night.method.NEE)) %>% select(ends_with("QC"))
+          
+          to.cbind[which(nee.qc.data < qc.threshold)] <- NA
+        }
+        
+      }
+      
       site.data.selected <- cbind(site.data.selected, to.cbind)
       setnames(site.data.selected, "to.cbind", v)
     }
     
     # convert day to day of year (doy)
     site.data.selected$Day <- as.integer(lubridate::yday(lubridate::ymd(site.data.selected$ymd)))
+    
+    # remove leap days and / or convert day to day
+    if (rm.leap == TRUE) {
+      indx <- which(site.data.selected$Day == 60 & leap_year(site.data.selected$Year))
+      if (length(indx) > 0) {
+        site.data.selected <- site.data.selected[-indx,]
+        
+        site.data.selected$Day[which(leap_year(site.data.selected$Year) &
+                                       site.data.selected$Day > 60)] <- site.data.selected$Day[which(leap_year(site.data.selected$Year) &
+                                                                                                       site.data.selected$Day > 60)]  - 1
+      }
+    }
     
     if (!missing(first.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) < first.year,]
@@ -217,21 +278,21 @@ ICOS.quantities <- list(
   new("Quantity",
       id = "GPP",
       name = "GPP",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("ICOS"),
       standard_name = "gross_primary_productivity"),
   new("Quantity",
       id = "NEE",
       name = "NEE",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("ICOS"),
       standard_name = "net_ecosystem_exchange"),
   new("Quantity",
       id = "Reco",
       name = "Reco",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("ICOS"),
       standard_name = "ecosystem_respiration")

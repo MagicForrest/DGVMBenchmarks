@@ -12,11 +12,14 @@ getField_ICOS(
   file.name,
   verbose,
   UT.threshold = "VUT",
-  partition.method = "REF",
+  method = "REF",
   day.night.method = "NT",
   NEE.day.night = NULL,
   first.year,
   last.year,
+  rm.leap = TRUE,
+  data.cleaning = TRUE,
+  qc.threshold = 0.5,
   ...
 )
 }
@@ -36,7 +39,7 @@ getField_ICOS(
 
 \item{UT.threshold}{USTAR threshold, variable (VUT) or constant (CUT). VUT is default}
 
-\item{partition.method}{Partition method, e.g. REF, USTAR50, MEAN. REF is default}
+\item{method}{Method, e.g. REF, USTAR50, MEAN. REF is default}
 
 \item{day.night.method}{Nighttime (NT) or daytime (DT) partition method for GPP and Reco. Default is NT}
 
@@ -45,6 +48,12 @@ getField_ICOS(
 \item{first.year}{Optional, will exclude data before this year}
 
 \item{last.year}{Optional, will exclude data beyond this year}
+
+\item{rm.leap}{A logical, set to true to remove leap days}
+
+\item{data.cleaning}{A logical, set to true to apply data cleaning}
+
+\item{qc.threshold}{Optional, set to a value between 0 and 1 below which data will be set to NA. Default is 0.5. Set to NULL to omit this from data cleaning}
 }
 \value{
 A list containing firstly the data.table containing the data, and secondly the STA.info
