@@ -215,10 +215,32 @@ getField_FLUXNET <- function(source,
 
       # data cleaning
       if (data.cleaning == TRUE) {
+ 
         # set negative GPP / Reco values to NA
         if (quant@name == "GPP" | quant@name == "Reco") {
           to.cbind[which(to.cbind < 0)] <- NA
+          
+          # select diff < 50%
+          temp <- select(site.data, contains(UT.threshold)) %>%
+            select(contains(quant@name)) %>%
+            select(contains(partition.method)) %>%
+            select(contains("DT") | contains("NT"))
+          
+          colnames(temp) <- c("DT", "NT")
+          
+          for (c in 1:length(to.cbind)) {
+            if (is.na(temp$DT[c]) == T | is.na(temp$NT[c]) == T) {
+              next
+            }
+            else if (temp$DT[c] == 0 & temp$NT[c] == 0) {
+              next
+            }
+            else if (100 * (abs(temp$NT[c] - temp$DT[c]) / (abs(temp$NT[c] + temp$DT[c]) / 2)) >= 50) {
+              to.cbind[c] <- NA
+            }
+          }
         }
+    
 
         # set values with NEE QC below threshold as NA
         if (is.null(qc.threshold) == FALSE) {
@@ -275,13 +297,14 @@ getField_FLUXNET <- function(source,
       }
     }
     
-    if (exists("FLUXNETCH4.cfluxes") == T & exists("FLUXNET2015.cfluxes") == T) {
-      FLUXNET.cfluxes <- rbind(FLUXNETCH4.cfluxes, FLUXNET2015.cfluxes)
-    } else if (exists("FLUXNETCH4.cfluxes") == T) {
-      FLUXNET.cfluxes <- FLUXNETCH4.cfluxes
-    } else {
-      FLUXNET.cfluxes <- FLUXNET2015.cfluxes
-    }
+  }
+  
+  if (exists("FLUXNETCH4.cfluxes") == T & exists("FLUXNET2015.cfluxes") == T) {
+    FLUXNET.cfluxes <- rbind(FLUXNETCH4.cfluxes, FLUXNET2015.cfluxes)
+  } else if (exists("FLUXNETCH4.cfluxes") == T) {
+    FLUXNET.cfluxes <- FLUXNETCH4.cfluxes
+  } else {
+    FLUXNET.cfluxes <- FLUXNET2015.cfluxes
   }
   
   
@@ -355,21 +378,21 @@ FLUXNET.quantities <- list(
   new("Quantity",
       id = "GPP",
       name = "GPP",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("FLUXNET"),
       standard_name = "gross_primary_productivity"),
   new("Quantity",
       id = "NEE",
       name = "NEE",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("FLUXNET"),
       standard_name = "net_ecosystem_exchange"),
   new("Quantity",
       id = "Reco",
       name = "Reco",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("FLUXNET"),
       standard_name = "ecosystem_respiration")
