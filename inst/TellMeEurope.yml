@@ -1,6 +1,6 @@
 Directory:
   New: "C:/Users/Admin/Documents/tellus/Simulaitons_240122_to_karl/231221_european_applications_full_reineke"
-  Data: ""
+  Data: "C:/Users/Admin/Documents/tellus/Data"
   Old: ""
   Format: "GUESS"
   Simulation_name: ["european_applications", "profound"]
@@ -13,17 +13,17 @@ Directory:
 
 Switches:
   do_plots: TRUE
-  do_agpp: F
-  do_cmass: F
-  do_stem_density: F
+  do_agpp: T
+  do_cmass: T
+  do_stem_density: T
   do_qdbh: F
-  do_woody_growth: F
+  do_woody_growth: T
   do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: T
 
 AGPP:
-  File_name: "agpp_twin_2001-2010"
+  File_name: "agpp"
   Unit: "kg/m2/y"
   Id: "AGPP"
   Name: "AGPP"
@@ -42,7 +42,7 @@ AGPP:
   Dataset_description: "This dataset is sponsored by Torbern Tagesson"
 
 CMASS:
-  File_name: "cmass_plus10cm_sts_ext_patch_mean_twin_2010-2010"
+  File_name: "cmass_plus10cm_sts"
   Unit: "kg/m2"
   Id: "Cmass"
   Name: "Cmass"
@@ -61,7 +61,7 @@ CMASS:
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
 W_GROWTH:
-  File_name: "cmass_wood_inc_plus10cm_sts_ext_patch_mean_twin_2001-2010"
+  File_name: "cmass_wood_inc_plus10cm_sts"
   Unit: "kg/m2/y"
   Id: "W_growth"
   Name: "W_growth"
@@ -80,7 +80,7 @@ W_GROWTH:
   Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
 
 STEM_DENSITY:
-  File_name: "dens_plus10cm_sts_ext_patch_mean_twin_2010-2010"
+  File_name: "dens_plus10cm_sts"
   Unit: "indiv/ha"
   Id: "stem density"
   Name: "stem density"
