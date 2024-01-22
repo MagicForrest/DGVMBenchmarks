@@ -42,6 +42,7 @@ do_qdbh <- input[["Switches"]][["do_qdbh"]]
 do_woody_growth <- input[["Switches"]][["do_woody_growth"]]
 do_profound <- input[["Switches"]][["do_profound"]]
 do_cmass_pft <- input[["Switches"]][["do_cmass_pft"]]
+do_cmass_pft1 <- input[["Switches"]][["do_cmass_pft1"]]
 ```
 ***
 # AGPP {.tabset}
@@ -57,7 +58,7 @@ if (do_agpp){
 benchmark_name <- "AGPP"
 
 # Process your dataset
-Data.year.mean <- processDataSource(all_datasets, input, benchmark_name, simulation = 1)
+Data.year.mean <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 1)
 
 # Build your current benchmark from input YAML file  
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
@@ -68,7 +69,7 @@ all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
 ## Make comparison onjects from your fields
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name)#, old_model = all_simulation_Sources_list[[2]]@name)
 
 ## Spatial plotting of your comparisons
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
@@ -107,7 +108,7 @@ field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name)#, old_model = all_simulation_Sources_list[[2]]@name)
 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
@@ -143,12 +144,12 @@ this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.ye
 field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
+#all_sim_full[[1]] <- convertUnits(all_sim_full[[1]],"indiv/ha","indiv/km2")
 all_sim_full[[1]] <- convertUnits(all_sim_full[[1]],"indiv/ha","indiv/km2")
-all_sim_full[[2]] <- convertUnits(all_sim_full[[2]],"indiv/ha","indiv/km2")
 all_Fields_list[[2]] <- convertUnits(all_Fields_list[[2]],"indiv/ha","indiv/km2")
-all_Fields_list[[3]] <- convertUnits(all_Fields_list[[3]],"indiv/ha","indiv/km2")
+# all_Fields_list[[3]] <- convertUnits(all_Fields_list[[3]],"indiv/ha","indiv/km2")
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name)#, old_model = all_simulation_Sources_list[[2]]@name)
 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
@@ -184,7 +185,7 @@ field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name)#, old_model = all_simulation_Sources_list[[2]]@name)
 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
@@ -220,7 +221,7 @@ field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name)#, old_model = all_simulation_Sources_list[[2]]@name)
 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
@@ -238,7 +239,7 @@ if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table
 if(do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
-# pft {.tabset}
+# pft cmass difference {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
 cat(input[["CMASS_pft"]][["Dataset_description"]])
@@ -262,7 +263,7 @@ all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = 
 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}}
 ```
-# pft {.tabset}
+# pft cmass {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
 cat(input[["CMASS_pft"]][["Dataset_description"]])
