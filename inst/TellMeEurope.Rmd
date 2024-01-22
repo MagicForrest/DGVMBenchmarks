@@ -244,7 +244,7 @@ if(do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchm
 cat(input[["CMASS_pft"]][["Dataset_description"]])
 ```
 
-## pft cmass
+## pft cmass comparison
 
 ```{r pft cmass difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
 if (do_cmass_pft){
@@ -261,6 +261,30 @@ all_Fields_list <- field_lists[[2]]
 all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}}
+```
+# pft {.tabset}
+
+```{r, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["CMASS_pft"]][["Dataset_description"]])
+```
+
+## pft cmass 
+
+```{r pft cmass, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
+if (do_cmass_pft1){
+benchmark_name <- "CMASS_pft" 
+
+Data.year.mean <- processDataSource(all_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+
+field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+
+
+if(do_plots){plotSpatialField(Benchmark = this_benchmark, all_Fields_list = all_Fields_list)}}
 ```
 
 # Summary table spatial mean
