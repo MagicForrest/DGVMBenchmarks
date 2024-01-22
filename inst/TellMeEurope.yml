@@ -1,9 +1,9 @@
 Directory:
-  New: "C:/Users/Admin/Documents/tellus/simulations_061923/230615_optimal_new_reineke"
-  Data: "C:/Users/Admin/Documents/tellus/Data"
-  Old: "C:/Users/Admin/Documents/tellus/simulations_061923/230617_trunk"
+  New: "C:/Users/Admin/Documents/tellus/Simulaitons_240122_to_karl/231221_european_applications_full_reineke"
+  Data: ""
+  Old: ""
   Format: "GUESS"
-  Simulation_name: ["european_complications", "profound"]
+  Simulation_name: ["european_applications", "profound"]
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -13,12 +13,12 @@ Directory:
 
 Switches:
   do_plots: TRUE
-  do_agpp: TRUE
-  do_cmass: TRUE
-  do_stem_density: TRUE
-  do_qdbh: TRUE
-  do_woody_growth: TRUE
-  do_profound: T
+  do_agpp: F
+  do_cmass: F
+  do_stem_density: F
+  do_qdbh: F
+  do_woody_growth: F
+  do_profound: F
   do_cmass_pft: T
 
 AGPP:
