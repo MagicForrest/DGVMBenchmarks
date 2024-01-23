@@ -35,6 +35,8 @@ convertUnits <- function(df, from, to, benchmark = this_benchmark) {
     conversion_factor <- 1 / 0.0001
   } else if (from == "indiv/km2" && to == "indiv/m2") {
     conversion_factor <- 1 / 0.000001
+  } else if ( from == "indiv/km2" && to == "indiv/ha"){
+    conversion_factor <- 100
   } else if (from == "cm" & to == "m") {
     conversion_factor <- 0.01
   } else if (from == "cm" & to == "mm") {
