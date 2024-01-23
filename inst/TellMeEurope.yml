@@ -1,7 +1,7 @@
 Directory:
-  New: "C:/Users/Admin/Documents/tellus/Simulaitons_240122_to_karl/231221_european_applications_full_reineke"
-  Data: "C:/Users/Admin/Documents/tellus/Data_240122"
-  Old: ""
+  New: "C:/Users/Admin/Documents/tellus/simulations_061923/230615_optimal_new_reineke"
+  Data: "C:/Users/Admin/Documents/tellus/Data"
+  Old: "C:/Users/Admin/Documents/tellus/simulations_061923/230617_trunk"
   Format: "GUESS"
   Simulation_name: ["european_applications", "profound"]
   spatial_extent_id: "Full"
@@ -16,10 +16,10 @@ Switches:
   do_agpp: T
   do_cmass: T
   do_stem_density: T
-  do_qdbh: F
+  do_qdbh: T
   do_woody_growth: T
   do_profound: F
-  do_cmass_pft: F
+  do_cmass_pft: T
   do_cmass_pft1: T
 
 AGPP:
