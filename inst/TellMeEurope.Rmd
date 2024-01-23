@@ -63,20 +63,20 @@ Data.year.mean <- processDataSource(all_datasets, input, spatial.extent = spatia
 # Build your current benchmark from input YAML file  
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
-# Process simulations and order together with dataset
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
 field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-## Make comparison onjects from your fields
+## Make comparison objects from your fields, used for comparison only!
 all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name)#, old_model = all_simulation_Sources_list[[2]]@name)
 
-## Spatial plotting of your comparisons
+## Spatial plotting of your comparisons, handels multiple layers to.
 if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
-## Table making 
+## Table making, extracts the spatial mean from your fields.
 summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
-
+## Extracts statistical metrics from your fields.
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
