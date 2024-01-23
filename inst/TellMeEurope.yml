@@ -99,7 +99,7 @@ STEM_DENSITY:
   Dataset_description: "Stem density from NFI data compiled from tmp5"
 
 QDBH:
-  File_name: "diam_g_plus10cm_sts_ext_patch_mean_twin_2010-2010"
+  File_name: "diam_g_plus10cm_sts"
   Unit: "cm"
   Id: "QDBH"
   Name: "QDBH"
