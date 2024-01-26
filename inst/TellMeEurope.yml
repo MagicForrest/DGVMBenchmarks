@@ -1,7 +1,9 @@
 Directory:
   New: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
+  New_id: "With thinning"
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
   Old: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_no_harv"
+  Old_id: "W/O thinning"
   Format: "GUESS"
   Simulation_name: ["european_applications", "profound"]
   spatial_extent_id: "Full"
