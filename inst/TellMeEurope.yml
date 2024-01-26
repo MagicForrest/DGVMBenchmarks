@@ -41,7 +41,7 @@ AGPP:
   Dataset_name: "LRF-GPP"
   Dataset_longname: "Light Response Function GPP (LRF-GPP)"
   Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
-  Dataset_description: "This dataset is sponsored by Torbern Tagesson"
+  Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
 
 CMASS:
   File_name: "cmass_plus10cm_sts"
@@ -60,7 +60,7 @@ CMASS:
   Dataset_name: "NFI"
   Dataset_longname: "National Forest Inventory (NFI)"
   Dataset_source: "Global Forest Dynamics database"
-  Dataset_description: "Biomass estimate based on national forest inventory data"
+  Dataset_description: "Comparison of grid-cell level simulated values of above ground Carbon mass in forests from LPJ-GUESS to National Forest Inventory estimates for 2010."
 
 W_GROWTH:
   File_name: "cmass_wood_inc_plus10cm_sts"
@@ -130,9 +130,9 @@ CMASS_pft:
   First_year: 2000
   Last_year: 2010
   Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
-  Dataset_name: "NFI"
-  Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Global Forest Dynamics database"
+  Dataset_name: "LPJ GUESS"
+  Dataset_longname: "LPJ GUESS"
+  Dataset_source: "Simulation only"
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
 Profound_lai:
