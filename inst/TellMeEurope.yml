@@ -1,7 +1,7 @@
 Directory:
-  New: "C:/Users/Admin/Documents/tellus/simulations_061923/230615_optimal_new_reineke"
+  New: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
-  Old: "C:/Users/Admin/Documents/tellus/simulations_061923/230617_trunk"
+  Old: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_no_harv"
   Format: "GUESS"
   Simulation_name: ["european_applications", "profound"]
   spatial_extent_id: "Full"
