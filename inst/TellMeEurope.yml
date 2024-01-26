@@ -83,7 +83,7 @@ W_GROWTH:
 
 STEM_DENSITY:
   File_name: "dens_plus10cm_sts"
-  Unit: "indiv/km2"
+  Unit: "indiv/ha"
   Id: "stem density"
   Name: "stem density"
   Description: "stem density"
