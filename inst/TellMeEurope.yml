@@ -1,8 +1,8 @@
 Directory:
-  New: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_no_harv"
+  New: "C:\\Users\\Admin\\Documents\\tellus\\simulations_061923\\230617_trunk"
   New_id: "W/O Thinning"
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
-  Old: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
+  Old: "C:\\Users\\Admin\\Documents\\tellus\\simulations_061923\\230617_trunk_reineke"
   Old_id: "With thinning"
   Format: "GUESS"
   Simulation_name: ["european_applications", "profound"]
