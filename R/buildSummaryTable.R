@@ -9,7 +9,7 @@
 #'
 #' @examples buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
-buildSummaryTable <- function(benchmark = this_benchmark, all_sim_full, summary_col_names){
+buildSummaryTable <- function(benchmark = this_benchmark, all_sim_full, summary_col_names, input){
   
   summary_line <- as.list(rep("-", length(summary_col_names)))
   names(summary_line) <- summary_col_names
@@ -40,7 +40,7 @@ buildSummaryTable <- function(benchmark = this_benchmark, all_sim_full, summary_
     this_simulation_ymean <- suppressWarnings(aggregateSpatial(this_simulation, "mean"))
     summary_line[[this_simulation@source@name]] <- signif(this_simulation_ymean@data[[benchmark@guess_layers]], 3)
   }
-  if (summary_line[["New Model Run"]] != "-" || summary_line[["Old Model Run"]] != "-"){
+  if (summary_line[[input[["Directory"]][["New_id"]]]] != "-" || summary_line[[input[["Directory"]][["Old_id"]]]] != "-"){
     summary_table <- rbind(summary_table, summary_line)
     names(summary_table) <- summary_col_names}
   return(summary_table)
