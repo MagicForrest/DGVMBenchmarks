@@ -62,7 +62,7 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
   # do the NULL benchmarks
   
   
-  names(metric_table) <- col_names
+  #names(metric_table) <- col_names
   return(metric_table)
   
 }
