@@ -13,6 +13,7 @@ library(ggplot2)
 theme_set(theme_bw())
 library(DGVMBenchmarks)
 library(DGVMTools)
+library(TellMeEurope)
 library(knitr)
 library(dplyr)
 library(kableExtra)
@@ -71,13 +72,13 @@ all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
 ## Spatial plotting of your comparisons, handels multiple layers to.
-if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 ## Table making, extracts the spatial mean from your fields.
-summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
+summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 ## Extracts statistical metrics from your fields.
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
@@ -88,7 +89,7 @@ if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table
 
 ## AGPP Scatterplots 
 ```{r AGPP_SCATTER, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if (do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if (do_plots && length(all_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # Cmass {.tabset}
@@ -110,11 +111,11 @@ field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
-if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
-summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
+summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
@@ -146,16 +147,16 @@ this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.ye
 field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
-all_sim_full[[2]] <- convertUnits(all_sim_full[[2]],"indiv/ha","indiv/km2")
-all_sim_full[[1]] <- convertUnits(all_sim_full[[1]],"indiv/ha","indiv/km2")
-all_Fields_list[[2]] <- convertUnits(all_Fields_list[[2]],"indiv/ha","indiv/km2")
-all_Fields_list[[3]] <- convertUnits(all_Fields_list[[3]],"indiv/ha","indiv/km2")
+all_sim_full[[2]] <- convertUnits(all_sim_full[[2]],"indiv/m2","indiv/ha")
+all_sim_full[[1]] <- convertUnits(all_sim_full[[1]],"indiv/m2","indiv/ha")
+all_Fields_list[[2]] <- convertUnits(all_Fields_list[[2]],"indiv/m2","indiv/ha")
+all_Fields_list[[3]] <- convertUnits(all_Fields_list[[3]],"indiv/m2","indiv/ha")
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
-if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
-summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
+summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
@@ -187,11 +188,11 @@ field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
-if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
-summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
+summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
@@ -223,11 +224,11 @@ field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
-if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
-summary_table <- buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
+summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
@@ -238,7 +239,7 @@ if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table
 
 ## Woody Growth Scatter
 ```{r Woody growth scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(all_datasets) > 0){plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && length(all_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # pft cmass difference {.tabset}
@@ -261,9 +262,9 @@ field_lists <- getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_simulation_Sources_list[[1]]@name, old_model = all_simulation_Sources_list[[2]]@name)
 
-if(do_plots){plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}}
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}}
 ```
 # pft cmass {.tabset}
 
@@ -301,8 +302,8 @@ if(do_plots){plotSpatialField(Benchmark = this_benchmark, all_Fields_list = all_
 if(nrow(metric_table) > 0) {
    #substitute "r2" for something prettier in the "Metric" column
   metric_table$Metric <- gsub(pattern = "r2", replacement = "R^2^", metric_table$Metric)
-  metric_table$`New Model Run` <- as.numeric(metric_table$`New Model Run`)
-  metric_table$`New Model Run` <- sprintf("%.3f", metric_table$`New Model Run`)
+  #metric_table$input[["Directory"]][["New_id"]] <- as.numeric(metric_table$input[["Directory"]][["New_id"]])
+  #metric_table$input[["Directory"]][["New_id"]] <- sprintf("%.3f", metric_table$input[["Directory"]][["New_id"]])
    #print the table
   kable(metric_table) %>% kable_styling(full_width = TRUE)}
 ```
