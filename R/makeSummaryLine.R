@@ -15,10 +15,11 @@
 makeSummaryLine <- function(benchmark, col_names) {
   summary_table_lines <- as.list(rep("-", length(col_names)))
   names(summary_table_lines) <- col_names
+  if(length(benchmark@datasets[[1]]) != 0){
   for(this_dataset in benchmark@datasets) {
     if(summary_table_lines$Dataset == "-") summary_table_lines$Dataset <- this_dataset@source@name
     else summary_table_lines$Dataset <- paste0(summary_table_lines$Dataset, ", ", this_dataset@source@name) 
-  }
+  }}
   summary_table_lines$Quantity <- benchmark@description
   summary_table_lines$Unit <- benchmark@agg.unit
   return(summary_table_lines)
