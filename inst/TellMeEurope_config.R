@@ -1,15 +1,15 @@
 ## Read input file, set parameters ##
 input <- yaml::yaml.load_file(file.path(system.file("TellMeEurope.yml", package = "DGVMBenchmarks")))
 ## Extract the file name and unit element from yml to define quantity and format
-format <- defineAllQuantities(input = input)
+format <- DGVMBenchmarks::defineAllQuantities(input = input)
 
 ## Set Model and reference sources ##
-sources <- defineAllSources(input = input,format = format)
+sources <- DGVMBenchmarks::defineAllSources(input = input,format = format)
 all_datasets <- sources[[1]]
 all_simulation_Sources_list <- sources[[2]]
 
 ## Set the grid cell spatial extent see list of predefined options or choose "Full" or "Custom"
-spatial.extent <- setGridCellExtent(input = input)
+spatial.extent <- DGVMBenchmarks::setGridCellExtent(input = input)
 
 ## Set up summary table will be built benchmark by-benchmark ##
 summary_col_names <- c("Quantity", "Unit")
