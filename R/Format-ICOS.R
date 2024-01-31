@@ -36,18 +36,20 @@ getField_ICOS <- function(source,
                           file.name,
                           verbose,
                           UT.threshold = "VUT",
-                          partition.method = "REF",
+                          method = "REF",
                           day.night.method = "NT",
                           NEE.day.night = NULL,
                           first.year,
                           last.year,
+                          rm.leap = TRUE,
+                          data.cleaning = TRUE,
+                          qc.threshold = 0.5,
                           ...) {
   
   ### CHECK ARGUEMENTS
   if(!missing(first.year) & !missing(last.year) ) {
     if(first.year > last.year) stop("first.year cannot be greater than last.year!")
   }
-  
   
   # variables that are currently supported
   variables.cfluxes = c("GPP", "NEE", "Reco")
@@ -93,36 +95,92 @@ getField_ICOS <- function(source,
     
     
     # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
-    # adds day and night to get daily values
     # divides by a 1000 to convert gC/m^2 to kgC/m^2
     for (v in variables.cfluxes) {
       if (v == "NEE" & is.null(NEE.day.night) == T) {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
-          select(ends_with(partition.method)) %>%
-        rowSums() / 1000
+          select(ends_with(method)) %>%
+          rowSums() / 1000
         
       } else if (v == "NEE" & is.null(NEE.day.night) == F) {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
-          select(contains(partition.method)) %>%
+          select(contains(method)) %>%
           select(ends_with(NEE.day.night)) %>%
-        rowSums() / 1000
+          rowSums() / 1000
         
       } else {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
-          select(contains(partition.method)) %>%
+          select(contains(method)) %>%
           select(contains(day.night.method)) %>%
           rowSums() / 1000
+      } 
+      
+      # data cleaning
+      if (data.cleaning == TRUE) {
+        
+        # set negative GPP / Reco values to NA
+        if (quant@name == "GPP" | quant@name == "Reco") {
+          to.cbind[which(to.cbind < 0)] <- NA
+          
+          # select diff < 50%
+          temp <- select(site.data, contains(UT.threshold)) %>%
+            select(contains(quant@name)) %>%
+            select(contains(method)) %>%
+            select(contains("DT") | contains("NT"))
+          
+          colnames(temp) <- c("DT", "NT")
+          
+          for (c in 1:length(to.cbind)) {
+            if (is.na(temp$DT[c]) == T | is.na(temp$NT[c]) == T) {
+              next
+            }
+            else if (temp$DT[c] == 0 & temp$NT[c] == 0) {
+              next
+            }
+            else if (100 * (abs(temp$NT[c] - temp$DT[c]) / (abs(temp$NT[c] + temp$DT[c]) / 2)) >= 50) {
+              to.cbind[c] <- NA
+            }
+          }
+        }
+        
+        # set values with NEE QC below threshold as NA
+        if (is.null(qc.threshold) == FALSE) {
+          if (day.night.method == "NT" | day.night.method == "NIGHT") {
+            day.night.method.NEE <- "NIGHT"
+          } else if (day.night.method == "DT" | day.night.method == "DAY") {
+            day.night.method.NEE <- "DAY"
+          }
+          
+          nee.qc.data <- select(site.data, contains(UT.threshold)) %>%
+            select(contains("NEE")) %>% select(contains(method)) %>%
+            select(contains(day.night.method.NEE)) %>% select(ends_with("QC"))
+          
+          to.cbind[which(nee.qc.data < qc.threshold)] <- NA
+        }
+        
       }
-
+      
       site.data.selected <- cbind(site.data.selected, to.cbind)
       setnames(site.data.selected, "to.cbind", v)
     }
     
     # convert day to day of year (doy)
     site.data.selected$Day <- as.integer(lubridate::yday(lubridate::ymd(site.data.selected$ymd)))
+    
+    # remove leap days and / or convert day to day
+    if (rm.leap == TRUE) {
+      indx <- which(site.data.selected$Day == 60 & leap_year(site.data.selected$Year))
+      if (length(indx) > 0) {
+        site.data.selected <- site.data.selected[-indx,]
+        
+        site.data.selected$Day[which(leap_year(site.data.selected$Year) &
+                                       site.data.selected$Day > 60)] <- site.data.selected$Day[which(leap_year(site.data.selected$Year) &
+                                                                                                       site.data.selected$Day > 60)]  - 1
+      }
+    }
     
     if (!missing(first.year)) {
       site.data.selected <- site.data.selected[!(site.data.selected$Year) < first.year,]
@@ -151,7 +209,7 @@ getField_ICOS <- function(source,
     ICOS.cfluxes %>% select(Year, Day, Lon, Lat, quant@id) -> quant.data
   }
   
- 
+  
   # creating a data table with the lon/lat
   gridcells <- data.table(Lon = as.numeric(unique(ICOS.cfluxes$Lon)),
                           Lat = as.numeric(unique(ICOS.cfluxes$Lat)),
@@ -217,21 +275,21 @@ ICOS.quantities <- list(
   new("Quantity",
       id = "GPP",
       name = "GPP",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("ICOS"),
       standard_name = "gross_primary_productivity"),
   new("Quantity",
       id = "NEE",
       name = "NEE",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("ICOS"),
       standard_name = "net_ecosystem_exchange"),
   new("Quantity",
       id = "Reco",
       name = "Reco",
-      units = "kgC/m^2",
+      units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("ICOS"),
       standard_name = "ecosystem_respiration")
