@@ -24,5 +24,5 @@ define_NetCDF_Sources <- function(input){
   if (!is.null(input[["Directory"]][["Old"]])){Old_run <- DGVMTools::defineSource(id = input[["Directory"]][["Old_id"]], dir = input[["Directory"]][["Old"]], format = NetCDF, name = input[["Directory"]][["Old_id"]])
   all_NetCDF_simulation_Sources_list <- list(New_run, Old_run)
   }else{all_NetCDF_simulation_Sources_list <- list(New_run)}
-  return(sources <- list(all_NetCDF_datasets,all_NetCDF_simulation_Sources_list))
+  return(NetCDF_sources <- list(all_NetCDF_datasets,all_NetCDF_simulation_Sources_list))
 }
