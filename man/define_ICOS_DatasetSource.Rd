@@ -15,3 +15,6 @@ List of lists
 \description{
 Define ICOS sources. Create a ICOS source for your dataset.
 }
+\author{
+Karl Piltz (karl.piltz@nateko.lu.se)
+}

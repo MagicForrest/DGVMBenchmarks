@@ -9,6 +9,7 @@
 #' @export
 #'
 #' @examples
+#' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 define_ICOS_DatasetSource <- function(input){
   ## Set Model and reference sources ##
   all_ICOS_datasets <- list()
