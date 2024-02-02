@@ -96,6 +96,6 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
       return(Data.year.mean)
     }
   }
-  }
 }
+
 
