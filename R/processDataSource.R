@@ -17,7 +17,48 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
   if (length(all_datasets) == 0) {
     Data.year.mean <- all_datasets
     return(Data.year.mean)
-  } else {
+  } 
+  else if (all_datasets[[dataset]]@format@id == "ICOS") {
+    # If the dataset is present, check if the directory and file path are valid.
+    this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
+    
+    if (dir.exists(this_dataset_run_dir) &&
+        (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
+         file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz"))))) {
+      
+      this_data_Source <- all_datasets[[dataset]]
+      this_data_Source@dir <- file.path(this_dataset_run_dir)  
+      
+      if (!is.null(input[[benchmark_name]][["First_year_Data"]]) && !is.null(input[[benchmark_name]][["Last_year_Data"]])){
+        Data.year.mean <- DGVMTools::getField(
+          source = this_data_Source,
+          quant = input[[benchmark_name]][["File_name"]],
+          layers = NULL,
+          UT.threshold = input[[benchmark_name]][["UT.threshold"]],
+          partition.method = input[[benchmark_name]][["partition.method"]],
+          day.night.method = input[[benchmark_name]][["day.night.method"]],
+          NEE.day.night = input[[benchmark_name]][["NEE.day.night"]],
+          first.year = as.numeric(input[[benchmark_name]][["First_year_Data"]]),
+          last.year = as.numeric(input[[benchmark_name]][["Last_year_Data"]])
+        )}
+      else{
+        Data.year.mean <- DGVMTools::getField(
+          source = this_data_Source,
+          quant = input[[benchmark_name]][["File_name"]],
+          layers = NULL,
+          UT.threshold = input[[benchmark_name]][["UT.threshold"]],
+          partition.method = input[[benchmark_name]][["partition.method"]],
+          day.night.method = input[[benchmark_name]][["day.night.method"]],
+          NEE.day.night = input[[benchmark_name]][["NEE.day.night"]])
+          
+      }
+      
+      Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
+      return(Data.year.mean)
+    }
+  }
+  
+    else {
     # If the dataset is present, check if the directory and file path are valid.
     this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
@@ -54,6 +95,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
       Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
       return(Data.year.mean)
     }
+  }
   }
 }
 
