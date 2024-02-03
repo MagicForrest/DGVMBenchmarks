@@ -18,13 +18,20 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     Data.year.mean <- all_datasets
     return(Data.year.mean)
   } 
-  else if (all_datasets[[dataset]]@format@id == "ICOS") {
+  
+  if (all_datasets[[dataset]]@format@id == "ICOS") {
     # If the dataset is present, check if the directory and file path are valid.
     this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
+    # Check precence of files with daily fluxes and siteinfo in ICOS directory
+    daily.files <- list.files(this_dataset_run_dir) %>%
+      stringr::str_subset("DD")
+    siteinfo.files <- list.files(this_dataset_run_dir) %>% stringr::str_subset("SITEINFO")
+    
     if (dir.exists(this_dataset_run_dir) &&
-        (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
-         file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz"))))) {
+        (length(daily.files) != 0 ) && 
+        (length(siteinfo.files) != 0) &&
+        (length(daily.files) == length(siteinfo.files))){
       
       this_data_Source <- all_datasets[[dataset]]
       this_data_Source@dir <- file.path(this_dataset_run_dir)  
@@ -38,6 +45,9 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           partition.method = input[[benchmark_name]][["partition.method"]],
           day.night.method = input[[benchmark_name]][["day.night.method"]],
           NEE.day.night = input[[benchmark_name]][["NEE.day.night"]],
+          rm.leap = TRUE,
+          data.cleaning = TRUE,
+          qc.threshold = 0.5,
           first.year = as.numeric(input[[benchmark_name]][["First_year_Data"]]),
           last.year = as.numeric(input[[benchmark_name]][["Last_year_Data"]])
         )}
@@ -49,7 +59,10 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           UT.threshold = input[[benchmark_name]][["UT.threshold"]],
           partition.method = input[[benchmark_name]][["partition.method"]],
           day.night.method = input[[benchmark_name]][["day.night.method"]],
-          NEE.day.night = input[[benchmark_name]][["NEE.day.night"]])
+          NEE.day.night = input[[benchmark_name]][["NEE.day.night"]],
+          rm.leap = TRUE,
+          data.cleaning = TRUE,
+          qc.threshold = 0.5)
           
       }
       
