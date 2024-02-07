@@ -104,8 +104,9 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
       
       # check if file is present (if not don't include this run)
       this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation)
-      if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".out"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".out.gz")))) {
-        
+      if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".out"))) ||
+          file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".out.gz"))) ||
+          file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".nc")))){        
         # make local sources pointing to the simulation directory
         this_Source <- this_sim_Source
         this_Source@dir <- this_benchmark_run_dir
