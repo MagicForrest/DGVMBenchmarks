@@ -334,6 +334,7 @@ getField_FLUXNET <- function(source,
   }
   
   # creating a data table with the lon/lat
+<<<<<<< HEAD
   gridcells <- rbindlist(all.site.data)
     
    # FLUXNET2015.gridcells 
@@ -342,12 +343,31 @@ getField_FLUXNET <- function(source,
   #                         Lat = as.numeric(unique(FLUXNET.cfluxes$Lat)),
   #                         Code = unique(FLUXNET.cfluxes$Code),
   #                         Name = unique(FLUXNET.cfluxes$Name))
+=======
+  gridcells <- data.table(Lon = as.numeric(unique(FLUXNET.cfluxes$Lon)),
+                          Lat = as.numeric(unique(FLUXNET.cfluxes$Lat)),
+                          Code = unique(FLUXNET.cfluxes$Code),
+                          Name = unique(FLUXNET.cfluxes$Name))
+  
+  # make final STAInfo and field.id
+  final.STAInfo <- new("STAInfo",
+                       first.year = min(quant.data$Year),
+                       last.year = max(quant.data$Year),
+                       year.aggregate.method = "none",
+                       spatial.extent = gridcells,
+                       spatial.extent.id = "All_FLUXNET_Sites",
+                       spatial.aggregate.method = "none",
+                       subannual.resolution = "Day",
+                       subannual.aggregate.method = "none",
+                       subannual.original = "Day")
+  
+>>>>>>> 1a04137 (Correctly define STAInfo and field@id)
   
   field.id <-
     makeFieldID(
       source = source,
       quant.string = quant@id,
-      sta.info = target.STAInfo
+      sta.info = final.STAInfo
     )
   
   return.field <- new(
@@ -355,16 +375,8 @@ getField_FLUXNET <- function(source,
     id = field.id,
     quant = quant,
     data = quant.data,
-    first.year = min(quant.data$Year),
-    last.year = max(quant.data$Year),
-    year.aggregate.method = "none",
-    spatial.extent = gridcells,
-    spatial.extent.id = "Gridcells",
-    spatial.aggregate.method = "none",
-    subannual.resolution = "Day",
-    subannual.aggregate.method = "none",
-    subannual.original = "Day",
-    source = source
+    source = source,
+    final.STAInfo
   )
   
   return(return.field)

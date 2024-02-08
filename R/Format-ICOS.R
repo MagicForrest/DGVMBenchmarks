@@ -104,14 +104,14 @@ getField_ICOS <- function(source,
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
           select(ends_with(method)) %>%
-        rowSums() / 1000
+          rowSums() / 1000
         
       } else if (v == "NEE" & is.null(NEE.day.night) == F) {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
           select(contains(method)) %>%
           select(ends_with(NEE.day.night)) %>%
-        rowSums() / 1000
+          rowSums() / 1000
         
       } else {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
@@ -127,15 +127,15 @@ getField_ICOS <- function(source,
         # set negative GPP / Reco values to NA
         if (quant@name == "GPP" | quant@name == "Reco") {
           to.cbind[which(to.cbind < 0)] <- NA
-
+          
           # select diff < 50%
           temp <- select(site.data, contains(UT.threshold)) %>%
             select(contains(quant@name)) %>%
             select(contains(method)) %>%
             select(contains("DT") | contains("NT"))
-
+          
           colnames(temp) <- c("DT", "NT")
-
+          
           for (c in 1:length(to.cbind)) {
             if (is.na(temp$DT[c]) == T | is.na(temp$NT[c]) == T) {
               next
@@ -148,7 +148,7 @@ getField_ICOS <- function(source,
             }
           }
         }
-
+        
         # set values with NEE QC below threshold as NA
         if (is.null(qc.threshold) == FALSE) {
           if (day.night.method == "NT" | day.night.method == "NIGHT") {
@@ -212,17 +212,32 @@ getField_ICOS <- function(source,
     ICOS.cfluxes %>% select(Year, Day, Lon, Lat, quant@id) -> quant.data
   }
   
- 
+  
   # creating a data table with the lon/lat
   gridcells <- data.table(Lon = as.numeric(unique(ICOS.cfluxes$Lon)),
                           Lat = as.numeric(unique(ICOS.cfluxes$Lat)),
                           Code = unique(ICOS.cfluxes$Code),
                           Name = unique(ICOS.cfluxes$Name))
+  
+  
+  # make final STAInfo and field.id
+  final.STAInfo <- new("STAInfo",
+                       first.year = min(quant.data$Year),
+                       last.year = max(quant.data$Year),
+                       year.aggregate.method = "none",
+                       spatial.extent = gridcells,
+                       spatial.extent.id = "All_ICOS_Sites",
+                       spatial.aggregate.method = "none",
+                       subannual.resolution = "Day",
+                       subannual.aggregate.method = "none",
+                       subannual.original = "Day")
+  
+  
   field.id <-
     makeFieldID(
       source = source,
       quant.string = quant@id,
-      sta.info = target.STAInfo
+      sta.info = final.STAInfo
     )
   
   return.field <- new(
@@ -230,16 +245,8 @@ getField_ICOS <- function(source,
     id = field.id,
     quant = quant,
     data = quant.data,
-    first.year = min(quant.data$Year),
-    last.year = max(quant.data$Year),
-    year.aggregate.method = "none",
-    spatial.extent = gridcells,
-    spatial.extent.id = "Gridcells",
-    spatial.aggregate.method = "none",
-    subannual.resolution = "Day",
-    subannual.aggregate.method = "none",
-    subannual.original = "Day",
-    source = source
+    source = source,
+    final.STAInfo
   )
   
   return(return.field)
