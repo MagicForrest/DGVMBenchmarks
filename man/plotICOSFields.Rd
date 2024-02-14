@@ -8,7 +8,7 @@ plotICOSFields(
   Benchmark = this_benchmark,
   all_Fields_list = all_Fields_list,
   all_comparisons = all_comparisons,
-  plot.option = NULL
+  plot.option
 )
 }
 \arguments{
