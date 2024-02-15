@@ -87,8 +87,12 @@ getField_FLUXNET <- function(source,
                                               pattern = "(?<=FLX_).+(?=_FLUXNET)"))
       
       # determine the longitude and latitude
-      lon <- as.numeric(as.character(siteinfo.data$LON[siteinfo.data$SITE_ID == site]))
-      lat <- as.numeric(as.character(siteinfo.data$LAT[siteinfo.data$SITE_ID == site]))
+      # MF: Some sites have more than one location recorded in the site description file, due to reasons like the tower being moved
+      # or the meteorogical instrumentation being set located slightly further away.
+      #  The above applies to sites in the 2015 release, I have no idea how it applies to the CH4 community product.  
+      # I have adopted the convention of just taking the first location in the file
+      lon <- as.numeric(as.character(siteinfo.data$LON[siteinfo.data$SITE_ID == site]))[1]
+      lat <- as.numeric(as.character(siteinfo.data$LAT[siteinfo.data$SITE_ID == site]))[1]
       
       # determine the full site name
       site.name <- siteinfo.data$SITE_NAME[siteinfo.data$SITE_ID == site]
@@ -156,31 +160,39 @@ getField_FLUXNET <- function(source,
   
   if (length(FLUXNET2015.files) != 0) {
     
+    # make list of the sites (individual rows to be rbind-ed at the end)
+    all.site.data <- list()
+    
+    # read the site info from the .csv file (same for all sites so only need to do this once)
+    siteinfo.files <- list.files(path = source@dir) %>% stringr::str_subset("AA-Flx") %>%
+      stringr::str_subset("DD")
+    siteinfo.data <- readxl::read_xlsx(path = file.path(source@dir, siteinfo.files))
+    
     # loop over all FLUXNET2015 files
     for (i in 1:length(FLUXNET2015.files)) {
       
       # read the daily data from the .csv file
       site.data <- read.csv(file = file.path(source@dir, FLUXNET2015.files[i]), na = c("-9999", "NA"))
       
-      # read the site info from the .csv file
-      siteinfo.files <- list.files(path = source@dir) %>% stringr::str_subset("AA-Flx") %>%
-        stringr::str_subset("DD")
-      siteinfo.data <- readxl::read_xlsx(path = file.path(source@dir, siteinfo.files))
-      
+       
       # determine site code
       site <- unlist(stringr::str_extract_all(string = FLUXNET2015.files[i],
                                               pattern = "(?<=FLX_).+(?=_FLUXNET)"))
       
       # determine the longitude and latitude
+      # MF: Some sites have more than one location recorded in the site description file, due to reasons like the tower being moved
+      # or the meteorogical instrumentation being set located slightly further aaway
+      # This currently affects: DE-Gri, DE-RuS, RU-Sam, US-MyB, US-Tw3, US-TwT
+      # I have adopted the convention of just taking the first location in the file
       lon <- as.numeric(as.character(siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LONG" &
-                                                               siteinfo.data$SITE_ID == site]))
+                                                               siteinfo.data$SITE_ID == site]))[1]
       lat <- as.numeric(as.character(siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LAT" &
-                                                               siteinfo.data$SITE_ID == site]))
+                                                               siteinfo.data$SITE_ID == site]))[1]
       
       # determine the full site name
       site.name <- siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "SITE_NAME" &
                                              siteinfo.data$SITE_ID == site]
-      
+      #print(site)
       # declaring a new data table with metadata that will be used to append the daily fluxes to
       site.data.selected <- data.table(Code = site,
                                        Name = site.name,
@@ -190,6 +202,12 @@ getField_FLUXNET <- function(source,
                                        Lon = as.numeric(lon),
                                        Lat = as.numeric(lat))
       
+      # declare a new data.table with only the site data
+      all.site.data[[site]] <- data.table(Lon = as.numeric(lon),
+                                       Lat = as.numeric(lat),
+                                       Code = site,
+                                       Name = site.name)
+
       # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
       # divides by a 1000 to convert gC/m^2 to kgC/m^2
       if (quant@name == "NEE" & day.night.method == "NT") {
@@ -292,8 +310,10 @@ getField_FLUXNET <- function(source,
       # combine the data tables with selected daily fluxes for all sites
       if (i == 1) {
         FLUXNET2015.cfluxes <- site.data.selected
+        #FLUXNET2015.gridcells <- site.location.data
       } else {
         FLUXNET2015.cfluxes <- rbind(FLUXNET2015.cfluxes, site.data.selected)
+        #FLUXNET2015.gridcells <- rbind(FLUXNET2015.gridcells, site.location.data)
       }
     }
     
@@ -314,11 +334,9 @@ getField_FLUXNET <- function(source,
   }
   
   # creating a data table with the lon/lat
-  gridcells <- data.table(Lon = as.numeric(unique(FLUXNET.cfluxes$Lon)),
-                          Lat = as.numeric(unique(FLUXNET.cfluxes$Lat)),
-                          Code = unique(FLUXNET.cfluxes$Code),
-                          Name = unique(FLUXNET.cfluxes$Name))
-  
+
+  gridcells <- rbindlist(all.site.data)
+   
   # make final STAInfo and field.id
   final.STAInfo <- new("STAInfo",
                        first.year = min(quant.data$Year),
@@ -329,8 +347,7 @@ getField_FLUXNET <- function(source,
                        spatial.aggregate.method = "none",
                        subannual.resolution = "Day",
                        subannual.aggregate.method = "none",
-                       subannual.original = "Day")
-  
+                       subannual.original = "Day")  
   
   field.id <-
     makeFieldID(

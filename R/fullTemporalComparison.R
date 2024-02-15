@@ -42,8 +42,6 @@ fullTemporalComparison <- function(benchmark, all_ts, all_trends = NULL, all_sea
       comparision_name <- paste0(this_sim, " - ", this_dataset)
       
       #### SPATIAL VALUES COMPARISONS ####
-      print(this_sim)
-      print(names(all_ts))
       suppressWarnings(
         spatial_comparisons_list[[comparision_name]] <- compareLayers(field1 = all_ts[[this_sim]],
                                                                       field2 = all_ts[[this_dataset]],

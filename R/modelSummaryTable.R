@@ -1,6 +1,7 @@
 
 #' @export
 modelSummaryTable <- function(simulations,
+                              settings,
                               var,
                               periods,
                               new_sim,
@@ -34,10 +35,10 @@ modelSummaryTable <- function(simulations,
                                                                  var,
                                                                  first.year = first_year_needed,
                                                                  last.year = last_year_needed,
-                                                                 spatial.extent = spatial_extent,
-                                                                 spatial.extent.id = spatial_extent_id,
-                                                                 quick.read = quick_read,
-                                                                 quick.read.file = paste(var, version_label, sep = "_"))
+                                                                 spatial.extent = settings$spatial_extent,
+                                                                 spatial.extent.id = settings$spatial_extent_id,
+                                                                 quick.read = settings$quick_read,
+                                                                 quick.read.file = paste(var, settings$version_label, sep = "_"))
       )
     }
   }
