@@ -121,7 +121,7 @@ for (i in seq_along(all_comparisons)) {
       labs(title = paste(this_comparison@source1@name, "vs", Benchmark@datasets[[1]]@source@name),
            x = paste(Benchmark@datasets[[1]]@source@name, Benchmark@id, Benchmark@unit),
            y = paste("Model", Benchmark@id, Benchmark@unit),
-           color = "Country") +
+           color = "Stations") +
       theme(legend.position = "bottom",
             legend.direction = "horizontal",
             legend.title = element_text(size = 12, face = "bold"),
