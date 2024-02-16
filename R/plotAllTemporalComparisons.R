@@ -10,6 +10,9 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_comparisons = all_comparisons){
  
+  color_palette <- c("#457b9d", "#a8dadc", "#f4a261", "#2a9d8f", "#e76f51")
+  
+  
   if (Benchmark@datasets[[1]]@source@format@id == "ICOS"){
   grid.names <- unique(Benchmark@datasets[[1]]@spatial.extent$Name)
   names(grid.names) <- paste0("(", unique(Benchmark@datasets[[1]]@spatial.extent$Lon), ",", unique(Benchmark@datasets[[1]]@spatial.extent$Lat), ")")
