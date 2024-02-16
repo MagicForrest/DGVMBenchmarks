@@ -16,7 +16,7 @@ plotICOSFields <- function(Benchmark = this_benchmark, all_Fields_list = all_Fie
 if (!missing(all_Fields_list) && plot.option == "per_source"){
   for (i in seq_along(all_Fields_list)) {
   this_Field <- all_Fields_list[[i]]
-  stations <- read.csv("C:\\Users\\Admin\\Documents\\tellus\\ICOS\\stations.csv")
+  stations <- read.table(file.path(system.file("extdata/ICOS/ICOS_stations_info.txt", package = "DGVMBenchmarks")), header = T,sep = "\t")
   stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
   stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
   
@@ -55,7 +55,7 @@ plot(densplot)
 if (!missing(all_comparisons) && plot.option == "joined"){
 for (i in seq_along(all_comparisons)) {
   this_comparison <- all_comparisons[[1]][[i]]
-  stations <- read.csv("C:\\Users\\Admin\\Documents\\tellus\\ICOS\\stations.csv")
+  stations <- read.table(file.path(system.file("extdata/ICOS/ICOS_stations_info.txt", package = "DGVMBenchmarks")), header = T,sep = "\t")
   stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
   stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
   
