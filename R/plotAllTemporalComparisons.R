@@ -11,7 +11,7 @@
 plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_comparisons = all_comparisons){
  
   if (Benchmark@datasets[[1]]@source@format@id == "ICOS"){
-  grid.names <- unique(Benchmark@datasets[[1]]@spatial.extent@spatial.extent$Name)
+  grid.names <- unique(Benchmark@datasets[[1]]@spatial.extent$Name)
   names(grid.names) <- paste0("(", unique(Benchmark@datasets[[1]]@spatial.extent$Lon), ",", unique(Benchmark@datasets[[1]]@spatial.extent@spatial.extent$Lat), ")")
   
   
