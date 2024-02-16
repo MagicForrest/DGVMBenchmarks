@@ -4,8 +4,8 @@ Directory:
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
   Old: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
   Old_id: "Euapp with thinning"
-  Format: "GUESS"
-  Simulation_name: ["european_applications", "profound"]
+  Format: ["GUESS","ICOS"]
+  Simulation_name: ["european_applications", "profound", "ICOS"]
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -14,15 +14,16 @@ Directory:
   gridlist:
 
 Switches:
-  do_plots: TRUE
+  do_plots: T
   do_agpp: T
-  do_cmass: T
-  do_stem_density: T
-  do_qdbh: T
-  do_woody_growth: T
-  do_profound: T
-  do_cmass_pft: T
-  do_cmass_pft1: T
+  do_cmass: F
+  do_stem_density: F
+  do_qdbh: F
+  do_woody_growth: F
+  do_profound: F
+  do_cmass_pft: F
+  do_cmass_pft1: F
+  do_ICOS_GPP: T
 
 AGPP:
   File_name: "agpp"
@@ -204,4 +205,26 @@ Profound_diam_plus10cm_sts_ext_st_mean:
   Dataset_longname: "ProfoundData"
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
+  
+ICOS_GPP:
+  File_name: "GPP"
+  Unit: "kgC/m2"
+  Format: "ICOS"
+  Id: "GPP"
+  Name: "GPP"
+  Description: "Daily GPP"
+  First_year_Data: NULL
+  Last_year_Data: NULL
+  UT.threshold: "VUT"
+  partition.method: "REF"
+  day.night.method: "NT"
+  NEE.day.night: NULL
+  First_year: 2013
+  Last_year: 2021
+  Layer: "GPP"
+  Dataset_name: "ICOS"
+  Dataset_longname: "Light Response Function GPP (LRF-GPP)"
+  Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
+  Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
+
   

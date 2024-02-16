@@ -1,21 +1,38 @@
 ## Read input file, set parameters ##
 input <- yaml::yaml.load_file(file.path(system.file("TellMeEurope.yml", package = "DGVMBenchmarks")))
 ## Extract the file name and unit element from yml to define quantity and format
-format <- DGVMBenchmarks::defineAllQuantities(input = input)
+Formats <- unique(input[["Directory"]][["Format"]])
 
 ## Set Model and reference sources ##
-sources <- DGVMBenchmarks::defineAllSources(input = input,format = format)
-all_datasets <- sources[[1]]
-all_simulation_Sources_list <- sources[[2]]
+all_GUESS_simulation_Sources_list <- list()
+if ("GUESS" %in% Formats){
+  GUESS_sources <- DGVMBenchmarks::define_GUESS_Sources(input = input)
+  all_GUESS_datasets <- GUESS_sources[[1]]
+  all_GUESS_simulation_Sources_list <- GUESS_sources[[2]]}
+
+all_NetCDF_simulation_Sources_list <- list()
+if ("NetCDF" %in% Formats){
+  NetCDF_sources <- DGVMBenchmarks::define_NetCDF_Sources(input = input)
+  all_NetCDF_datasets <- NetCDF_sources[[1]]
+  all_NetCDF_simulation_Sources_list <- NetCDF_sources[[2]]}
+
+if ("ICOS" %in% Formats){
+  all_ICOS_datasets <- DGVMBenchmarks::define_ICOS_DatasetSource(input = input)}
 
 ## Set the grid cell spatial extent see list of predefined options or choose "Full" or "Custom"
 spatial.extent <- DGVMBenchmarks::setGridCellExtent(input = input)
 
 ## Set up summary table will be built benchmark by-benchmark ##
 summary_col_names <- c("Quantity", "Unit")
-for(this_sim in all_simulation_Sources_list){summary_col_names <- append(summary_col_names, this_sim@name)}
-summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
-summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
+if (length(all_GUESS_simulation_Sources_list) != 0){
+  for(this_sim in all_GUESS_simulation_Sources_list){summary_col_names <- append(summary_col_names, this_sim@name)}
+  summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
+  summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
+} else if (length(all_NetCDF_simulation_Sources_list) != 0){
+  for(this_sim in all_NetCDF_simulation_Sources_list){summary_col_names <- append(summary_col_names, this_sim@name)}
+  summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
+  summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)  
+}
 
 ## This table is completely empty, it will by built benchmark by-benchmark ##
 metric_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
@@ -31,8 +48,8 @@ setClass(
     simulation = "character",
     spatial_extent_id = "character",
     spatial.extent = "ANY",
-    guess_var = "character",
-    guess_layers = "character",
+    guess_var = "ANY",
+    guess_layers = "ANY",
     unit = "character",
     agg.unit = "character",
     datasets = "list",
