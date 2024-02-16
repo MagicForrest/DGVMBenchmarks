@@ -11,7 +11,6 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 plotICOSScatter <- function(Benchmark = this_benchmark, all_comparisons = all_comparisons, fill = NULL){
 
-
 if (fill == "climate"){
 for (i in seq_along(all_comparisons)) {
   this_comparison <- all_comparisons[[1]][[i]]
@@ -27,9 +26,22 @@ for (i in seq_along(all_comparisons)) {
   # Add the Site.type column to this_comparison@data
   this_comparison@data$Climate.zone <- merged_data$Climate.zone
   this_comparison@data$Name <- merged_data$Name
+  field_data <- this_comparison@data
+  
+  # Add the Season column using case_when
+  field_data <- field_data %>%
+    mutate(Season = case_when(
+      between(Day, 80, 171) ~ "Spring",
+      between(Day, 172, 263) ~ "Summer",
+      between(Day, 264, 355) ~ "Autumn",
+      TRUE ~ "Winter"
+    ))
+  
+  # Assign the modified data back to the list
+  this_comparison@data <- field_data
   
   
-  densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Climate.zone)) +
+  densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Climate.zone, shape = Season)) +
     #geom_bin2d(bins = 30) +
     scale_fill_continuous(type = "viridis") +
     theme_bw()+
@@ -68,9 +80,21 @@ for (i in seq_along(all_comparisons)) {
     this_comparison@data$Site.type <- merged_data$Site.type
     this_comparison@data$Name <- merged_data$Name
     
+    field_data <- this_comparison@data
     
+    # Add the Season column using case_when
+    field_data <- field_data %>%
+      mutate(Season = case_when(
+        between(Day, 80, 171) ~ "Spring",
+        between(Day, 172, 263) ~ "Summer",
+        between(Day, 264, 355) ~ "Autumn",
+        TRUE ~ "Winter"
+      ))
     
-    densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Site.type)) +
+    # Assign the modified data back to the list
+    this_comparison@data <- field_data
+    
+    densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Site.type, shape = Season)) +
       #geom_bin2d(bins = 30) +
       scale_fill_continuous(type = "viridis") +
       theme_bw()+
@@ -109,9 +133,21 @@ for (i in seq_along(all_comparisons)) {
     this_comparison@data$Name <- merged_data$Name
     this_comparison@data$Country <- merged_data$Country
     
+    field_data <- this_comparison@data
     
+    # Add the Season column using case_when
+    field_data <- field_data %>%
+      mutate(Season = case_when(
+        between(Day, 80, 171) ~ "Spring",
+        between(Day, 172, 263) ~ "Summer",
+        between(Day, 264, 355) ~ "Autumn",
+        TRUE ~ "Winter"
+      ))
     
-    densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Country, shape = Name)) +
+    # Assign the modified data back to the list
+    this_comparison@data <- field_data
+    
+    densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Country, shape = Season)) +
       #geom_bin2d(bins = 30) +
       scale_fill_continuous(type = "viridis") +
       theme_bw()+
