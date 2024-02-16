@@ -13,7 +13,7 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 plotICOSFields <- function(Benchmark = this_benchmark, all_Fields_list = all_Fields_list, all_comparisons = all_comparisons, plot.option){
  
-if (!missing(all_Fields_list && plot.option == "per_source")){
+if (!missing(all_Fields_list) && plot.option == "per_source"){
   for (i in seq_along(all_Fields_list)) {
   this_Field <- all_Fields_list[[i]]
   stations <- read.csv("C:\\Users\\Admin\\Documents\\tellus\\ICOS\\stations.csv")
