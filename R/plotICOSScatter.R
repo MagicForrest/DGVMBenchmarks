@@ -111,7 +111,7 @@ for (i in seq_along(all_comparisons)) {
     
     
     
-    densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Name, shape = Country)) +
+    densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]],color=Country, shape = Name)) +
       #geom_bin2d(bins = 30) +
       scale_fill_continuous(type = "viridis") +
       theme_bw()+
