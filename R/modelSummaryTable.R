@@ -1,4 +1,8 @@
-
+#'   Produce a model summary table
+#' 
+#'   The table produced here compares multiple model versions for all layers of a single variable for an arbitrary selection of time periods.
+#'   Optionally it can be subset over a spatial extent.  
+#' 
 #' @export
 modelSummaryTable <- function(simulations,
                               settings,
