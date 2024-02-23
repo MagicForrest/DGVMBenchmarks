@@ -45,6 +45,7 @@ benchmark_GCP <- function(simulation_sources,
   
   # loop through model runs to be processed and store the full data 
   all_sim_full_NBP <- list()
+  earliest_common_year <- max(GCP_full_Field@data[["Year"]])
   for(this_sim_Source in simulation_sources) {
     
     # check if file is present (if not don't include this run)
@@ -59,13 +60,14 @@ benchmark_GCP <- function(simulation_sources,
       this_simulation_NBP <- getField(source = this_subrun_Source,
                                       this_benchmark@guess_var,
                                       first.year = this_benchmark@first.year,
-                                      last.year = this_benchmark@last.year,
                                       verbose = settings$verbose_read,
                                       quick.read = settings$quick_read,
                                       quick.read.file = paste("cflux", version_label, sep = "_") 
       )
       
       if("NEE" %in% names(this_simulation_NBP)) renameLayers(this_simulation_NBP, "NEE", "NBP")
+      
+      earliest_common_year <- min(earliest_common_year, max(this_simulation_NBP@data[["Year"]]))
       
       # save for possibly using later
       all_sim_full_NBP[[this_sim_Source@name]] <- this_simulation_NBP
@@ -93,6 +95,8 @@ benchmark_GCP <- function(simulation_sources,
     } 
     
   }
+  
+  # update the earliest common year
   
   
   # plot all together
