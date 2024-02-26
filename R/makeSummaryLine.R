@@ -21,6 +21,6 @@ makeSummaryLine <- function(benchmark, col_names) {
   }
   summary_table_lines$Quantity <- benchmark@description
   summary_table_lines$Unit <- benchmark@agg.unit
-  summary_table_lines$Period <- paste(benchmark@first.year,benchmark@first.year, sep = "-")
+  summary_table_lines$Period <- paste(benchmark@first.year,benchmark@last.year, sep = "-")
   return(summary_table_lines)
 }

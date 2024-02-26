@@ -16,7 +16,7 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
   
   
   # Prepare the (empty) table of benchmarking metrics
-  col_names <- c("Dataset", "Metric", "Dimension", "Years")
+  col_names <- c("Dataset", "Metric", "Dimension", "Period")
   col_types <- c("character", "character", "character", "character")
   
   for(this_sim in simulation_sources) {
@@ -55,24 +55,15 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
       for(this_metric in benchmark@metrics){
         
         metric_table[which(metric_table$Metric == this_metric), gsub(pattern = " ", replacement = ".", x = this_sim_Source@name)] <- signif(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]]@stats[[this_metric]],3)
-        print(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]]@sta.info1)
-        print(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]]@sta.info2)
-        
-        
-        
         common_sta <- commonSTAInfo(list(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]]@sta.info1,
                                          all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]]@sta.info2))
-        print(common_sta)
-        
-        metric_table[which(metric_table$Metric == this_metric), "Years"] <- paste(common_sta@first.year, common_sta@last.year, sep = "-")
+        metric_table[which(metric_table$Metric == this_metric), "Period"] <- paste(common_sta@first.year, common_sta@last.year, sep = "-")
         all_dims <- getDimInfo(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]])
         domain <- list()
-        print(all_dims)
         if("Lat" %in% all_dims & "Lat" %in% all_dims) domain[["Spatial"]] <- "Spatial"
         if("Year" %in% all_dims) domain[["Temporal"]] <- "Temporal"
         if("Month" %in% all_dims) domain[["Seasonal"]] <- "Seasonal"
         domain <- paste(domain, collapse = ",")
-        print(domain)
         metric_table[which(metric_table$Metric == this_metric), "Dimension"] <- domain
         
       }

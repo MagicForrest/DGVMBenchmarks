@@ -96,8 +96,6 @@ benchmark_GCP <- function(simulation_sources,
   # NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 8, hjust = 0, col = "black")
   print(NBP_plot)
   
-  
-  
   # calculate R^2 on this data
   all_NBP_temporal_comparisons <- fullTemporalComparison(benchmark = this_benchmark, 
                                                          all_ts = all_NBP_Fields_list, 
