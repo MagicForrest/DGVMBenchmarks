@@ -5,6 +5,8 @@ Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
 
 TellMeEurope is a benchmarking report using the functionality of DGVMBenchmarks tailored for European scale data input and simulation output. The report handles both spatial (gridded) and temporal (time-series) evaluation. As of this version the available file formats compatible with the evaluation structure are LPJ-GUESS (.out), NetCDF (.nc), aDGVM, aDGVM2 and ICOS. ICOS is an internally defined format for ICOS dataset time-series input, this is processed from raw ICOS station input (.csv) (should not be altered before use). 
 
+The current version has full integration of spatial benchmarks using NFI data (Woody biomass growth, stem density, QDBH and Cmass, pft cmass) and LRF-GPP (Annual GPP) "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424". Fully integrated temporal benchmarks are Profound (LAI, Cmass, Stem density, QDBH and DBH) and ICOS (GPP, NEE, Reco). Additional integrated possibilities in ICOS to plot against land cover, country and climate.
+
 The report is in a three part structure where the 1st part is a YML instruction file, 2nd a configuration file and 3rd the actual report Rmd.
 
 ## TellMeEurope YAML
