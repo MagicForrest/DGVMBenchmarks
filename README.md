@@ -17,10 +17,10 @@ Your path would hence be e.g. "/your/path/to/your/simulations". Here you have di
 ```yaml
 # Directory (YML)
 Directory:
-  New: "your\path\to\simulation1"
+  New: "your\\path\\to\\simulation1"
   New_id: "Euapp probabilistic harvest"
-  Data: "your\path\to\Data"
-  Old: "your\path\to\simulation2"
+  Data: "your\\path\\to\\Data"
+  Old: "your\\path\\to\\simulation2"
   Old_id: "Euapp with thinning"
   Format: ["GUESS","ICOS"]
   Simulation_name: ["european_applications", "profound", "ICOS"]
