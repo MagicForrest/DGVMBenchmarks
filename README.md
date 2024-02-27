@@ -7,6 +7,10 @@ TellMeEurope is a benchmarking report using the functionality of DGVMBenchmarks 
 
 The current version has full integration of spatial benchmarks using NFI data (Woody biomass growth, stem density, QDBH and Cmass, pft cmass) and LRF-GPP (Annual GPP) "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424". Fully integrated temporal benchmarks are Profound (LAI, Cmass, Stem density, QDBH and DBH) and ICOS (GPP, NEE, Reco). Additional integrated possibilities in ICOS to plot against land cover, country and climate.
 
+For each spatial benchmark it is possible to make maps of Absolute values, Difference and density plots. Additionally it is possible to make a summary table displaying the spatial mean for data and simulations as well as a metric table showcasing statistical metrics from comparison evaluation.
+
+For temporal benchmarks it is possible to plot time-series Absolute values, time-series difference and scatter plots. Additionally it is possible to make tabular output of statistical metrics from the time-series comparisons.
+
 The report is in a three part structure where the 1st part is a YML instruction file, 2nd a configuration file and 3rd the actual report Rmd.
 
 ## TellMeEurope YAML
