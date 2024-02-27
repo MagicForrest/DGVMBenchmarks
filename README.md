@@ -11,24 +11,25 @@ The YAML instruction file is where the user defines and structures their benchma
 In *Directory* the user defines their path´s to Data, simulation 1 and simulation 2 (Simulation 1 is mandatory for the report to run, however it is optional to use Data and sim 2, skip by leaving empty or setting NULL). The users pathways should lead to the directory containing the users different simulations a level above the actual input files as the report is adapted to evaluate multiple simulations in the same session. The user then has to define which simulations will be evaluated. The simulation is the name of the folder containing your files to be evaluated. 
 Your path would hence be e.g. "/your/path/to/your/simulations". Here you have different folder for different simulations e.g. trunk, ICOS, Profound.... When running the report your path will be connected to the simulation of the specific benchmark hence if evaluation files from ICOS the report will connect your path with the simulation folder e.g. "/your/path/to/your/simulations/ICOS". Furthermore, the user is able to set the extent prior to evaluation either by choosing a pre-defined grid cell list (Most of the current available European countries) or using own grid list or setting extent limits. 
 
-##Directory (YML)
+```yaml
+# Directory (YML)
 Directory:
-  New: "your\\path\\to\\simulation1"
+  New: "your\path\to\simulation1"
   New_id: "Euapp probabilistic harvest"
-  Data: "your\\path\\to\\Data"
-  Old: "your\\path\\to\\simulation2"
+  Data: "your\path\to\Data"
+  Old: "your\path\to\simulation2"
   Old_id: "Euapp with thinning"
   Format: ["GUESS","ICOS"]
   Simulation_name: ["european_applications", "profound", "ICOS"]
   spatial_extent_id: "Full"
-  custom_xmax: 
+  custom_xmax:
   custom_xmin:
   custom_ymax:
   custom_ymin:
   gridlist:
-  
+  ```
 In *Switches* you can turn on and off benchmark and choose to render plots or not. Logical *TRUE*/*FALSE* connected to the chunks in the Rmd. 
-
+```yaml
 ##Switches (YML)
 Switches:
   do_plots: TRUE
@@ -41,10 +42,11 @@ Switches:
   do_cmass_pft: TRUE
   do_cmass_pft1: FALSE
   do_ICOS_GPP: TRUE
-  
+  ```
 The rest of the objects are benchmark specific and should be filled out as per benchmark.
 Below is the object for a benchmark of annual GPP evaluated against NFI data. The information is used to build the benchmark using File_name, Unit, Id, first/last year and layer for processing the fields; limits, breaks and axis_lim for plotting; Name, source, description for tabular output.
 
+```yaml
 ##Benchmark (YML)
 AGPP:
   File_name: "agpp"
@@ -64,10 +66,12 @@ AGPP:
   Dataset_longname: "Light Response Function GPP (LRF-GPP)"
   Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
   Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
+```
 
 # TellMeEurope_config
 The configuration script is the bridge between the instruction file and the Rmd. This scripts reads the YML file, defines your sources from you directories, sets the format, sets extent, initializes tabular output and most importantly initializes a benchmark object. The benchmark object is integral to bind the benchmark instructions to the actual benchmark in the report rendering. 
 
+```yaml
 ##Initialize benchmark class
 setClass(
   "benchmark",
@@ -93,7 +97,7 @@ setClass(
     metrics = "character"
   )
 )
-
+```
 #TellMeEurope report
 The TellMeEurope Rmd is where the rendering of the report takes place. This markdown script reads necessary libraries and initializes the connection between the instructions and the configuration by souring these when running. Its in the Rmd that the user make use of the DGVMBenchmark toolset to structure and evaluate their benchmarks. The report within the package displays the current version of the final rendered version. Make note of the markdown language to get a feel for how you want to structure your report. This version make use of tab-sets in order where each benchmark has its own section in the report with tabs to flick through the output. While creating your benchmark you may follow a workflow made to handle most input. Every benchmark has its own *Chunk* this means that each benchmark has an exclusive part of the code and should not be entangled with other benchmarks. Below is an example of how a benchmark chunk is structured. 
 
