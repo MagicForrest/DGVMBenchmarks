@@ -1,12 +1,13 @@
 # DGVMBenchmarks
 Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
 
-TellMeEurope:
+# TellMeEurope
+
 TellMeEurope is a benchmarking report using the functionality of DGVMBenchmarks tailored for European scale data input and simulation output. The report handles both spatial (gridded) and temporal (time-series) evaluation. As of this version the available file formats compatible with the evaluation structure are LPJ-GUESS (.out), NetCDF (.nc), aDGVM, aDGVM2 and ICOS. ICOS is an internally defined format for ICOS dataset time-series input, this is processed from raw ICOS station input (.csv) (should not be altered before use). 
 
 The report is in a three part structure where the 1st part is a YML instruction file, 2nd a configuration file and 3rd the actual report Rmd.
 
-# TellMeEurope YAML
+## TellMeEurope YAML
 The YAML instruction file is where the user defines and structures their benchmarks. This is built as multiple benchmark objects that reads as a list of lists where each list is a certain benchmark. The first two objects that needs defining are *Directory* and *Switches*. 
 In *Directory* the user defines their path´s to Data, simulation 1 and simulation 2 (Simulation 1 is mandatory for the report to run, however it is optional to use Data and sim 2, skip by leaving empty or setting NULL). The users pathways should lead to the directory containing the users different simulations a level above the actual input files as the report is adapted to evaluate multiple simulations in the same session. The user then has to define which simulations will be evaluated. The simulation is the name of the folder containing your files to be evaluated. 
 Your path would hence be e.g. "/your/path/to/your/simulations". Here you have different folder for different simulations e.g. trunk, ICOS, Profound.... When running the report your path will be connected to the simulation of the specific benchmark hence if evaluation files from ICOS the report will connect your path with the simulation folder e.g. "/your/path/to/your/simulations/ICOS". Furthermore, the user is able to set the extent prior to evaluation either by choosing a pre-defined grid cell list (Most of the current available European countries) or using own grid list or setting extent limits. 
@@ -68,7 +69,7 @@ AGPP:
   Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
 ```
 
-# TellMeEurope_config
+## TellMeEurope_config
 The configuration script is the bridge between the instruction file and the Rmd. This scripts reads the YML file, defines your sources from you directories, sets the format, sets extent, initializes tabular output and most importantly initializes a benchmark object. The benchmark object is integral to bind the benchmark instructions to the actual benchmark in the report rendering. 
 
 ```yaml
@@ -99,7 +100,7 @@ setClass(
 )
 ```
 
-# TellMeEurope report
+## TellMeEurope report
 The TellMeEurope Rmd is where the rendering of the report takes place. This markdown script reads necessary libraries and initializes the connection between the instructions and the configuration by souring these when running. Its in the Rmd that the user make use of the DGVMBenchmark toolset to structure and evaluate their benchmarks. The report within the package displays the current version of the final rendered version. Make note of the markdown language to get a feel for how you want to structure your report. This version make use of tab-sets in order where each benchmark has its own section in the report with tabs to flick through the output. While creating your benchmark you may follow a workflow made to handle most input. Every benchmark has its own *Chunk* this means that each benchmark has an exclusive part of the code and should not be entangled with other benchmarks. Below is an example of how a benchmark chunk is structured. 
 
 This example is the evaluation of Annual GPP between Data and two simulations. 
