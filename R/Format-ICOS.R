@@ -209,7 +209,7 @@ getField_ICOS <- function(source,
   
   # select the required columns for the current quantity
   if (quant@id %in% variables.cfluxes) {
-    ICOS.cfluxes %>% select(Year, Day, Lon, Lat, quant@id) -> quant.data
+    ICOS.cfluxes %>% select(Year, Day, Lon, Lat, Code, Name, quant@id) -> quant.data
   }
   
   
