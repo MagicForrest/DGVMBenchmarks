@@ -4,7 +4,7 @@
 \alias{availiableICOSStations}
 \title{List all availiable ICOS stations and get Lat/Lon corrections.}
 \usage{
-availiableICOSStations(Stations = "All", station.selection = "Hyltemossa")
+availiableICOSStations(Stations = "All", station.selection = NULL)
 }
 \arguments{
 \item{Stations}{Default "ALL" renders datatable with all availiable stations.}
