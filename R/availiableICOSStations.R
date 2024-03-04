@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
-availiableICOSStations <- function(Stations = "All", station.selection= "Hyltemossa"){
+availiableICOSStations <- function(Stations = "All", station.selection= NULL){
 
 stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
 stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
