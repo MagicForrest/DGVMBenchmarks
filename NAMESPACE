@@ -3,6 +3,7 @@
 export(FLUXNET)
 export(ICOS)
 export(areaWeightedTotal)
+export(availiableICOSStations)
 export(benchmark_GCP)
 export(buildSummaryTable)
 export(calcLinearTrend)
