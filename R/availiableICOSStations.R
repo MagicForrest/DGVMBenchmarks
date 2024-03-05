@@ -17,7 +17,7 @@ stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
 stations <- stations[, -which(names(stations) == "Position")]
 stations$Station_ID <- sapply(strsplit(stations$Id, "/"), function(x) tail(x, 1))
 
-if (Stations == "All"){
+if (!is.null(station.selection)){
 available_stations <- unique(stations[, c("Name", "Station_ID")])
 return(DT::datatable(available_stations, 
           caption = "Available Stations", 
