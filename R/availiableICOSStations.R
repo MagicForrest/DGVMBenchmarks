@@ -18,20 +18,21 @@ stations <- stations[, -which(names(stations) == "Position")]
 stations$Station_ID <- sapply(strsplit(stations$Id, "/"), function(x) tail(x, 1))
 
 if (!is.null(station.selection)){
-available_stations <- unique(stations[, c("Name", "Station_ID")])
-return(DT::datatable(available_stations, 
-          caption = "Available Stations", 
-          options = list(pageLength = 172 , dom = 't')))
+return(available_stations <- unique(stations[, c("Name", "Station_ID")]))
+# return(DT::datatable(available_stations, 
+#           caption = "Available Stations", 
+#           options = list(pageLength = 172 , dom = 't')))
 }else if (!is.null(station.selection)) {
   station.selection <- as.character(station.selection)
   station.selection <- station.selection[station.selection %in% stations$Name]
   if (length(station.selection) == 0) {
     stop("Specified station names not found.")
   }
-  specified_stations_data <- stations[stations$Name %in% station.selection, c("Station_ID","Name", "Lon", "Lat")]
-  return(DT::datatable(specified_stations_data, 
-                       caption = "Specified Stations", 
-                       options = list(pageLength = nrow(specified_stations_data), dom = 't')))
+  return(specified_stations_data <- stations[stations$Name %in% station.selection, c("Station_ID","Name", "Lon", "Lat")])
+  
+  # return(DT::datatable(specified_stations_data, 
+  #                      caption = "Specified Stations", 
+  #                      options = list(pageLength = nrow(specified_stations_data), dom = 't')))
 } else {
   stop("Invalid argument. Use 'All' to get all stations or provide a vector of specified station names.")
 }
