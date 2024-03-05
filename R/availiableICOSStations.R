@@ -17,8 +17,8 @@ stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
 stations <- stations[, -which(names(stations) == "Position")]
 stations$Station_ID <- sapply(strsplit(stations$Id, "/"), function(x) tail(x, 1))
 
-if (!is.null(station.selection)){
-return(available_stations <- unique(stations[, c("Name", "Station_ID")]))
+if (!is.null(Stations)){
+return(available_stations <- unique(stations[, c("Name", "Station_ID", "Lon", "Lat")]))
 # return(DT::datatable(available_stations, 
 #           caption = "Available Stations", 
 #           options = list(pageLength = 172 , dom = 't')))
