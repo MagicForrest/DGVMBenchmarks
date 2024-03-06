@@ -498,7 +498,7 @@ all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_bench
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
                                       simulation_sources = all_GUESS_simulation_Sources_list))}
@@ -600,7 +600,7 @@ all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_bench
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
                                       simulation_sources = all_GUESS_simulation_Sources_list))}
@@ -701,7 +701,7 @@ all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_bench
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
                                       simulation_sources = all_GUESS_simulation_Sources_list))}
@@ -731,6 +731,19 @@ plotICOSScatter(this_benchmark,all_comparisons,fill="country")
 ## Reco per site
 ```{r ICOS Reco site, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 plotICOSScatter(this_benchmark,all_comparisons,fill="station")
+```
+
+# ICOS metric table
+```{r Profound Metric table, echo=FALSE, message=FALSE, warning=FALSE}
+if(nrow(ICOS_table) > 0) {
+   #substitute "r2" for something prettier in the "Metric" column
+  ICOS_table$Metric <- gsub(pattern = "r2", replacement = "R^2^", ICOS_table$Metric)
+  # Profound_table$`New Model Run` <- as.numeric(Profound_table$`New Model Run`)
+  # Profound_table$`New Model Run` <- sprintf("%.3f", Profound_table$`New Model Run`)
+  # Profound_table$`Old Model Run` <- as.numeric(Profound_table$`Old Model Run`)
+  # Profound_table$`Old Model Run` <- sprintf("%.3f", Profound_table$`Old Model Run`)
+   #print the table
+  kable(ICOS_table) %>% kable_styling(full_width = TRUE)}
 ```
 
 # Timing
