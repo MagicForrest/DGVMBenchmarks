@@ -40,7 +40,7 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
       this_line <- copy(metric_table_line_template)
       this_line$Dataset <- this_dataset@source@name
       this_line$Metric <- this_metric
-      this_line$benchmark@id
+      this_line$Quantity <- benchmark@id
       this_line$`Dataset ref.` <- benchmark@dataset_source
       metric_table <- rbind(metric_table, data.frame(this_line))
     }
