@@ -16,8 +16,8 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
  
   
   # Prepare the (empty) table of benchmarking metrics
-  col_names <- c("Dataset", "Metric")
-  col_types <- c("character", "character")
+  col_names <- c("Dataset","Quantity", "Metric")
+  col_types <- c("character", "character", "character")
   
   for(this_sim in simulation_sources) {
     col_names <- append(col_names, this_sim@name)
@@ -40,6 +40,7 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
       this_line <- copy(metric_table_line_template)
       this_line$Dataset <- this_dataset@source@name
       this_line$Metric <- this_metric
+      this_line$benchmark@id
       this_line$`Dataset ref.` <- benchmark@dataset_source
       metric_table <- rbind(metric_table, data.frame(this_line))
     }

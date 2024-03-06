@@ -496,6 +496,7 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
 ## Make comparison objects from your fields, used for comparison only!
 all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
 
+plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
@@ -597,6 +598,7 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
 ## Make comparison objects from your fields, used for comparison only!
 all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
 
+plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
@@ -697,6 +699,7 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
 ## Make comparison objects from your fields, used for comparison only!
 all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
 
+plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,

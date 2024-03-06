@@ -210,7 +210,7 @@ Profound_diam_plus10cm_sts_ext_st_mean:
   
 ICOS_GPP:
   File_name: "GPP"
-  Unit: "kgC/m2"
+  Unit: "kgC/m2/day"
   Format: "ICOS"
   Id: "GPP"
   Name: "GPP"
@@ -231,7 +231,7 @@ ICOS_GPP:
 
 ICOS_NEE:
   File_name: "NEE"
-  Unit: "kgC/m2"
+  Unit: "kgC/m2/day"
   Format: "ICOS"
   Id: "NEE"
   Name: "NEE"
@@ -252,7 +252,7 @@ ICOS_NEE:
 
 ICOS_Reco:
   File_name: "Reco"
-  Unit: "kgC/m2"
+  Unit: "kgC/m2/day"
   Format: "ICOS"
   Id: "Reco"
   Name: "Reco"
