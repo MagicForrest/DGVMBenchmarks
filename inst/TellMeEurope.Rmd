@@ -512,7 +512,7 @@ plotAllTemporalComparisons(this_benchmark,all_comparisons)
 
 ## GPP per land cover
 ```{r ICOS GPP lu, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="landuse")
+plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")
 ```
 
 ## GPP per Climate
@@ -734,7 +734,7 @@ plotICOSScatter(this_benchmark,all_comparisons,fill="station")
 ```
 
 # ICOS metric table
-```{r Profound Metric table, echo=FALSE, message=FALSE, warning=FALSE}
+```{r ICOS Metric table, echo=FALSE, message=FALSE, warning=FALSE}
 if(nrow(ICOS_table) > 0) {
    #substitute "r2" for something prettier in the "Metric" column
   ICOS_table$Metric <- gsub(pattern = "r2", replacement = "R^2^", ICOS_table$Metric)
