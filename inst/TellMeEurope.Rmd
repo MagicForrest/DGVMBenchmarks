@@ -49,6 +49,7 @@ do_cmass_pft1 <- as.logical(input[["Switches"]][["do_cmass_pft1"]])
 do_ICOS_GPP <- as.logical(input[["Switches"]][["do_ICOS_GPP"]])
 do_ICOS_NEE <- as.logical(input[["Switches"]][["do_ICOS_NEE"]])
 do_ICOS_Reco <- as.logical(input[["Switches"]][["do_ICOS_Reco"]])
+do_ICOS_ET <- as.logical(input[["Switches"]][["do_ICOS_ET"]])
 ```
 ***
 # AGPP {.tabset}
@@ -321,6 +322,8 @@ cat(input[["Profound"]][["Dataset_description"]])
 ```{r Profound LAI, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
 benchmark_name <- "Profound_lai"
+
+Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name, simulation = 2, dataset = 1)
 
  this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
  if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
@@ -733,6 +736,106 @@ plotICOSScatter(this_benchmark,all_comparisons,fill="country")
 plotICOSScatter(this_benchmark,all_comparisons,fill="station")
 ```
 
+# ICOS Evapotranspiration{.tabset}
+
+## Daily Total
+```{r ICOS ET, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_ICOS_ET){
+  # Define which benchmark to do
+benchmark_name <- "ICOS_ET"
+
+# Process your dataset
+Data.year.mean <- processDataSource(all_ICOS_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 3)
+
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 3, Data.year.mean, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+correctICOSDataset(all_Fields_list, site.type = "Ecosystem")
+
+#stations1 <-availiableICOSStations(Stations=NULL,station.selection = c("Hyltemossa","Svartberget","Degero","Norunda"))
+lats <- unique(all_Fields_list[[1]]@data$Lat)
+lons <- unique(all_Fields_list[[1]]@data$Lon)
+all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 56.25 ~ lats[[2]],
+      Lat == 60.25 ~ lats[[3]],
+      Lat == 64.25 ~ lats[[4]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == 13.25 ~ lons[[2]],
+      Lon == 17.25 ~ lons[[3]],
+      Lon == 19.75 ~ lons[[4]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 56.25 ~ lats[[2]],
+      Lat == 60.25 ~ lats[[3]],
+      Lat == 64.25 ~ lats[[4]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == 13.25 ~ lons[[2]],
+      Lon == 17.25 ~ lons[[3]],
+      Lon == 19.75 ~ lons[[4]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+  
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+
+plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
+```
+
+## ET Daily Difference
+```{r ICOS ET Diff, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+## ET per land cover
+```{r ICOS ET lu, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")
+```
+
+## ET per Climate
+```{r ICOS ET clim, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotICOSScatter(this_benchmark,all_comparisons,fill="climate")
+```
+
+## ET per country
+```{r ICOS ET country, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotICOSScatter(this_benchmark,all_comparisons,fill="country")
+```
+
+## ET per site
+```{r ICOS ET site, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotICOSScatter(this_benchmark,all_comparisons,fill="station")
+```
 # ICOS metric table
 ```{r ICOS Metric table, echo=FALSE, message=FALSE, warning=FALSE}
 if(nrow(ICOS_table) > 0) {
