@@ -240,7 +240,7 @@ getField_SITE <- function(source,
     "Field",
     id = field.id,
     quant = quant,
-    data = quant.data,
+    data = dt,
     source = source,
     final.STAInfo
   )
@@ -283,6 +283,7 @@ SITE.quantities <- list(
       colours = function(n) rev(viridis::viridis(n)),
       format = c("SITE"),
       standard_name = "leaf_area_index"),
+  
   new("Quantity",
       id = "cmass",
       name = "cmass",
@@ -290,6 +291,7 @@ SITE.quantities <- list(
       colours = function(n) rev(viridis::viridis(n)),
       format = c("SITE"),
       standard_name = "carbon_mass"),
+  
   new("Quantity",
       id = "dens",
       name = "dens",
@@ -297,6 +299,7 @@ SITE.quantities <- list(
       colours = function(n) rev(viridis::viridis(n)),
       format = c("SITE"),
       standard_name = "stem_density"),
+  
   new("Quantity",
       id = "QDBH",
       name = "QDBH",
@@ -304,6 +307,7 @@ SITE.quantities <- list(
       colours = function(n) rev(viridis::viridis(n)),
       format = c("SITE"),
       standard_name = "quadratic_mean_diamiter"),
+  
   new("Quantity",
       id = "DBH",
       name = "DBH",
@@ -319,7 +323,7 @@ SITE.quantities <- list(
 ############################ SITE FORMAT ############################################################
 #####################################################################################################
 
-#' @description \code{SITE} - a Format for reading PROFOUND observations
+#' @description \code{SITE} - a Format for reading SITE observations
 #' 
 #' @format A \code{\linkS4class{Format}} object is an S4 class.
 #' @aliases Format-class
