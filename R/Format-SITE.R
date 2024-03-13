@@ -220,8 +220,7 @@ getField_SITE <- function(source,
                   last.year = max(dt$Year),
                   year.aggregate.method = this.year.aggregate.method,
                   spatial.extent = data.table(Lon = unique(dt$Lon),
-                                              Lat = unique(dt$Lat),
-                                              Name = unique(dt$site)),
+                                              Lat = unique(dt$Lat)),
                   spatial.extent.id = paste("All_", quant@id, "_Sites", sep = ""),
                   spatial.aggregate.method = "none",
                   subannual.resolution = subannual,
@@ -254,7 +253,7 @@ getField_SITE <- function(source,
 
 #' List SITE quantities available
 #'
-#' Simply lists all carbon flux variables available in the SITE data
+#' Simply lists all variables available in the SITE data
 #' 
 #' @return A list of all SITE quantities
 #' @keywords internal
