@@ -9,7 +9,7 @@
 #' @param source A  \code{\linkS4class{Source}} containing the meta-data about the ICOS observations
 #' @param quant A Quantity object to define what quantity from the ICOS observations to extract
 #' @param layers Ignored for SITE
-#' @param target.STAInfo The spatial-temporal target domain
+#' @param target.STA The spatial-temporal target domain
 #' @param file.name Character string holding the name of the file.  This can be left blank, in which case the file name is just taken to be 
 #' "<quant@id>.out" (also "<quant@id>.out.gz")
 #' @param verbose A logical, set to true to give progress/debug information
@@ -25,7 +25,7 @@
 getField_SITE <- function(source,
                               quant,
                               layers = NULL,
-                              target.STAInfo,
+                              target.STA,
                               file.name,
                               first.year,
                               last.year,
@@ -44,8 +44,8 @@ getField_SITE <- function(source,
   
   
   # Make the filename and read the file using the handy utility function
-  if(is.null(file.name)) file_path <- file.path(source@dir,"PROFOUND", paste0(quant,".csv"))
-  else file.string <- file.path(source@dir, file.name)
+  file_path <- file.path(paste0(source@dir,"//", "PROFOUND", "//", quant, ".out"))
+  
   dt <- fread(file_path,header = TRUE)
   
   # correct the dimension names if they are lower case
