@@ -2,6 +2,7 @@
 
 export(FLUXNET)
 export(ICOS)
+export(SITE)
 export(areaWeightedTotal)
 export(availiableICOSStations)
 export(benchmark_GCP)
