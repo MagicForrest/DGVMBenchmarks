@@ -9,7 +9,7 @@
 #' @param source A  \code{\linkS4class{Source}} containing the meta-data about the ICOS observations
 #' @param quant A Quantity object to define what quantity from the ICOS observations to extract
 #' @param layers Ignored for SITE
-#' @param target.STA The spatial-temporal target domain
+#' @param target.STAInfo The spatial-temporal target domain
 #' @param file.name Character string holding the name of the file.  This can be left blank, in which case the file name is just taken to be 
 #' "<quant@id>.out" (also "<quant@id>.out.gz")
 #' @param verbose A logical, set to true to give progress/debug information
@@ -25,7 +25,7 @@
 getField_SITE <- function(source,
                               quant,
                               layers = NULL,
-                              target.STA,
+                              target.STAInfo,
                               file.name,
                               first.year,
                               last.year,
@@ -39,8 +39,8 @@ getField_SITE <- function(source,
   always.read <- c("Lon", "Lat", "Year", "Month", "Day", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
   
   # extract from the target.sta
-  first.year = target.sta@first.year
-  last.year = target.sta@last.year
+  first.year = target.STAInfo@first.year
+  last.year = target.STAInfo@last.year
   
   
   # Make the filename and read the file using the handy utility function
@@ -79,16 +79,16 @@ getField_SITE <- function(source,
   actual.last.year <- max(dt[["Year"]])
   
   # check if cropping needs to be done based on first year
-  if(length(target.sta@first.year) == 1 && target.sta@first.year != actual.first.year) {
+  if(length(target.STAInfo@first.year) == 1 && target.STAInfo@first.year != actual.first.year) {
     call.selectYear <- TRUE
-    first.year <- target.sta@first.year
+    first.year <- target.STAInfo@first.year
   }
   else first.year <- actual.first.year
   
   # check if cropping needs to be done based on last year
-  if(length(target.sta@last.year) == 1 && target.sta@last.year != actual.last.year) {
+  if(length(target.sta@last.year) == 1 && target.STAInfo@last.year != actual.last.year) {
     call.selectYear <- TRUE
-    last.year <- target.sta@last.year
+    last.year <- target.STAInfo@last.year
   }
   else last.year <- actual.last.year
   
@@ -110,13 +110,13 @@ getField_SITE <- function(source,
   # Correct lon and lats
   if(length(run@lonlat.offset) == 2 ){
     if(verbose) message("Correcting lons and lats with offset.")
-    if(run@lonlat.offset[1] != 0) dt[, Lon := Lon + run@lonlat.offset[1]]
-    if(run@lonlat.offset[2] != 0) dt[, Lat := Lat + run@lonlat.offset[2]]
+    if(source@lonlat.offset[1] != 0) dt[, Lon := Lon + source@lonlat.offset[1]]
+    if(source@lonlat.offset[2] != 0) dt[, Lat := Lat + source@lonlat.offset[2]]
   }
   else if(length(run@lonlat.offset) == 1 ){
     if(verbose) message("Correcting lons and lats with offset.")
-    if(run@lonlat.offset[1] != 0) dt[, Lon := Lon + run@lonlat.offset[1]]
-    if(run@lonlat.offset[1] != 0) dt[, Lat := Lat + run@lonlat.offset[1]]
+    if(source@lonlat.offset[1] != 0) dt[, Lon := Lon + source@lonlat.offset[1]]
+    if(source@lonlat.offset[1] != 0) dt[, Lat := Lat + source@lonlat.offset[1]]
   }
   
   if(verbose) {
@@ -136,9 +136,9 @@ getField_SITE <- function(source,
   all.years <- sort(unique(dt[["Year"]]))
   
   crop.first <- FALSE
-  if(length(target.sta@first.year) == 1) {
-    if(target.sta@first.year != min(all.years)) {
-      first.year <- target.sta@first.year
+  if(length(target.STAInfo@first.year) == 1) {
+    if(target.STAInfo@first.year != min(all.years)) {
+      first.year <- target.STAInfo@first.year
       crop.first <- TRUE
     }
     else {
@@ -148,13 +148,13 @@ getField_SITE <- function(source,
   }
   
   crop.last <- FALSE
-  if(length(target.sta@last.year) == 1) {
-    if(target.sta@last.year != max(all.years)) {
-      last.year <- target.sta@last.year
+  if(length(target.STAInfo@last.year) == 1) {
+    if(target.STAInfo@last.year != max(all.years)) {
+      last.year <- target.STAInfo@last.year
       crop.last <- TRUE
     }
     else {
-      last.year <- target.sta@last.year
+      last.year <- target.STAInfo@last.year
       crop.last <- FALSE
     }
   }
@@ -175,10 +175,10 @@ getField_SITE <- function(source,
   # first store all the years before averaging them away
   
   this.year.aggregate.method <- "none"
-  if(target.sta@year.aggregate.method != "none") {
+  if(target.STAInfo@year.aggregate.method != "none") {
     
-    dt <- aggregateYears(x = dt, method = target.sta@year.aggregate.method, verbose = verbose)
-    this.year.aggregate.method <- target.sta@year.aggregate.method
+    dt <- aggregateYears(x = dt, method = target.STAInfo@year.aggregate.method, verbose = verbose)
+    this.year.aggregate.method <- target.STAInfo@year.aggregate.method
     
   }
   gc()
