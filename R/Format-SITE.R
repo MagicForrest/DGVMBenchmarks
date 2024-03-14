@@ -111,12 +111,12 @@ getField_SITE <- function(source,
   }
   
   # Correct lon and lats
-  if(length(run@lonlat.offset) == 2 ){
+  if(length(source@lonlat.offset) == 2 ){
     if(verbose) message("Correcting lons and lats with offset.")
     if(source@lonlat.offset[1] != 0) dt[, Lon := Lon + source@lonlat.offset[1]]
     if(source@lonlat.offset[2] != 0) dt[, Lat := Lat + source@lonlat.offset[2]]
   }
-  else if(length(run@lonlat.offset) == 1 ){
+  else if(length(source@lonlat.offset) == 1 ){
     if(verbose) message("Correcting lons and lats with offset.")
     if(source@lonlat.offset[1] != 0) dt[, Lon := Lon + source@lonlat.offset[1]]
     if(source@lonlat.offset[1] != 0) dt[, Lat := Lat + source@lonlat.offset[1]]
