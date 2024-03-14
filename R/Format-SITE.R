@@ -47,7 +47,7 @@ getField_SITE <- function(source,
   
   
   # Make the filename and read the file using the handy utility function
-  file_path <- file.path(paste0(source@dir,"//", "PROFOUND", "//", variable, ".csv"))
+  file_path <- file.path(paste0(source@dir, "//", variable, ".csv"))
   
   dt <- fread(file_path,header = TRUE)
   
