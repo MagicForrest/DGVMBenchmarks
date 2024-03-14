@@ -89,7 +89,7 @@ getField_SITE <- function(source,
   else first.year <- actual.first.year
   
   # check if cropping needs to be done based on last year
-  if(length(target.sta@last.year) == 1 && target.STAInfo@last.year != actual.last.year) {
+  if(length(target.STAInfo@last.year) == 1 && target.STAInfo@last.year != actual.last.year) {
     call.selectYear <- TRUE
     last.year <- target.STAInfo@last.year
   }
@@ -97,11 +97,11 @@ getField_SITE <- function(source,
   
   # 
   if(call.selectYear) {
-    if(verbose) message(paste("Selecting years from", first.year, "to", last.year, "in LPJ-GUESS table.", sep = " "))
+    if(verbose) message(paste("Selecting years from", first.year, "to", last.year, "in table.", sep = " "))
     this.Field <- selectYears(dt, first = first.year, last = last.year) 
   }
   else{
-    if(verbose) message("No year selection being applied to LPJ-GUESS table.")
+    if(verbose) message("No year selection being applied to table.")
   }
   
   
@@ -123,7 +123,7 @@ getField_SITE <- function(source,
   }
   
   if(verbose) {
-    message("Offsets applied. Head of full .out file (after offsets):")
+    message("Offsets applied. Head of full .csv file (after offsets):")
     print(utils::head(dt))
   }
   
@@ -200,7 +200,7 @@ getField_SITE <- function(source,
     
     # replace column names with 1,2,3.. etc before melting, and then melt
     setnames(dt, old = standard.monthly.ljp.col.names, new = paste(1:12))
-    dt <- melt(dt, id.vars = st.cols, measure.vars = paste(1:12), variable.name = "Month", value.name = variable)
+    dt <- melt(dt, id.vars = st.cols, measure.vars = paste(1:12), variable.name = "Month", value.name = layers)
     dt[, Month := as.integer(Month)]
     
   }
