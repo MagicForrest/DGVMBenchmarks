@@ -205,8 +205,7 @@ getField_SITE <- function(source,
     
   }
   
-  # remove any NAs
-  dt <- stats::na.omit(dt)
+  
   
   # set the keys (very important!)
   setKeyDGVM(dt)
