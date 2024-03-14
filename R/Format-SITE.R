@@ -29,7 +29,7 @@ getField_SITE <- function(source,
                               file.name,
                               first.year,
                               last.year,
-                              verbose,
+                              verbose = TRUE,
                               ...) {
   
   ### CHECK ARGUEMENTS
