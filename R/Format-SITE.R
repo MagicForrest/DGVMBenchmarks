@@ -36,6 +36,9 @@ getField_SITE <- function(source,
   if(!missing(first.year) & !missing(last.year) ) {
     if(first.year > last.year) stop("first.year cannot be greater than last.year!")
   }
+  
+  variable <- quant@id
+  
   always.read <- c("Lon", "Lat", "Year", "Month", "Day", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
   
   # extract from the target.sta
@@ -44,7 +47,7 @@ getField_SITE <- function(source,
   
   
   # Make the filename and read the file using the handy utility function
-  file_path <- file.path(paste0(source@dir,"//", "PROFOUND", "//", quant, ".csv"))
+  file_path <- file.path(paste0(source@dir,"//", "PROFOUND", "//", variable, ".csv"))
   
   dt <- fread(file_path,header = TRUE)
   
