@@ -217,8 +217,8 @@ getField_SITE <- function(source,
   }else if("Day" %in% dimensions) subannual <- "Day"
   
   
-  gridlist <- data.table(Lon = as.numeric(unique(dt$Lon)),
-                         Lat = as.numeric(unique(dt$Lat)))
+  gridlist <- data.table(Lon = as.numeric(dt$Lon),
+                         Lat = as.numeric(dt$Lat))
   # Create STAInfo object
   final.STAInfo <- new("STAInfo",
                   first.year = min(dt$Year),
