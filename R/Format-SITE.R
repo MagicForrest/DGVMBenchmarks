@@ -27,9 +27,9 @@ getField_SITE <- function(source,
                               layers = NULL,
                               target.STAInfo,
                               file.name,
+                              verbose,
                               first.year,
                               last.year,
-                              verbose = TRUE,
                               ...) {
   
   ### CHECK ARGUEMENTS
