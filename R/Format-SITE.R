@@ -50,6 +50,7 @@ getField_SITE <- function(source,
   file_path <- file.path(paste0(source@dir, "//", variable, ".csv"))
   
   dt <- fread(file_path,header = TRUE)
+  dt[is.na(dt)] <- 0
   
   # correct the dimension names if they are lower case
   dim.names <- c("Lon", "Lat", "Year", "Month", "Day", "Site", "Station")
@@ -205,7 +206,7 @@ getField_SITE <- function(source,
     
   }
   
-  dt[is.na(dt)] <- 0
+  
   
   # set the keys (very important!)
   setKeyDGVM(dt)
