@@ -205,7 +205,7 @@ getField_SITE <- function(source,
     
   }
   
-  
+  dt[is.na(dt)] <- 0
   
   # set the keys (very important!)
   setKeyDGVM(dt)
