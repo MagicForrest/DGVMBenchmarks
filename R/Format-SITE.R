@@ -137,25 +137,25 @@ getField_SITE <- function(source,
   }
   
   # if spatial extent specified, crop to it
-  new.extent <- NULL
-  full.extent <- extent(dt)
-  if(!is.null(target.STAInfo@spatial.extent)) {
-    
-    spatial.extent.class <- class(target.STAInfo@spatial.extent)[1]
-    
-    if(spatial.extent.class == "SpatialPolygonsDataFrame" || spatial.extent.class == "numeric" || is.data.frame(target.STAInfo@spatial.extent) || is.data.table(target.STAInfo@spatial.extent)) {
-      dt <- selectGridcells(x = dt, gridcells = target.STAInfo@spatial.extent, spatial.extent.id = target.STAInfo@spatial.extent.id, ...)
-      new.extent <- target.STAInfo@spatial.extent
-      # if new.extent is a data.frame, convert it to a data.table for consistency
-      #if(is.data.frame(new.extent) & !is.data.table(new.extent)) new.extent <- as.data.table(new.extent)
-    }
-    
-    else {
-      dt <- crop(x = dt, y = target.STAInfo@spatial.extent, spatial.extent.id = target.STAInfo@spatial.extent.id)
-      new.extent <- extractRasterExtent(target.STAInfo@spatial.extent)
-    } 
-    
-  }
+  # new.extent <- NULL
+  # full.extent <- extent(dt)
+  # if(!is.null(target.STAInfo@spatial.extent)) {
+  #   
+  #   spatial.extent.class <- class(target.STAInfo@spatial.extent)[1]
+  #   
+  #   if(spatial.extent.class == "SpatialPolygonsDataFrame" || spatial.extent.class == "numeric" || is.data.frame(target.STAInfo@spatial.extent) || is.data.table(target.STAInfo@spatial.extent)) {
+  #     dt <- selectGridcells(x = dt, gridcells = target.STAInfo@spatial.extent, spatial.extent.id = target.STAInfo@spatial.extent.id, ...)
+  #     new.extent <- target.STAInfo@spatial.extent
+  #     # if new.extent is a data.frame, convert it to a data.table for consistency
+  #     #if(is.data.frame(new.extent) & !is.data.table(new.extent)) new.extent <- as.data.table(new.extent)
+  #   }
+  #   
+  #   else {
+  #     dt <- crop(x = dt, y = target.STAInfo@spatial.extent, spatial.extent.id = target.STAInfo@spatial.extent.id)
+  #     new.extent <- extractRasterExtent(target.STAInfo@spatial.extent)
+  #   } 
+  #   
+  # }
   gc()
   # if year cropping selected, do that here, before aggregating
   all.years <- sort(unique(dt[["Year"]]))
