@@ -240,7 +240,7 @@ getField_SITE <- function(source,
   
   
   
-  gridcells <- data.frame(Lon = as.numeric(dt$Lon),
+  gridcells <- data.table(Lon = as.numeric(dt$Lon),
                           Lat = as.numeric(dt$Lat))
 if("Site" %in% names(dt)){gridcells$Site = as.character(dt$Site)}
   
