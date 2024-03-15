@@ -242,10 +242,18 @@ getField_SITE <- function(source,
   if("Site" %in% names(dt)){
   gridcells <- data.table(Lon = as.numeric(dt$Lon),
                           Lat = as.numeric(dt$Lat),
+                          xmin = as.numeric(min(dt$Lon)),
+                          ymin = as.numeric(min(dt$Lat)),
+                          xmax = as.numeric(max(dt$Lon)),
+                          ymax = as.numeric(max(dt$Lat)),
                           Site = as.character(dt$Site))}
   else{
     gridcells <- data.table(Lon = as.numeric(dt$Lon),
-                            Lat = as.numeric(dt$Lat))}
+                            Lat = as.numeric(dt$Lat),
+                            xmin = as.numeric(min(dt$Lon)),
+                            ymin = as.numeric(min(dt$Lat)),
+                            xmax = as.numeric(max(dt$Lon)),
+                            ymax = as.numeric(max(dt$Lat)))}
 
   
   # Create STAInfo object
