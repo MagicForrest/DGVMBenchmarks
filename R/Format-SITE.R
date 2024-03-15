@@ -218,7 +218,7 @@ getField_SITE <- function(source,
   }else if("Day" %in% dimensions) subannual <- "Day"
   
   
-  gridlist <- data.table(Lon = as.numeric(unique(dt$Lon)),
+  gridcells <- data.table(Lon = as.numeric(unique(dt$Lon)),
                          Lat = as.numeric(unique(dt$Lat)))
   if("Site" %in% names(dt)){gridlist$Site = as.character(unique(dt$Site))}
   # Create STAInfo object
@@ -226,7 +226,7 @@ getField_SITE <- function(source,
                   first.year = min(dt$Year),
                   last.year = max(dt$Year),
                   year.aggregate.method = this.year.aggregate.method,
-                  spatial.extent = gridlist,
+                  spatial.extent = gridcells,
                   spatial.extent.id = paste("All_", quant@id, "_Sites", sep = ""),
                   spatial.aggregate.method = "none",
                   subannual.resolution = subannual,
