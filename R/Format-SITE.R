@@ -52,6 +52,7 @@ getField_SITE <- function(source,
   dt <- fread(file_path,header = TRUE)
   dt[is.na(dt)] <- 0
   
+  
   # correct the dimension names if they are lower case
   dim.names <- c("Lon", "Lat", "Year", "Month", "Day", "Site", "Station")
   dt.header <- names(dt)
@@ -218,15 +219,14 @@ getField_SITE <- function(source,
   }else if("Day" %in% dimensions) subannual <- "Day"
   
   
-  gridcells <- data.table(Lon = as.numeric(unique(dt$Lon)),
-                         Lat = as.numeric(unique(dt$Lat)))
+  
   if("Site" %in% names(dt)){gridlist$Site = as.character(unique(dt$Site))}
   # Create STAInfo object
   final.STAInfo <- new("STAInfo",
                   first.year = min(dt$Year),
                   last.year = max(dt$Year),
                   year.aggregate.method = this.year.aggregate.method,
-                  spatial.extent = gridcells,
+                  spatial.extent = extent(dt),
                   spatial.extent.id = paste("All_", quant@id, "_Sites", sep = ""),
                   spatial.aggregate.method = "none",
                   subannual.resolution = subannual,
