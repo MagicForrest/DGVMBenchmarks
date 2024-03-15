@@ -156,7 +156,7 @@ getField_SITE <- function(source,
   #   } 
   #   
   # }
-  gc()
+  #gc()
   # if year cropping selected, do that here, before aggregating
   all.years <- sort(unique(dt[["Year"]]))
   
@@ -206,7 +206,7 @@ getField_SITE <- function(source,
     this.year.aggregate.method <- target.STAInfo@year.aggregate.method
     
   }
-  gc()
+  #gc()
   
   # If data is has monthly or daily columns, melt to long/tidy data where "Month" becomes a column
   
@@ -239,10 +239,11 @@ getField_SITE <- function(source,
   }else if("Day" %in% dimensions) subannual <- "Day"
   
   
-  
+  if("Site" %in% names(dt)){
   gridcells <- data.table(Lon = as.numeric(dt$Lon),
-                          Lat = as.numeric(dt$Lat))
-if("Site" %in% names(dt)){gridcells$Site = as.character(dt$Site)}
+                          Lat = as.numeric(dt$Lat),
+                          Site = as.character(dt$Site))}
+
   
   # Create STAInfo object
   final.STAInfo <- new("STAInfo",
@@ -267,7 +268,7 @@ if("Site" %in% names(dt)){gridcells$Site = as.character(dt$Site)}
   #   final.STAInfo@spatial.extent.id <- paste("All_", quant@id, "_Sites", sep = "")
   # }
   
-  gc()
+  #gc()
   
   
   # Create Field object
