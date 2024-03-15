@@ -243,6 +243,9 @@ getField_SITE <- function(source,
   gridcells <- data.table(Lon = as.numeric(dt$Lon),
                           Lat = as.numeric(dt$Lat),
                           Site = as.character(dt$Site))}
+  else{
+    gridcells <- data.table(Lon = as.numeric(dt$Lon),
+                            Lat = as.numeric(dt$Lat))}
 
   
   # Create STAInfo object
