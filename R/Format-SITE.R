@@ -240,10 +240,10 @@ getField_SITE <- function(source,
   
   
   
-  gridcells <- data.table(xmin = as.numeric(min(dt$Lon)),
-                          ymin = as.numeric(min(dt$Lat)),
-                          xmax = as.numeric(max(dt$Lon)),
-                          ymax = as.numeric(max(dt$Lat)))
+  # gridcells <- data.table(xmin = as.numeric(min(dt$Lon)),
+  #                         ymin = as.numeric(min(dt$Lat)),
+  #                         xmax = as.numeric(max(dt$Lon)),
+  #                         ymax = as.numeric(max(dt$Lat)))
   
 
   
@@ -252,7 +252,7 @@ getField_SITE <- function(source,
                   first.year = min(dt$Year),
                   last.year = max(dt$Year),
                   year.aggregate.method = this.year.aggregate.method,
-                  spatial.extent = gridcells,
+                  spatial.extent = NULL,
                   spatial.extent.id = paste("All_", quant@id, "_Sites", sep = ""),
                   spatial.aggregate.method = "none",
                   subannual.resolution = subannual,
