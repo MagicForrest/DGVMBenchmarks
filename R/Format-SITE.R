@@ -239,21 +239,12 @@ getField_SITE <- function(source,
   }else if("Day" %in% dimensions) subannual <- "Day"
   
   
-  if("Site" %in% names(dt)){
-  gridcells <- data.table(Lon = as.numeric(dt$Lon),
-                          Lat = as.numeric(dt$Lat),
-                          xmin = as.numeric(min(dt$Lon)),
+  
+  gridcells <- data.table(xmin = as.numeric(min(dt$Lon)),
                           ymin = as.numeric(min(dt$Lat)),
                           xmax = as.numeric(max(dt$Lon)),
-                          ymax = as.numeric(max(dt$Lat)),
-                          Site = as.character(dt$Site))}
-  else{
-    gridcells <- data.table(Lon = as.numeric(dt$Lon),
-                            Lat = as.numeric(dt$Lat),
-                            xmin = as.numeric(min(dt$Lon)),
-                            ymin = as.numeric(min(dt$Lat)),
-                            xmax = as.numeric(max(dt$Lon)),
-                            ymax = as.numeric(max(dt$Lat)))}
+                          ymax = as.numeric(max(dt$Lat)))
+  
 
   
   # Create STAInfo object
