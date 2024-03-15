@@ -240,27 +240,32 @@ getField_SITE <- function(source,
   
   
   
-  if("Site" %in% names(dt)){gridlist$Site = as.character(unique(dt$Site))}
+  gridcells <- data.frame(Lon = as.numeric(dt$Lon),
+                          Lat = as.numeric(dt$Lat))
+if("Site" %in% names(dt)){gridcells$Site = as.character(dt$Site)}
+  
   # Create STAInfo object
   final.STAInfo <- new("STAInfo",
                   first.year = min(dt$Year),
                   last.year = max(dt$Year),
                   year.aggregate.method = this.year.aggregate.method,
+                  spatial.extent = gridcells,
+                  spatial.extent.id = paste("All_", quant@id, "_Sites", sep = ""),
                   spatial.aggregate.method = "none",
                   subannual.resolution = subannual,
                   subannual.aggregate.method = subannual,
                   subannual.original = subannual)
  
   # if cropping has been done, set the new spatial.extent and spatial.extent.id
-  if(!is.null(new.extent))  {
-    final.STAInfo@spatial.extent = new.extent
-    final.STAInfo@spatial.extent.id <- target.STAInfo@spatial.extent.id
-  }
-  # otherwise set to the (potentially what the extent was before spatial aggregating)
-  else {
-    final.STAInfo@spatial.extent = full.extent
-    final.STAInfo@spatial.extent.id <- paste("All_", quant@id, "_Sites", sep = "")
-  }
+  # if(!is.null(new.extent))  {
+  #   final.STAInfo@spatial.extent = new.extent
+  #   final.STAInfo@spatial.extent.id <- target.STAInfo@spatial.extent.id
+  # }
+  # # otherwise set to the (potentially what the extent was before spatial aggregating)
+  # else {
+  #   final.STAInfo@spatial.extent = full.extent
+  #   final.STAInfo@spatial.extent.id <- paste("All_", quant@id, "_Sites", sep = "")
+  # }
   
   gc()
   
