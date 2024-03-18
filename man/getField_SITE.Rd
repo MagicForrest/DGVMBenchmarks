@@ -10,9 +10,9 @@ getField_SITE(
   layers = NULL,
   target.STAInfo,
   file.name,
+  verbose,
   first.year,
   last.year,
-  verbose,
   ...
 )
 }
@@ -28,11 +28,11 @@ getField_SITE(
 \item{file.name}{Character string holding the name of the file.  This can be left blank, in which case the file name is just taken to be
 "\href{mailto:quant@id}{quant@id}.out" (also "\href{mailto:quant@id}{quant@id}.out.gz")}
 
+\item{verbose}{A logical, set to true to give progress/debug information}
+
 \item{first.year}{Optional, will exclude data before this year}
 
 \item{last.year}{Optional, will exclude data beyond this year}
-
-\item{verbose}{A logical, set to true to give progress/debug information}
 }
 \value{
 A list containing firstly the data.table containing the data, and secondly the STA.info

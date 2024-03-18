@@ -10,6 +10,6 @@ availableQuantities_SITE()
 A list of all SITE quantities
 }
 \description{
-Simply lists all carbon flux variables available in the SITE data
+Simply lists all variables available in the SITE data
 }
 \keyword{internal}
