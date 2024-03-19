@@ -4,8 +4,8 @@ Directory:
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
   Old: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
   Old_id: "Euapp with thinning"
-  Format: ["GUESS","ICOS"]
-  Simulation_name: ["european_applications", "profound", "ICOS"]
+  Format: ["GUESS","ICOS","SITE"]
+  Simulation_name: ["european_applications", "PROFOUND", "ICOS"]
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -139,6 +139,20 @@ CMASS_pft:
   Dataset_source: "Simulation only"
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
+Profound_csv:
+  File_name: "lai"
+  Unit: "m2^m2"
+  Id: "lai"
+  Name: "lai"
+  Description: ""
+  First_year: 2010
+  Last_year: 2010
+  Layer: "Forest_sum"
+  Dataset_name: "Profound"
+  Dataset_longname: "ProfoundData"
+  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+  Dataset_description: "Site stand data from the ProfoundData database"
+  
 Profound_lai:
   File_name: "lai"
   Unit: "m2^m2"
