@@ -16,6 +16,12 @@ if ("NetCDF" %in% Formats){
   all_NetCDF_datasets <- NetCDF_sources[[1]]
   all_NetCDF_simulation_Sources_list <- NetCDF_sources[[2]]}
 
+all_SITE_simulation_Sources_list <- list()
+if ("SITE" %in% Formats){
+  SITE_sources <- DGVMBenchmarks::define_SITE_Sources(input = input)
+  all_SITE_datasets <- SITE_sources[[1]]
+  all_SITE_simulation_Sources_list <- SITE_sources[[2]]}
+
 if ("ICOS" %in% Formats){
   all_ICOS_datasets <- DGVMBenchmarks::define_ICOS_DatasetSource(input = input)}
 
@@ -60,7 +66,10 @@ setClass(
     limits = "list",
     breaks = "list",
     ax_limits = "list",
-    metrics = "character"
+    metrics = "character",
+    year.aggregate.method = "character",
+    spatial.aggregate.method = "character",
+    conversion_factor = "numeric"
   )
 )
 # quick read switch and version label (for making quick read files)
