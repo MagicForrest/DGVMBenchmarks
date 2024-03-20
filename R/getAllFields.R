@@ -18,7 +18,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
     all_Fields_list[[benchmark@datasets[[1]]@source@name]] <- benchmark@datasets[[1]]
   }
   
-  if (all_simulation_Sources_list[[1]]@source@format@id == "SITE") {
+  if (all_simulation_Sources_list[[1]]@format@id == "SITE") {
     for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
