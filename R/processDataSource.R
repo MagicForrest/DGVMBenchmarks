@@ -22,7 +22,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
     if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".csv")))){
-      this_data_Source <- all_GUESS_datasets[[1]]
+      this_data_Source <- all_datasets[[1]]
     this_data_Source@dir <- this_dataset_run_dir
     
     Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
