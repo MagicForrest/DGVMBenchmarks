@@ -27,6 +27,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     
     Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
     Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
+    return(Data.year.mean)
    } 
   }
   else if (all_datasets[[dataset]]@format@id == "ICOS") {
