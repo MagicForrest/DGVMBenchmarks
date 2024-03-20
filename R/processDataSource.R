@@ -18,8 +18,18 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     Data.year.mean <- all_datasets
     return(Data.year.mean)
   } 
-  
-  if (all_datasets[[dataset]]@format@id == "ICOS") {
+  if (all_datasets[[dataset]]@format@id == "SITE"){
+    this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
+    
+    if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".csv")))){
+      this_data_Source <- all_GUESS_datasets[[1]]
+    this_data_Source@dir <- this_dataset_run_dir
+    
+    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
+   } 
+  }
+  else if (all_datasets[[dataset]]@format@id == "ICOS") {
     # If the dataset is present, check if the directory and file path are valid.
     this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
