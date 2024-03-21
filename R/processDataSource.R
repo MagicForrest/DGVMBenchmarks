@@ -27,6 +27,15 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     
     Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
     Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
+    
+    
+    
+      ## PROFOUND data exception
+    if ("species_id" %in% colnames(Data.year.mean@data)) {species <- unique(Data.year.mean@data$species_id)}
+    if (length(species) > 1) {
+      Data.year.mean@data <- Data.year.mean@data[, .(Forest_sum = sum(get(input[[benchmark_name]][["Layer"]]))), by = .(Lat,Lon,Year,Site)]
+      setnames(Data.year.mean@data, "Forest_sum", input[[benchmark_name]][["Layer"]])
+      }
     return(Data.year.mean)
    } 
   }
