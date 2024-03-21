@@ -230,7 +230,7 @@ getField_SITE <- function(source,
   
   
   # set the keys (very important!)
-  setKeyDGVM(dt)
+  #setKeyDGVM(dt)
   
   # Build as STAInfo object describing the data
   dimensions <- getDimInfo(dt)
