@@ -31,8 +31,6 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         # read the data
         this_simulation <- DGVMTools::getField(source = this_Source,
                                                quant = benchmark@file_name,
-                                               first.year = benchmark@first.year,
-                                               last.year = benchmark@last.year,
                                                layers = benchmark@guess_layers,
                                                units = benchmark@unit,
                                                verbose = verbose_read,

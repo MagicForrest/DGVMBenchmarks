@@ -25,7 +25,13 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
       this_data_Source <- all_datasets[[1]]
     this_data_Source@dir <- this_dataset_run_dir
     
-    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
+    Data.year.mean <- DGVMTools::getField(source = this_data_Source, 
+                                          quant = input[[benchmark_name]][["File_name"]],
+                                          layers = benchmark@guess_layers,
+                                          units = benchmark@unit,
+                                          verbose = verbose_read,
+                                          quick.read = quick_read,
+                                          quick.read.file = paste(benchmark@id, version_label, sep = "_"))
     Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
     
     
