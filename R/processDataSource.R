@@ -31,7 +31,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
                                           units = input[[benchmark_name]][["Unit"]],
                                           verbose = verbose_read,
                                           quick.read = quick_read,
-                                          quick.read.file = paste(benchmark@id, version_label, sep = "_"))
+                                          quick.read.file = paste(input[[benchmark_name]][["Id"]], version_label, sep = "_"))
     Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
     
     
