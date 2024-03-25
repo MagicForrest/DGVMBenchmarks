@@ -18,6 +18,26 @@ plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_compariso
   names(grid.names) <- paste0("(", unique(Benchmark@datasets[[1]]@spatial.extent$Lon), ",", unique(Benchmark@datasets[[1]]@spatial.extent$Lat), ")")
   
   
+  if (all_comparisons[["Values"]][[1]]@source2@format@id == "SITE"){
+    PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
+    setDT(PROFOUND)
+    for (i in seq_along(all_comparisons)){
+      
+      all_comparisons[[1]][[i]]@data[, Site := character()]
+      
+      # Add the "Site" column to all_Fields_list[[2]]@data
+      all_comparisons[[1]][[i]]@data[
+        PROFOUND,
+        Site := i.Site,
+        on = c("Lat", "Lon")
+      ]      
+      grid.names <- unique(PROFOUND$Site)
+      names(grid.names) <- paste0("(", unique(PROFOUND$Lon), ",", unique(PROFOUND$Lat), ")")
+      }
+    
+    
+    }
+  
 if(length(Benchmark@guess_layers) < 2){
 for (layer in all_comparisons[[1]]){
   plot1 <- DGVMTools::plotTemporalComparison(layer, type = c("difference"), labeller= as_labeller(grid.names))+
@@ -26,7 +46,7 @@ for (layer in all_comparisons[[1]]){
     scale_color_manual(values = color_palette)+
     #coord_fixed(ratio = 550)+
     labs(title = paste0("Difference"," ", layer@name),
-      subtitle = paste0("Total"," ", "Daily", " ", Benchmark@guess_layers),
+      subtitle = paste0("Total"," ", layer@sta.info1@subannual.resolution, " ", Benchmark@guess_layers),
       x = "Year",
       y.label = paste0("Difference", toupper(Benchmark@id),"(", Benchmark@unit,")"))+
     theme(axis.title = element_text(size = 18),  # Adjust axis title text size
@@ -60,8 +80,8 @@ if(length(Benchmark@guess_layers) > 1){
     if(length(Benchmark@guess_layers) < 2){
     for (layer in all_comparisons[[1]]){
       plot1 <- DGVMTools::plotTemporalComparison(layer, type = c("difference"))+
-        geom_line( size = 0.6, linetype = 1 )+
-        geom_point( size = 0.4, colour = "black", alpha = 0.4)+
+        geom_line( size = 0.9, linetype = 1 )+
+        geom_point( size = 0.8, colour = "black", alpha = 0.4)+
         scale_color_manual(values = color_palette)+
         #coord_fixed(ratio = 550)+
         labs(title = paste0("Difference"," ", layer@name),
