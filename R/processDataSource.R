@@ -27,8 +27,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     
     Data.year.mean <- DGVMTools::getField(source = this_data_Source, 
                                           quant = input[[benchmark_name]][["File_name"]],
-                                          layers = benchmark@guess_layers,
-                                          units = benchmark@unit,
+                                          layers = input[[benchmark_name]][["Layer"]],
+                                          units = input[[benchmark_name]][["Unit"]],
                                           verbose = verbose_read,
                                           quick.read = quick_read,
                                           quick.read.file = paste(benchmark@id, version_label, sep = "_"))
@@ -41,7 +41,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     if (length(species) > 1) {
       Data.year.mean@data <- Data.year.mean@data[, .(Forest_sum = sum(get(input[[benchmark_name]][["Layer"]]))), by = .(Lat,Lon,Year,Site)]
       setnames(Data.year.mean@data, "Forest_sum", input[[benchmark_name]][["Layer"]])
-      }
+    }
+    setKeyDGVM(Data.year.mean@data)
     return(Data.year.mean)
    } 
   }
