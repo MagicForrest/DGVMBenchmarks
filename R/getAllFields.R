@@ -38,7 +38,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
                                                quick.read.file = paste(benchmark@id, version_label, sep = "_")
                                                
         )
-        setKeyDGVM(this_simulation)
+        setKeyDGVM(this_simulation@data)
         
         all_sim_full[[this_sim_Source@name]] <- this_simulation
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
