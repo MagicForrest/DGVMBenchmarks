@@ -12,10 +12,10 @@ plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_compariso
  
   color_palette <- c("#457b9d", "#a8dadc", "#f4a261", "#2a9d8f", "#e76f51")
   
-  
+  grid.names <- NULL
   if (Benchmark@datasets[[1]]@source@format@id == "ICOS"){
   grid.names <- unique(Benchmark@datasets[[1]]@spatial.extent$Name)
-  names(grid.names) <- paste0("(", unique(Benchmark@datasets[[1]]@spatial.extent$Lon), ",", unique(Benchmark@datasets[[1]]@spatial.extent$Lat), ")")
+  names(grid.names) <- paste0("(", unique(Benchmark@datasets[[1]]@spatial.extent$Lon), ",", unique(Benchmark@datasets[[1]]@spatial.extent$Lat), ")")}
   
   
   if (all_comparisons[["Values"]][[1]]@source2@format@id == "SITE"){
@@ -38,7 +38,7 @@ plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_compariso
     
     }
   
-if(length(Benchmark@guess_layers) < 2){
+if(length(Benchmark@guess_layers) < 2 && !is.null(grid.names) ){
 for (layer in all_comparisons[[1]]){
   plot1 <- DGVMTools::plotTemporalComparison(layer, type = c("difference"), labeller= as_labeller(grid.names))+
     geom_line( size = 0.6, linetype = 1 )+
@@ -58,7 +58,7 @@ for (layer in all_comparisons[[1]]){
 }
 }
 
-if(length(Benchmark@guess_layers) > 1){
+if(length(Benchmark@guess_layers) > 1 && !is.null(grid.names)){
   p1 <- DGVMTools::plotTemporalComparison(all_comparisons[["Values"]], type = "difference",text.multiplier = 1.1, labeller= as_labeller(grid.names))+ #, map.overlay = "world", panel.bg.col = "gray")+
     geom_line( size = 0.6, linetype = 1 )+
     geom_point( size = 0.4, colour = "black", alpha = 0.4)+
@@ -75,8 +75,7 @@ if(length(Benchmark@guess_layers) > 1){
           plot.title = element_text(size = 20))
   print(p1)
 }
-  }
-  else {
+  }else{
     if(length(Benchmark@guess_layers) < 2){
     for (layer in all_comparisons[[1]]){
       plot1 <- DGVMTools::plotTemporalComparison(layer, type = c("difference"))+
