@@ -75,8 +75,7 @@ if(length(Benchmark@guess_layers) > 1 && !is.null(grid.names)){
           plot.title = element_text(size = 20))
   print(p1)
 }
-  }else{
-    if(length(Benchmark@guess_layers) < 2){
+    if(length(Benchmark@guess_layers) < 2 && is.null(grid.names)){
     for (layer in all_comparisons[[1]]){
       plot1 <- DGVMTools::plotTemporalComparison(layer, type = c("difference"))+
         geom_line( size = 0.9, linetype = 1 )+
@@ -96,7 +95,7 @@ if(length(Benchmark@guess_layers) > 1 && !is.null(grid.names)){
     }
   }
     
-    if(length(Benchmark@guess_layers) > 1){
+    if(length(Benchmark@guess_layers) > 1 && is.null(grid.names)){
       p1 <- DGVMTools::plotTemporalComparison(all_comparisons[["Values"]], type = "difference",text.multiplier = 1.1)+ #, map.overlay = "world", panel.bg.col = "gray")+
         geom_line( size = 0.6, linetype = 1 )+
         geom_point( size = 0.4, colour = "black", alpha = 0.4)+
@@ -112,5 +111,5 @@ if(length(Benchmark@guess_layers) > 1 && !is.null(grid.names)){
               legend.text = element_text(size = 18),
               plot.title = element_text(size = 20))
       print(p1)}
-  }
+  
 }
