@@ -23,10 +23,10 @@ plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_compariso
     setDT(PROFOUND)
     comparisons <- list()
     for (i in seq_along(all_comparisons)){
-      this_comparison <- all_comparisons[[1]][[i]]
+      this_comparison <- copy(all_comparisons[[1]][[i]])
       this_comparison@data[, Site := character()]
       
-      # Add the "Site" column to all_Fields_list[[2]]@data
+      # Add the "Site" column to this_comparison@data
 this_comparison@data[
         PROFOUND,
         Site := i.Site,
