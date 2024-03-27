@@ -15,9 +15,15 @@ plotTemporalScatter <- function(Benchmark = this_benchmark, all_comparisons = al
 if (all_comparisons[["Values"]][[1]]@source2@format@id == "SITE"){
   PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
     setDT(PROFOUND)
-      for (i in seq_along(all_comparisons)){
-        all_comparisons[[1]][[i]]@data <- merge(all_comparisons[[1]][[i]]@data, PROFOUND[, c("Lat", "Lon", "Site")], by = c("Lon", "Lat"), all.x = TRUE)
-        }
+    for (i in seq_along(all_comparisons)) {
+      # Merge and keep only the 'Site' column from the PROFOUND dataset
+      all_comparisons[[1]][[i]]@data <- merge(
+        x = all_comparisons[[1]][[i]]@data,
+        y = PROFOUND[, .(Lat, Lon, Site)],
+        by = c("Lon", "Lat"),
+        all.x = TRUE
+      )
+    }
           }
     
     for (this_comparison in all_comparisons[[1]]){
