@@ -21,16 +21,19 @@ plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_compariso
   if (all_comparisons[["Values"]][[1]]@source2@format@id == "SITE"){
     PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
     setDT(PROFOUND)
+    comparisons <- list()
     for (i in seq_along(all_comparisons)){
-      
-      all_comparisons[[1]][[i]]@data[, Site := character()]
+      this_comparison <- all_comparisons[[1]][[i]]
+      this_comparison@data[, Site := character()]
       
       # Add the "Site" column to all_Fields_list[[2]]@data
-      all_comparisons[[1]][[i]]@data[
+this_comparison@data[
         PROFOUND,
         Site := i.Site,
         on = c("Lat", "Lon")
       ]      
+    
+    comparisons[[this_comparison@name]] <- this_comparison
       grid.names <- unique(PROFOUND$Site)
       names(grid.names) <- paste0("(", unique(PROFOUND$Lon), ",", unique(PROFOUND$Lat), ")")
       }
@@ -39,7 +42,7 @@ plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_compariso
     }
   
 if(length(Benchmark@guess_layers) < 2 && !is.null(grid.names) ){
-for (layer in all_comparisons[[1]]){
+for (layer in comparisons){
   plot1 <- DGVMTools::plotTemporalComparison(layer, type = c("difference"), labeller= as_labeller(grid.names))+
     geom_line( size = 0.6, linetype = 1 )+
     geom_point( size = 0.4, colour = "black", alpha = 0.4)+
@@ -59,7 +62,8 @@ for (layer in all_comparisons[[1]]){
 }
 
 if(length(Benchmark@guess_layers) > 1 && !is.null(grid.names)){
-  p1 <- DGVMTools::plotTemporalComparison(all_comparisons[["Values"]], type = "difference",text.multiplier = 1.1, labeller= as_labeller(grid.names))+ #, map.overlay = "world", panel.bg.col = "gray")+
+  for (layer in comparisons){
+  p1 <- DGVMTools::plotTemporalComparison(layer, type = "difference",text.multiplier = 1.1, labeller= as_labeller(grid.names))+ #, map.overlay = "world", panel.bg.col = "gray")+
     geom_line( size = 0.6, linetype = 1 )+
     geom_point( size = 0.4, colour = "black", alpha = 0.4)+
     scale_color_manual(values = color_palette)+
@@ -74,6 +78,7 @@ if(length(Benchmark@guess_layers) > 1 && !is.null(grid.names)){
           legend.text = element_text(size = 18),
           plot.title = element_text(size = 20))
   print(p1)
+  }
 }
     if(length(Benchmark@guess_layers) < 2 && is.null(grid.names)){
     for (layer in all_comparisons[[1]]){
