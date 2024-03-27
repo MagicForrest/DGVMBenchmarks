@@ -69,7 +69,7 @@ if (all_comparisons[["Values"]][[1]]@source2@format@id == "SITE"){
         guides(fill = FALSE) + # This removes the fill legend
         theme_bw() +
         theme(legend.position = "bottom",
-              legend.direction = "horisontal",
+              legend.direction = "horizontal",
               legend.title = element_text(size = 12, face = "bold"),
               legend.text = element_text(size = 12),
               plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
