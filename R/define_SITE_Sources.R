@@ -16,10 +16,10 @@ define_SITE_Sources <- function(input){
     all_SITE_datasets <- list(Reference_data)}
   
   # Define source for latest model run
-  New_run <- DGVMTools::defineSource(id = input[["Directory"]][["New_id"]], dir = input[["Directory"]][["New"]], format = SITE, name = input[["Directory"]][["New_id"]])
+  New_run <- DGVMTools::defineSource(id = input[["Directory"]][["Sim1_id"]], dir = input[["Directory"]][["Sim1"]], format = SITE, name = input[["Directory"]][["Sim1_id"]])
   # If previous model run is to be included, defined here. All sources added to list for benchmarking.
-  if (is.na(input[["Directory"]][["Old"]]) || input[["Directory"]][["Old"]] == ""){input[["Directory"]][["Old"]] <- NULL}
-  if (!is.null(input[["Directory"]][["Old"]])){Old_run <- DGVMTools::defineSource(id = input[["Directory"]][["Old_id"]], dir = input[["Directory"]][["Old"]], format = SITE, name = input[["Directory"]][["Old_id"]])
+  if (is.na(input[["Directory"]][["Sim2"]]) || input[["Directory"]][["Sim2"]] == ""){input[["Directory"]][["Sim2"]] <- NULL}
+  if (!is.null(input[["Directory"]][["Sim2"]])){Old_run <- DGVMTools::defineSource(id = input[["Directory"]][["Sim2_id"]], dir = input[["Directory"]][["Sim2"]], format = SITE, name = input[["Directory"]][["Sim2_id"]])
   all_SITE_simulation_Sources_list <- list(New_run, Old_run)
   }else{all_SITE_simulation_Sources_list <- list(New_run)}
   return(SITE_sources <- list(all_SITE_datasets,all_SITE_simulation_Sources_list))

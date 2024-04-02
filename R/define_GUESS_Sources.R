@@ -16,10 +16,10 @@ define_GUESS_Sources <- function(input){
     all_GUESS_datasets <- list(Reference_data)}
   
   # Define source for latest model run
-  New_run <- DGVMTools::defineSource(id = input[["Directory"]][["New_id"]], dir = input[["Directory"]][["New"]], format = GUESS, name = input[["Directory"]][["New_id"]])
+  New_run <- DGVMTools::defineSource(id = input[["Directory"]][["Sim1_id"]], dir = input[["Directory"]][["Sim1"]], format = GUESS, name = input[["Directory"]][["Sim1_id"]])
   # If previous model run is to be included, defined here. All sources added to list for benchmarking.
-  if (is.na(input[["Directory"]][["Old"]]) || input[["Directory"]][["Old"]] == ""){input[["Directory"]][["Old"]] <- NULL}
-  if (!is.null(input[["Directory"]][["Old"]])){Old_run <- DGVMTools::defineSource(id = input[["Directory"]][["Old_id"]], dir = input[["Directory"]][["Old"]], format = GUESS, name = input[["Directory"]][["Old_id"]])
+  if (is.na(input[["Directory"]][["Sim2"]]) || input[["Directory"]][["Sim2"]] == ""){input[["Directory"]][["Sim2"]] <- NULL}
+  if (!is.null(input[["Directory"]][["Sim2"]])){Old_run <- DGVMTools::defineSource(id = input[["Directory"]][["Sim2_id"]], dir = input[["Directory"]][["Sim2"]], format = GUESS, name = input[["Directory"]][["Sim2_id"]])
   all_GUESS_simulation_Sources_list <- list(New_run, Old_run)
   }else{all_GUESS_simulation_Sources_list <- list(New_run)}
   return(GUESS_sources <- list(all_GUESS_datasets,all_GUESS_simulation_Sources_list))

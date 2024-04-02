@@ -1,9 +1,9 @@
 Directory:
-  New: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_harv_prob"
-  New_id: "Euapp probabilistic harvest"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_harv_prob"
+  Sim1_id: "Euapp probabilistic harvest"
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
-  Old: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
-  Old_id: "Euapp with thinning"
+  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
+  Sim2_id: "Euapp with thinning"
   Format: ["GUESS","ICOS","SITE"]
   Simulation_name: ["european_applications", "PROFOUND", "ICOS"]
   spatial_extent_id: "Full"
