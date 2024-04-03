@@ -45,8 +45,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
       }
     }
     
-  }else if (length(benchmark@datasets[[1]]) != 0) {
-    if (benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "GPP") {
+  }else if (length(benchmark@datasets[[1]]) != 0 &&benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "GPP") {
     for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
@@ -73,9 +72,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
       }
     }
-    }
-  } else if (length(benchmark@datasets[[1]]) != 0){
-    if (benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "NEE") {
+    } else if (length(benchmark@datasets[[1]]) != 0 && benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "NEE") {
     for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
@@ -102,9 +99,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
       }
     }
-    }
-  } else if (length(benchmark@datasets[[1]]) != 0){
-    if (benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "Reco") {
+    }else if (length(benchmark@datasets[[1]]) != 0 && benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "Reco") {
     for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
@@ -131,9 +126,8 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
       }
     }
-    }
-  } else {
-    for (this_sim_Source in all_simulation_Sources_list) {
+    }else {
+      for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
       this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation)
@@ -162,10 +156,12 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         all_sim_full[[this_sim_Source@name]] <- this_simulation
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
       }
-    }
+      }
+      
   }
   
-  return(list(all_sim_full, all_Fields_list))
+return(list(all_sim_full, all_Fields_list))
 }
+
 
 
