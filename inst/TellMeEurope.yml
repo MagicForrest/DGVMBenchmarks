@@ -5,7 +5,7 @@ Directory:
   Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
   Sim2_id: "Euapp with thinning"
   Format: ["GUESS","ICOS","SITE"]
-  Simulation_name: ["european_applications", "PROFOUND", "ICOS"]
+  Simulation_name: ["european_applications", "PROFOUND", "ICOS", "Bias_corrected", "CRUJRA_v2.4.5d"]
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -182,7 +182,7 @@ Profound_cmass:
   Dataset_description: "Site stand data from the ProfoundData database"
   
 Profound_dens:
-  File_name: "densnew"
+  File_name: "dens"
   Unit: "indiv/ha"
   Id: ""
   Name: ""
