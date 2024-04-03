@@ -10,6 +10,8 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_comparisons = all_comparisons){
  
+  comparisons = all_comparisons
+  
   color_palette <- c("#457b9d", "#a8dadc", "#f4a261", "#2a9d8f", "#e76f51")
   
   grid.names <- NULL
