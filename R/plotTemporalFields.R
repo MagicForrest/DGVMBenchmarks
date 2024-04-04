@@ -18,8 +18,8 @@ plotTemporalFields <- function(Benchmark = this_benchmark, all_Fields_list = all
   if (uncertainty == "SD"){
     for (i in seq_along(all_comparisons[[1]])){
     
-      source1[[all_comparisons[[1]][[i]]@source1@name]] <- list.files(path = paste(all_comparisons[["Values"]][[i]]@source1@dir), pattern = paste0(Benchmark@id, "_","std"),full.names = TRUE, recursive = TRUE)
-      source2[[all_comparisons[[1]][[i]]@source2@name]] <- list.files(path = paste(all_comparisons[["Values"]][[i]]@source2@dir), pattern = paste0(Benchmark@id, "_","std"),full.names = TRUE, recursive = TRUE)
+      source1[[all_comparisons[[1]][[i]]@source1@name]] <- list.files(path = paste(all_comparisons[["Values"]][[i]]@source1@dir), pattern = paste0(Benchmark@file_name, "_","std"),full.names = TRUE, recursive = TRUE)
+      source2[[all_comparisons[[1]][[i]]@source2@name]] <- list.files(path = paste(all_comparisons[["Values"]][[i]]@source2@dir), pattern = paste0(Benchmark@file_name, "_","std"),full.names = TRUE, recursive = TRUE)
       
       if (length(source1[[1]]) > 0){
         # Read the standard deviation files as data.tables
