@@ -4,8 +4,8 @@ Directory:
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
   Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
   Sim2_id: "Euapp with thinning"
-  Format: ["GUESS","ICOS","SITE"]
-  Simulation_name: ["european_applications", "PROFOUND", "ICOS", "Bias_corrected", "CRUJRA_v2.4.5d"]
+  Format: ["GUESS","ICOS","SITE", "FLUXNET"]
+  Simulation_name: ["european_applications", "PROFOUND", "ICOS", "Bias_corrected", "CRUJRA_v2.4.5d", "FLUXNET"]
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:

@@ -25,6 +25,9 @@ if ("SITE" %in% Formats){
 if ("ICOS" %in% Formats){
   all_ICOS_datasets <- DGVMBenchmarks::define_ICOS_DatasetSource(input = input)}
 
+if ("FLUXNET" %in% Formats){
+  all_ICOS_datasets <- DGVMBenchmarks::define_ICOS_DatasetSource(input = input)}
+
 ## Set the grid cell spatial extent see list of predefined options or choose "Full" or "Custom"
 spatial.extent <- DGVMBenchmarks::setGridCellExtent(input = input)
 
@@ -43,6 +46,7 @@ if (length(all_GUESS_simulation_Sources_list) != 0){
 ## This table is completely empty, it will by built benchmark by-benchmark ##
 metric_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 Profound_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
+ICOS_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 ICOS_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 ## Inizialise the Benchmark class, to further customize your own benchmark add slot to use later. ##
 setClass(
@@ -69,7 +73,8 @@ setClass(
     metrics = "character",
     year.aggregate.method = "character",
     spatial.aggregate.method = "character",
-    conversion_factor = "numeric"
+    conversion_factor = "numeric",
+    conversion_layer = "list"
   )
 )
 # quick read switch and version label (for making quick read files)
