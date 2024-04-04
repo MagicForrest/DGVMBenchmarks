@@ -49,6 +49,7 @@ for (layer in comparisons){
     geom_line( size = 0.6, linetype = 1 )+
     geom_point( size = 0.4, colour = "black", alpha = 0.4)+
     scale_color_manual(values = color_palette)+
+    facet_wrap(~ Site, scales = "free_x", labeller = as_labeller(grid.names)) +
     #coord_fixed(ratio = 550)+
     labs(title = paste0("Difference"," ", layer@name),
       subtitle = paste0("Total"," ", layer@sta.info1@subannual.resolution, " ", Benchmark@guess_layers),
