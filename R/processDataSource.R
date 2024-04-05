@@ -45,8 +45,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     setKeyDGVM(Data.year.mean@data)
     return(Data.year.mean)
    } 
-  }
-  else if (all_datasets[[dataset]]@format@id == "ICOS") {
+  }else if (all_datasets[[dataset]]@format@id == "ICOS") {
     # If the dataset is present, check if the directory and file path are valid.
     this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
@@ -77,8 +76,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           qc.threshold = 0.5,
           first.year = as.numeric(input[[benchmark_name]][["First_year_Data"]]),
           last.year = as.numeric(input[[benchmark_name]][["Last_year_Data"]])
-        )}
-      else{
+        )}else{
         Data.year.mean <- DGVMTools::getField(
           source = this_data_Source,
           quant = input[[benchmark_name]][["File_name"]],
@@ -128,8 +126,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           qc.threshold = 0.5,
           first.year = as.numeric(input[[benchmark_name]][["First_year_Data"]]),
           last.year = as.numeric(input[[benchmark_name]][["Last_year_Data"]])
-        )}
-      else{
+        )}else{
         Data.year.mean <- DGVMTools::getField(
           source = this_data_Source,
           quant = input[[benchmark_name]][["File_name"]],
@@ -148,9 +145,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
       Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
       return(Data.year.mean)
     }
-  }
-  
-    else {
+  }else {
     # If the dataset is present, check if the directory and file path are valid.
     this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
@@ -172,8 +167,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
         spatial.extent.id = input[["Directory"]][["spatial_extent_id"]],
         spatial.extent = spatial.extent,
         year.aggregate.method = "mean"
-      )}
-        else{
+      )}else{
           Data.year.mean <- DGVMTools::getField(
             source = this_data_Source,
             quant = input[[benchmark_name]][["File_name"]],
