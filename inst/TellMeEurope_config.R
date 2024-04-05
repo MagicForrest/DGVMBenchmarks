@@ -26,7 +26,7 @@ if ("ICOS" %in% Formats){
   all_ICOS_datasets <- DGVMBenchmarks::define_ICOS_DatasetSource(input = input)}
 
 if ("FLUXNET" %in% Formats){
-  all_ICOS_datasets <- DGVMBenchmarks::define_ICOS_DatasetSource(input = input)}
+  all_FLUXNET_datasets <- DGVMBenchmarks::define_FLUXNET_DatasetSource(input = input)}
 
 ## Set the grid cell spatial extent see list of predefined options or choose "Full" or "Custom"
 spatial.extent <- DGVMBenchmarks::setGridCellExtent(input = input)
