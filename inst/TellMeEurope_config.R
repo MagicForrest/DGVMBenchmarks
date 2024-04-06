@@ -47,7 +47,7 @@ if (length(all_GUESS_simulation_Sources_list) != 0){
 metric_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 Profound_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 ICOS_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
-ICOS_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
+FLUXNET_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
 ## Inizialise the Benchmark class, to further customize your own benchmark add slot to use later. ##
 setClass(
   "benchmark",
