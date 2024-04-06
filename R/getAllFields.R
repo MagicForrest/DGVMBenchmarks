@@ -45,7 +45,10 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
       }
     }
     
-  }else if (length(benchmark@datasets[[1]]) != 0 &&benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "GPP") {
+  }else if (length(benchmark@datasets[[1]]) != 0 && 
+            (benchmark@datasets[[1]]@source@format@id == "ICOS" || 
+             benchmark@datasets[[1]]@source@format@id == "FLUXNET") && 
+            benchmark@file_name == "GPP")  {
     for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
@@ -72,7 +75,11 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
       }
     }
-    } else if (length(benchmark@datasets[[1]]) != 0 && benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "NEE") {
+    } else if (length(benchmark@datasets[[1]]) != 0 &&
+               (benchmark@datasets[[1]]@source@format@id == "ICOS" || 
+               benchmark@datasets[[1]]@source@format@id == "FLUXNET") &&
+               benchmark@file_name == "NEE") {
+      
     for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
@@ -99,7 +106,10 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
       }
     }
-    }else if (length(benchmark@datasets[[1]]) != 0 && benchmark@datasets[[1]]@source@format@id == "ICOS" && benchmark@file_name == "Reco") {
+    }else if (length(benchmark@datasets[[1]]) != 0 &&
+              (benchmark@datasets[[1]]@source@format@id == "ICOS" ||
+               benchmark@datasets[[1]]@source@format@id == "FLUXNET") &&
+              benchmark@file_name == "Reco") {
     for (this_sim_Source in all_simulation_Sources_list) {
       
       # check if file is present (if not don't include this run)
