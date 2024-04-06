@@ -105,9 +105,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     
     
     if (dir.exists(this_dataset_run_dir) &&
-        (length(daily.files) != 0 ) && 
-        (length(siteinfo.files) != 0) &&
-        (length(daily.files) == length(siteinfo.files))){
+        (length(daily.files) != 0)){
       
       this_data_Source <- all_datasets[[dataset]]
       this_data_Source@dir <- file.path(this_dataset_run_dir)  
