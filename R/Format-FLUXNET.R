@@ -310,7 +310,7 @@ getField_FLUXNET <- function(source,
   
   # select the required columns for the current quantity
   if (quant@id %in% variables.cfluxes) {
-    FLUXNET.cfluxes %>% select(Year, Day, Lon, Lat, quant@id) -> quant.data
+    FLUXNET.cfluxes %>% select(Year, Day, Code, Name, Lon, Lat, quant@id) -> quant.data
   }
   
   # creating a data table with the lon/lat
