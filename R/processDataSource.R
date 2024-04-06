@@ -17,7 +17,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
   if (length(all_datasets) == 0) {
     Data.year.mean <- all_datasets
     return(Data.year.mean)
-  } 
+  } else{
   if (all_datasets[[dataset]]@format@id == "SITE"){
     this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
@@ -44,8 +44,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
     }
     setKeyDGVM(Data.year.mean@data)
     return(Data.year.mean)
-   } 
-  }else if (all_datasets[[dataset]]@format@id == "ICOS") {
+    } 
+    }else if (all_datasets[[dataset]]@format@id == "ICOS") {
     # If the dataset is present, check if the directory and file path are valid.
     this_dataset_run_dir <- file.path(all_datasets[[dataset]]@dir, input[["Directory"]][["Simulation_name"]][[simulation]])
     
@@ -181,6 +181,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
       Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]]
       return(Data.year.mean)
     }
+  }
   }
 }
 
