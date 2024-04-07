@@ -21,6 +21,7 @@ library(tictoc)
 library(ggpubr)
 library(yaml)
 library(showtext) 
+library(data.table)
 showtext_auto()
 # start timer
 tic()
@@ -50,6 +51,9 @@ do_ICOS_GPP <- as.logical(input[["Switches"]][["do_ICOS_GPP"]])
 do_ICOS_NEE <- as.logical(input[["Switches"]][["do_ICOS_NEE"]])
 do_ICOS_Reco <- as.logical(input[["Switches"]][["do_ICOS_Reco"]])
 do_ICOS_ET <- as.logical(input[["Switches"]][["do_ICOS_ET"]])
+do_FLUXNET_GPP <- as.logical(input[["Switches"]][["do_FLUXNET_GPP"]])
+do_FLUXNET_NEE <- as.logical(input[["Switches"]][["do_FLUXNET_NEE"]])
+do_FLUXNET_Reco <- as.logical(input[["Switches"]][["do_FLUXNET_Reco"]])
 ```
 ***
 # AGPP {.tabset}
@@ -246,19 +250,20 @@ if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table
 if(do_plots && length(all_GUESS_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
-# pft cmass difference {.tabset}
+# PFT CMASS {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
 cat(input[["CMASS_pft"]][["Dataset_description"]])
 ```
 
-## pft cmass comparison
+## Difference
 
 ```{r pft cmass difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
 if (do_cmass_pft){
 benchmark_name <- "CMASS_pft" 
 
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+Data.year.mean <- list()
+  processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
@@ -268,21 +273,19 @@ all_Fields_list <- field_lists[[2]]
 
 all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
 
-if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}}
-```
-# pft cmass {.tabset}
-
-```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["CMASS_pft"]][["Dataset_description"]])
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+}
 ```
 
-## pft cmass 
+
+
+## Total PFT Cmass
 
 ```{r pft cmass, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
 if (do_cmass_pft1){
 benchmark_name <- "CMASS_pft" 
 
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+Data.year.mean <- list()
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
 
@@ -290,9 +293,8 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-
-
-if(do_plots){plotSpatialField(Benchmark = this_benchmark, all_Fields_list = all_Fields_list)}}
+if(do_plots){plotSpatialField(Benchmark = this_benchmark, all_Fields_list = all_Fields_list)}
+}
 ```
 
 # Summary table spatial mean
@@ -314,110 +316,259 @@ if(nrow(metric_table) > 0) {
 
 # Profound {.tabset}
 
-```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["Profound"]][["Dataset_description"]])
-```
-
-## LAI
-```{r Profound LAI, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+## LAI Total
+```{r Profound LAI.csv, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
-benchmark_name <- "Profound_lai"
+benchmark_name <- "Profound_csv"
 
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name, simulation = 2, dataset = 1)
-
- this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
- if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-     this_data_Source <- all_GUESS_datasets[[1]]
-     this_data_Source@dir <- this_dataset_run_dir
- 
-     Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
-    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
 
-Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_GUESS_simulation_Sources_list)}
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+all_Fields_list[[2]]@data[, Site := paste0(tolower(Site))]
+all_Fields_list[[3]]@data[, Site := paste0(tolower(Site))]
+
+PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
+    setDT(PROFOUND)
+
+all_Fields_list[[2]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+all_Fields_list[[3]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+ 
+plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
+
+if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
 ```
 
-## CMASS
+## LAI Difference
+```{r Profound LAI difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+## CMASS Total
 ```{r Profound CMASS, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
 benchmark_name <- "Profound_cmass"
-this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_GUESS_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-
-    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
-    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
 
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
 
-Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_GUESS_simulation_Sources_list)
-  
+all_Fields_list[[2]]@data[["Forest_sum"]] <- as.numeric(all_Fields_list[[2]]@data[["Forest_sum"]])
+all_Fields_list[[3]]@data[["Forest_sum"]] <- as.numeric(all_Fields_list[[3]]@data[["Forest_sum"]])
+all_sim_full[[1]]@data[["Forest_sum"]] <- as.numeric(all_sim_full[[1]]@data[["Forest_sum"]])
+all_sim_full[[2]]@data[["Forest_sum"]] <- as.numeric(all_sim_full[[2]]@data[["Forest_sum"]])
+
+all_Fields_list[[2]]@data[["Forest_sum"]] <- all_Fields_list[[2]]@data[["Forest_sum"]] * 0.0001
+all_Fields_list[[3]]@data[["Forest_sum"]] <- all_Fields_list[[3]]@data[["Forest_sum"]] * 0.0001
+
+all_Fields_list[[2]]@data[, Site := paste0(tolower(Site))]
+all_Fields_list[[3]]@data[, Site := paste0(tolower(Site))]
+
+PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
+    setDT(PROFOUND)
+
+all_Fields_list[[2]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+all_Fields_list[[3]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+setkey(all_Fields_list[[2]]@data)
+setkey(all_Fields_list[[3]]@data)
+
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+ 
+plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
+
+if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
 }
 ```
 
-## DENSITY
+## Cmass Difference
+```{r Profound Cmass difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+## DENSITY Total
 ```{r Profound DENS, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
 benchmark_name <- "Profound_dens"
-this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_GUESS_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-
-    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
-    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
 
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
 
-Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_GUESS_simulation_Sources_list)
-  
+all_Fields_list[[2]]@data[, Site := paste0(tolower(Site))]
+all_Fields_list[[3]]@data[, Site := paste0(tolower(Site))]
+
+PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
+    setDT(PROFOUND)
+
+all_Fields_list[[2]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+all_Fields_list[[3]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+setkey(all_Fields_list[[2]]@data)
+setkey(all_Fields_list[[3]]@data)
+
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+ 
+plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
+
+if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
 }
 ```
 
-## QDBH
+## Density Difference
+```{r Profound density difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+
+## QDBH Total
 ```{r Profound QDBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
 benchmark_name <- "Profound_diam_g_plus10cm_sts_ext_st_mean"
 
-this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_GUESS_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-
-    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
-    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
 
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
 
-Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_GUESS_simulation_Sources_list)
-  
+all_Fields_list[[2]]@data[, Site := paste0(tolower(Site))]
+all_Fields_list[[3]]@data[, Site := paste0(tolower(Site))]
+
+PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
+    setDT(PROFOUND)
+
+all_Fields_list[[2]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+all_Fields_list[[3]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+setkey(all_Fields_list[[2]]@data)
+setkey(all_Fields_list[[3]]@data)
+
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+ 
+plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
+
+if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
 }
 ```
 
-## DBH
+## QDBH Difference
+```{r Profound QDBH difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+## DBH Total
 ```{r Profound DBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
 benchmark_name <- "Profound_diam_plus10cm_sts_ext_st_mean"
-this_dataset_run_dir <- file.path(all_GUESS_datasets[[1]]@dir, input[["Directory"]][["Simulation_name"]][[2]])
-if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||  file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]],".out.gz"))))
-    this_data_Source <- all_GUESS_datasets[[1]]
-    this_data_Source@dir <- this_dataset_run_dir
-
-    Data.year.mean <- DGVMTools::getField(source = this_data_Source, quant = input[[benchmark_name]][["File_name"]])
-    Data.year.mean@source@name <- input[[benchmark_name]][["Dataset_name"]] 
+Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
 
 this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
 
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
 
-Profound_table <- TellMeEurope::fullProfoundBenchmark(Benchmark = this_benchmark,all_simulation_Sources_list = all_GUESS_simulation_Sources_list)
-  
+all_Fields_list[[2]]@data[, Site := paste0(tolower(Site))]
+all_Fields_list[[3]]@data[, Site := paste0(tolower(Site))]
+
+PROFOUND <- read.csv(file.path(system.file("extdata/PROFOUND/PROFOUND_Grid_List.csv", package = "DGVMBenchmarks")), header = T,sep = ",")
+    setDT(PROFOUND)
+
+all_Fields_list[[2]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+all_Fields_list[[3]]@data[
+  PROFOUND,
+  c("Lat", "Lon") := .(i.Lat, i.Lon),
+  on = "Site"
+]
+
+setkey(all_Fields_list[[2]]@data)
+setkey(all_Fields_list[[3]]@data)
+
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+ 
+plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
+
+if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
 }
 ```
+
+## DBH Difference
+```{r Profound DBH difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
 
 ## Profound metric table
 ```{r Profound Metric table, echo=FALSE, message=FALSE, warning=FALSE}
@@ -451,9 +602,10 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
+## Run dataset through this function to make sure it matches with archive station info
 correctICOSDataset(all_Fields_list, site.type = "Ecosystem")
 
-#stations1 <-availiableICOSStations(Stations=NULL,station.selection = c("Hyltemossa","Svartberget","Degero","Norunda"))
+##Use the correct Lat Lon from dataset to match the simulated grid format to station location
 lats <- unique(all_Fields_list[[1]]@data$Lat)
 lons <- unique(all_Fields_list[[1]]@data$Lon)
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
@@ -555,7 +707,6 @@ all_Fields_list <- field_lists[[2]]
 
 correctICOSDataset(all_Fields_list, site.type = "Ecosystem")
 
-#stations1 <-availiableICOSStations(Stations=NULL,station.selection = c("Hyltemossa","Svartberget","Degero","Norunda"))
 lats <- unique(all_Fields_list[[1]]@data$Lat)
 lons <- unique(all_Fields_list[[1]]@data$Lon)
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
@@ -656,7 +807,6 @@ all_Fields_list <- field_lists[[2]]
 
 correctICOSDataset(all_Fields_list, site.type = "Ecosystem")
 
-#stations1 <-availiableICOSStations(Stations=NULL,station.selection = c("Hyltemossa","Svartberget","Degero","Norunda"))
 lats <- unique(all_Fields_list[[1]]@data$Lat)
 lons <- unique(all_Fields_list[[1]]@data$Lon)
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
@@ -757,7 +907,6 @@ all_Fields_list <- field_lists[[2]]
 
 correctICOSDataset(all_Fields_list, site.type = "Ecosystem")
 
-#stations1 <-availiableICOSStations(Stations=NULL,station.selection = c("Hyltemossa","Svartberget","Degero","Norunda"))
 lats <- unique(all_Fields_list[[1]]@data$Lat)
 lons <- unique(all_Fields_list[[1]]@data$Lon)
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
@@ -799,7 +948,11 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
         # Keep the original value if none of the conditions match
     )
   ) 
-  
+
+
+  all_Fields_list[[1]]@data$GPP <- all_Fields_list[[1]]@data$GPP/2
+  all_Fields_list[[2]]@data$GPP <- all_Fields_list[[2]]@data$GPP/2
+  all_Fields_list[[3]]@data$GPP <- all_Fields_list[[3]]@data$GPP/2
 ## Make comparison objects from your fields, used for comparison only!
 all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
 
@@ -836,6 +989,8 @@ plotICOSScatter(this_benchmark,all_comparisons,fill="country")
 ```{r ICOS ET site, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 plotICOSScatter(this_benchmark,all_comparisons,fill="station")
 ```
+
+
 # ICOS metric table
 ```{r ICOS Metric table, echo=FALSE, message=FALSE, warning=FALSE}
 if(nrow(ICOS_table) > 0) {
@@ -847,6 +1002,677 @@ if(nrow(ICOS_table) > 0) {
   # Profound_table$`Old Model Run` <- sprintf("%.3f", Profound_table$`Old Model Run`)
    #print the table
   kable(ICOS_table) %>% kable_styling(full_width = TRUE)}
+```
+
+# FLUXNET bias corrected GPP {.tabset}
+
+## Daily Total
+```{r FLUXNET GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_FLUXNET_GPP){
+  # Define which benchmark to do
+benchmark_name <- "FLUXNET_GPP"
+
+# Process your dataset
+Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+
+Data <- correctFLUXNETDataset(Data)
+
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 4, Data, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+lats <- unique(all_Fields_list[[1]]@data$Lat)
+lons <- unique(all_Fields_list[[1]]@data$Lon)
+this_benchmark@datasets[[1]]@spatial.extent$Lon <- lons
+this_benchmark@datasets[[1]]@spatial.extent$Lat <- lats
+
+all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+
+plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"per_source")
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
+```
+
+## Daily Difference
+```{r Difference Flux GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+
+## GPP per site
+```{r per site flux GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+```
+
+## GPP per Land cover
+```{r per lc flux GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+```
+
+
+# FLUXNET bias corrected NEE {.tabset}
+
+
+## Daily Total
+```{r FLUXNET NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_FLUXNET_NEE){
+  # Define which benchmark to do
+benchmark_name <- "FLUXNET_NEE"
+
+# Process your dataset
+Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+
+Data <- correctFLUXNETDataset(Data)
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 4, Data, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+lats <- unique(all_Fields_list[[1]]@data$Lat)
+lons <- unique(all_Fields_list[[1]]@data$Lon)
+this_benchmark@datasets[[1]]@spatial.extent$Lon <- lons
+this_benchmark@datasets[[1]]@spatial.extent$Lat <- lats
+
+all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+
+plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
+```
+
+
+## NEE Daily Difference
+```{r Difference Flux NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+
+## NEE per site
+```{r per site flux NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+```
+
+## NEE per Land cover
+```{r per lc flux NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+```
+
+# FLUXNET bias corrected Reco {.tabset}
+
+## Daily Total
+```{r FLUXNET Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_FLUXNET_Reco){
+  # Define which benchmark to do
+benchmark_name <- "FLUXNET_Reco"
+
+# Process your dataset
+Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+
+Data <- correctFLUXNETDataset(Data)
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 4, Data, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+lats <- unique(all_Fields_list[[1]]@data$Lat)
+lons <- unique(all_Fields_list[[1]]@data$Lon)
+this_benchmark@datasets[[1]]@spatial.extent$Lon <- lons
+this_benchmark@datasets[[1]]@spatial.extent$Lat <- lats
+
+all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+
+plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
+```
+
+
+## Reco Daily Difference
+```{r Difference Flux Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+
+## Reco per site
+```{r per site flux Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+```
+
+## Reco per Land cover
+```{r per lc flux Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+```
+
+
+# FLUXNET CRUJRA_v2.4.5d GPP {.tabset}
+
+## Daily Total
+```{r FLUXNET GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_FLUXNET_GPP){
+  # Define which benchmark to do
+benchmark_name <- "FLUXNET_GPP"
+
+# Process your dataset
+Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+
+Data <- correctFLUXNETDataset(Data)
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 5, Data, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+lats <- unique(all_Fields_list[[1]]@data$Lat)
+lons <- unique(all_Fields_list[[1]]@data$Lon)
+this_benchmark@datasets[[1]]@spatial.extent$Lon <- lons
+this_benchmark@datasets[[1]]@spatial.extent$Lat <- lats
+
+all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+
+plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
+```
+
+## Daily Difference
+```{r Difference Flux GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+
+## GPP per site
+```{r per site flux GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+```
+
+## GPP per Land cover
+```{r per lc flux GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+```
+
+# FLUXNET CRUJRA_v2.4.5d NEE {.tabset}
+
+## Daily Total
+```{r FLUXNET NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_FLUXNET_NEE){
+  # Define which benchmark to do
+benchmark_name <- "FLUXNET_NEE"
+
+# Process your dataset
+Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+
+Data <- correctFLUXNETDataset(Data)
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 5, Data, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+lats <- unique(all_Fields_list[[1]]@data$Lat)
+lons <- unique(all_Fields_list[[1]]@data$Lon)
+this_benchmark@datasets[[1]]@spatial.extent$Lon <- lons
+this_benchmark@datasets[[1]]@spatial.extent$Lat <- lats
+
+all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+
+plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
+```
+
+## NEE Daily Difference
+```{r Difference Flux NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+## NEE per site
+```{r per site flux NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+```
+
+## NEE per Land cover
+```{r per lc flux NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+```
+
+# FLUXNET CRUJRA_v2.4.5d Reco {.tabset}
+
+## Daily Total
+```{r FLUXNET Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_FLUXNET_Reco){
+  # Define which benchmark to do
+benchmark_name <- "FLUXNET_Reco"
+
+# Process your dataset
+Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+
+Data <- correctFLUXNETDataset(Data)
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, simulation = 5, Data, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+lats <- unique(all_Fields_list[[1]]@data$Lat)
+lons <- unique(all_Fields_list[[1]]@data$Lon)
+this_benchmark@datasets[[1]]@spatial.extent$Lon <- lons
+this_benchmark@datasets[[1]]@spatial.extent$Lat <- lats
+
+all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+  mutate(
+    Lat = case_when(
+      Lat == 36.75 ~ lats[[1]],
+      Lat == 44.75 ~ lats[[2]],
+      Lat == 48.75 ~ lats[[3]],
+      Lat == 50.75 ~ lats[[4]],
+      Lat == 52.25 ~ lats[[5]],
+      Lat == 47.25 ~ lats[[6]],
+      Lat == 51.25 ~ lats[[7]],
+      TRUE ~ Lat
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    ),
+    Lon = case_when(
+      Lon == -2.75 ~ lons[[1]],
+      Lon == -0.75 ~ lons[[2]],
+      Lon == 1.75 ~ lons[[3]],
+      Lon == 4.75 ~ lons[[4]],
+      Lon == 5.25 ~ lons[[5]],
+      Lon == 8.25 ~ lons[[6]],
+      Lon == 10.25 ~ lons[[7]],
+      TRUE ~ Lon
+      # Add more conditions if needed
+        # Keep the original value if none of the conditions match
+    )
+  ) 
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+
+plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+}
+```
+
+## Reco Daily Difference
+```{r Difference Flux Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotAllTemporalComparisons(this_benchmark,all_comparisons)
+```
+
+## Reco per site
+```{r per site flux Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+```
+
+## Reco per Land cover
+```{r per lc flux Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+```
+
+# FLUXNET metric table
+```{r FLUXNET Metric table, echo=FALSE, message=FALSE, warning=FALSE}
+if(nrow(FLUXNET_table) > 0) {
+   #substitute "r2" for something prettier in the "Metric" column
+  FLUXNET_table$Metric <- gsub(pattern = "r2", replacement = "R^2^", FLUXNET_table$Metric)
+  # Profound_table$`New Model Run` <- as.numeric(Profound_table$`New Model Run`)
+  # Profound_table$`New Model Run` <- sprintf("%.3f", Profound_table$`New Model Run`)
+  # Profound_table$`Old Model Run` <- as.numeric(Profound_table$`Old Model Run`)
+  # Profound_table$`Old Model Run` <- sprintf("%.3f", Profound_table$`Old Model Run`)
+   #print the table
+  kable(FLUXNET_table) %>% kable_styling(full_width = TRUE)}
 ```
 
 # Timing
