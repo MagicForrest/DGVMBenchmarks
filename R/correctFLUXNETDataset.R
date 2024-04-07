@@ -19,6 +19,12 @@ Dataset@data[
   c("Lat", "Lon") := .(i.Lat, i.Lon),
   on = "Name"
 ]
+if ("Name.y" %in% names(Dataset@data)){
+  rename(Name = Name.y)
+}
+if ("Code.y" %in% names(Dataset@data)){
+  rename(Code = Code.y)
+}
 
 return(Dataset)
 }
