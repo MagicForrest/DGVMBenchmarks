@@ -7,7 +7,7 @@
 #'
 #' @examples correctFLUXNETDataset(Dataset = Data)
 correctFLUXNETDataset <- function(Dataset){
-  Dataset@data <- merge(Dataset@data, Dataset@spatial.extent, by = c("Lon", "Lat"), all.x = TRUE)
+  
 FLUXNET_SITES <- read.csv(file.path(system.file("extdata/FLUXNET/FLUXNET_SITES.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
 
 setDT(FLUXNET_SITES)
