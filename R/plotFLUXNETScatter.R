@@ -19,7 +19,15 @@ plotFLUXNETScatter <- function(Benchmark = this_benchmark, all_comparisons = all
       FLUXNET_SITES <- read.csv(file.path(system.file("extdata/FLUXNET/FLUXNET_SITES.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
       setDT(FLUXNET_SITES)
       
+      decimals <- 5  # Specify the number of decimal places you want to round to
       
+      # Round Lon and Lat columns in stations
+      FLUXNET_SITES$Lon <- round(as.numeric(FLUXNET_SITES$Lon), decimals)
+      FLUXNET_SITES$Lat <- round(as.numeric(FLUXNET_SITES$Lat), decimals)
+      
+      # Round Lon and Lat columns in this_Field@data
+      this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
+      this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
       # Merge based on matching latitude and longitude coordinates
       merged_data <- merge(this_comparison@data, FLUXNET_SITES[, c("Lon", "Lat", "IGBP", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
       if("Name.y" %in% merged_data){
@@ -220,6 +228,15 @@ plotFLUXNETScatter <- function(Benchmark = this_benchmark, all_comparisons = all
       FLUXNET_SITES <- read.csv(file.path(system.file("extdata/FLUXNET/FLUXNET_SITES.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
       setDT(FLUXNET_SITES)
       
+      decimals <- 5  # Specify the number of decimal places you want to round to
+      
+      # Round Lon and Lat columns in stations
+      FLUXNET_SITES$Lon <- round(as.numeric(FLUXNET_SITES$Lon), decimals)
+      FLUXNET_SITES$Lat <- round(as.numeric(FLUXNET_SITES$Lat), decimals)
+      
+      # Round Lon and Lat columns in this_Field@data
+      this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
+      this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
       
       # Merge based on matching latitude and longitude coordinates
       merged_data <- merge(this_comparison@data, FLUXNET_SITES[, c("Lon", "Lat", "IGBP", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
