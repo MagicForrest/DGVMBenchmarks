@@ -76,7 +76,6 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           qc.threshold = 0.5,
           first.year = as.numeric(input[[benchmark_name]][["First_year_Data"]]),
           last.year = as.numeric(input[[benchmark_name]][["Last_year_Data"]],
-                                 verbose = verbose_read,
                                  quick.read = quick_read,
                                  quick.read.file = paste(benchmark_name, version_label, sep = "_"))
         )}else{
@@ -91,7 +90,6 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           rm.leap = TRUE,
           data.cleaning = TRUE,
           qc.threshold = 0.5,
-          verbose = verbose_read,
           quick.read = quick_read,
           quick.read.file = paste(benchmark_name, version_label, sep = "_"))
           
@@ -130,9 +128,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           qc.threshold = 0.5,
           first.year = as.numeric(input[[benchmark_name]][["First_year_Data"]]),
           last.year = as.numeric(input[[benchmark_name]][["Last_year_Data"]],
-                                 verbose = verbose_read,
-                                 quick.read = quick_read,
-                                 quick.read.file = paste(benchmark_name, version_label, sep = "_"))
+          quick.read = quick_read,
+          quick.read.file = paste(benchmark_name, version_label, sep = "_"))
         )}else{
         Data.year.mean <- DGVMTools::getField(
           source = this_data_Source,
@@ -145,7 +142,6 @@ processDataSource <- function(all_datasets, input, benchmark_name, simulation, s
           rm.leap = TRUE,
           data.cleaning = TRUE,
           qc.threshold = 0.5,
-          verbose = verbose_read,
           quick.read = quick_read,
           quick.read.file = paste(benchmark_name, version_label, sep = "_")
           )
