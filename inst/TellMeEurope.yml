@@ -21,12 +21,15 @@ Switches:
   do_qdbh: T
   do_woody_growth: T
   do_profound: T
-  do_cmass_pft: F
-  do_cmass_pft1: F
+  do_cmass_pft: T
+  do_cmass_pft1: T
   do_ICOS_GPP: T
   do_ICOS_NEE: T
   do_ICOS_Reco: T
   do_ICOS_ET: T
+  do_FLUXNET_GPP: T
+  do_FLUXNET_NEE: T
+  do_FLUXNET_Reco: T
 
 AGPP:
   File_name: "agpp"
@@ -305,5 +308,68 @@ ICOS_ET:
   Dataset_name: "ICOS"
   Dataset_longname: "ICOS Evapotranspiration (GPP/2)"
   Dataset_source: "ICOS Carbon portal"
-  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the ICOS measurment daily Reco station data from Hyltemossa, Svartberget & Norunda"
+  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the ICOS measurment daily ET station data from Hyltemossa, Svartberget & Norunda"
     
+FLUXNET_GPP:
+  File_name: "GPP"
+  Unit: "kgC/m2/day"
+  Format: "FLUXNET"
+  Id: "GPP"
+  Name: "GPP"
+  Description: "Daily Evapotranspiration"
+  First_year_Data: NULL
+  Last_year_Data: NULL
+  UT.threshold: "VUT"
+  partition.method: "REF"
+  day.night.method: "NT"
+  NEE.day.night: NULL
+  First_year: 2013
+  Last_year: 2021
+  Layer: "GPP"
+  Dataset_name: "FLUXNET"
+  Dataset_longname: "FLUXNET Gross Primary Production"
+  Dataset_source: "FLUXNET"
+  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily GPP station data."
+    
+FLUXNET_NEE:
+  File_name: "NEE"
+  Unit: "kgC/m2/day"
+  Format: "FLUXNET"
+  Id: "NEE"
+  Name: "NEE"
+  Description: "Daily Net Ecosystem Exchange"
+  First_year_Data: NULL
+  Last_year_Data: NULL
+  UT.threshold: "VUT"
+  partition.method: "REF"
+  day.night.method: "NT"
+  NEE.day.night: NULL
+  First_year: 2013
+  Last_year: 2021
+  Layer: "GPP"
+  Dataset_name: "FLUXNET"
+  Dataset_longname: "FLUXNET Net Ecosystem Exchange"
+  Dataset_source: "FLUXNET"
+  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily NEE station data."
+        
+FLUXNET_Reco:
+  File_name: "Reco"
+  Unit: "kgC/m2/day"
+  Format: "FLUXNET"
+  Id: "Reco"
+  Name: "Reco"
+  Description: "Daily Ecosystem Respiration"
+  First_year_Data: NULL
+  Last_year_Data: NULL
+  UT.threshold: "VUT"
+  partition.method: "REF"
+  day.night.method: "NT"
+  NEE.day.night: NULL
+  First_year: 2013
+  Last_year: 2021
+  Layer: "Reco"
+  Dataset_name: "FLUXNET"
+  Dataset_longname: "FLUXNET Ecosystem Respiration"
+  Dataset_source: "FLUXNET"
+  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
+        
