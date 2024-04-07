@@ -346,7 +346,7 @@ FLUXNET_NEE:
   NEE.day.night: NULL
   First_year: 2013
   Last_year: 2021
-  Layer: "GPP"
+  Layer: "NEE"
   Dataset_name: "FLUXNET"
   Dataset_longname: "FLUXNET Net Ecosystem Exchange"
   Dataset_source: "FLUXNET"
