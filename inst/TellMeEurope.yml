@@ -50,6 +50,60 @@ AGPP:
   Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
   Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
 
+superset_test:
+  File_name: "agpp"
+  Unit: "kg/m2/y"
+  Id: "AGPP"
+  Name: "AGPP"
+  Description: "Annual GPP"
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["european_application"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "LRF-GPP"
+    Dataset_longname: "Light Response Function GPP (LRF-GPP)"
+    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
+    Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: NULL
+      partition.method: NULL
+      day.night.method: NULL
+      NEE.day.night: NULL
+      rm.leap: NULL
+      data.cleaning: NULL
+      qc.threshold: NULL
+  Simulations:
+    Simulation: ["european_applications"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1, 1]
+      Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
+    Spatial_Scatter:
+      Limits: [0, 3]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 CMASS:
   File_name: "cmass_plus10cm_sts"
   Unit: "kg/m2"
@@ -69,6 +123,60 @@ CMASS:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Comparison of grid-cell level simulated values of above ground Carbon mass in forests from LPJ-GUESS to National Forest Inventory estimates for 2010."
 
+superset_test1:
+  File_name: "cmass_plus10cm_sts"
+  Unit: "kg/m2"
+  Id: "Cmass"
+  Name: "Cmass"
+  Description: "Cmass"  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["european_application"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "NFI"
+    Dataset_longname: "National Forest Inventory (NFI)"
+    Dataset_source: "Global Forest Dynamics database"
+    Dataset_description: "Comparison of grid-cell level simulated values of above ground Carbon mass in forests from LPJ-GUESS to National Forest Inventory estimates for 2010."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["european_applications"]
+    First_year: 2001
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: [-15, 18]
+      Breaks: [-15, -10, -5, 0, 5, 10, 15]
+    Spatial_Scatter:
+      Limits: [0, 30]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 W_GROWTH:
   File_name: "cmass_wood_inc_plus10cm_sts"
   Unit: "kg/m2/y"
@@ -88,6 +196,60 @@ W_GROWTH:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
 
+superset_test2:
+  File_name: "cmass_wood_inc_plus10cm_sts"
+  Unit: "kg/m2/y"
+  Id: "W_growth"
+  Name: "W_growth"
+  Description: "W_growth"  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["european_application"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "NFI"
+    Dataset_longname: "National Forest Inventory (NFI)"
+    Dataset_source: "Global Forest Dynamics database"
+    Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["european_applications"]
+    First_year: 2001
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1, 0.4]
+      Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
+    Spatial_Scatter:
+      Limits: [0, 1]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 STEM_DENSITY:
   File_name: "dens_plus10cm_sts"
   Unit: "indiv/ha"
@@ -107,6 +269,60 @@ STEM_DENSITY:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Stem density from NFI data compiled from tmp5"
 
+superset_test3:
+  File_name: "dens_plus10cm_sts"
+  Unit: "indiv/ha"
+  Id: "stem density"
+  Name: "stem density"
+  Description: "stem density"  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["european_application"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "NFI"
+    Dataset_longname: "National Forest Inventory (NFI)"
+    Dataset_source: "Global Forest Dynamics database"
+    Dataset_description: "Stem density from NFI data compiled from tmp5"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["european_applications"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1000, 1000]
+      Breaks: [-1000, -750, -500, -250, 0, 250, 500, 750, 1000]
+    Spatial_Scatter:
+      Limits: [0, 1500]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 QDBH:
   File_name: "diam_g_plus10cm_sts"
   Unit: "cm"
@@ -126,6 +342,60 @@ QDBH:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "QDBH estimated from NFI measurments"
 
+superset_test4:
+  File_name: "diam_g_plus10cm_sts"
+  Unit: "cm"
+  Id: "QDBH"
+  Name: "QDBH"
+  Description: "QDBH"  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["european_application"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "NFI"
+    Dataset_longname: "National Forest Inventory (NFI)"
+    Dataset_source: "Global Forest Dynamics database"
+    Dataset_description: "QDBH estimated from NFI measurments"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["european_applications"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: [-30, 30]
+      Breaks: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+    Spatial_Scatter:
+      Limits: [0, 60]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 CMASS_pft:
   File_name: "cmass_landscape_forest"
   Unit: "kg/m2"
@@ -142,6 +412,60 @@ CMASS_pft:
   Dataset_source: "Simulation only"
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
+superset_test5:
+  File_name: "cmass_landscape_forest"
+  Unit: "kg/m2"
+  Id: "Cmass PFT"
+  Name: "Cmass PFT"
+  Description: "Cmass PFT"  
+  Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
+  Data:
+    Datasets: ["european_application"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: 
+    Dataset_longname: 
+    Dataset_source: 
+    Dataset_description: 
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["european_applications"]
+    First_year: 2000
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 Profound_csv:
   File_name: "lai"
   Unit: "m2^m2"
@@ -156,6 +480,60 @@ Profound_csv:
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
   
+superset_test6:
+  File_name: "lai"
+  Unit: "m2^m2"
+  Id: "lai"
+  Name: "lai"
+  Description: ""  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["PROFOUND"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "Profound"
+    Dataset_longname: "ProfoundData"
+    Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+    Dataset_description: "Site stand data from the ProfoundData database"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["PROFOUND"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 Profound_lai:
   File_name: "lai"
   Unit: "m2^m2"
@@ -183,7 +561,61 @@ Profound_cmass:
   Dataset_longname: "ProfoundData"
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
-  
+
+superset_test7:
+  File_name: "cmass"
+  Unit: "kg/m2"
+  Id: "cmass"
+  Name: "cmass"
+  Description: ""  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["PROFOUND"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "Profound"
+    Dataset_longname: "ProfoundData"
+    Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+    Dataset_description: "Site stand data from the ProfoundData database"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["PROFOUND"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 Profound_dens:
   File_name: "dens"
   Unit: "indiv/ha"
@@ -198,6 +630,60 @@ Profound_dens:
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
 
+superset_test8:
+  File_name: "dens"
+  Unit: "indiv/ha"
+  Id: "dens"
+  Name: "dens"
+  Description: ""  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["PROFOUND"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "Profound"
+    Dataset_longname: "ProfoundData"
+    Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+    Dataset_description: "Site stand data from the ProfoundData database"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["PROFOUND"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 Profound_diam_g_plus10cm_sts_ext_st_mean:
   File_name: "diam_g_plus10cm_sts_ext_st_mean"
   Unit: "cm"
@@ -211,7 +697,61 @@ Profound_diam_g_plus10cm_sts_ext_st_mean:
   Dataset_longname: "ProfoundData"
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
-  
+
+superset_test9:
+  File_name: "diam_g_plus10cm_sts_ext_st_mean"
+  Unit: "cm"
+  Id: ""
+  Name: ""
+  Description: ""  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["PROFOUND"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "Profound"
+    Dataset_longname: "ProfoundData"
+    Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+    Dataset_description: "Site stand data from the ProfoundData database"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["PROFOUND"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 Profound_diam_plus10cm_sts_ext_st_mean:
   File_name: "diam_plus10cm_sts_ext_st_mean"
   Unit: "cm"
@@ -225,7 +765,61 @@ Profound_diam_plus10cm_sts_ext_st_mean:
   Dataset_longname: "ProfoundData"
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
-  
+
+superset_test10:
+  File_name: "diam_plus10cm_sts_ext_st_mean"
+  Unit: "cm"
+  Id: ""
+  Name: ""
+  Description: ""  
+  Layer: "Forest_sum"
+  Data:
+    Datasets: ["PROFOUND"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "Profound"
+    Dataset_longname: "ProfoundData"
+    Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
+    Dataset_description: "Site stand data from the ProfoundData database"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["PROFOUND"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 ICOS_GPP:
   File_name: "GPP"
   Unit: "kgC/m2/day"
@@ -247,6 +841,60 @@ ICOS_GPP:
   Dataset_source: "ICOS Carbon portal"
   Dataset_description: "Comparison of daily GPP produced by LPJ-GUESS to the ICOS measurment daily GPP station data from Hyltemossa, Svartberget & Norunda"
 
+superset_test11:
+  File_name: "GPP"
+  Unit: "kgC/m2/day"
+  Id: "GPP"
+  Name: "GPP"
+  Description: "Daily GPP"  
+  Layer: "GPP"
+  Data:
+    Datasets: ["ICOS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "ICOS"
+    Dataset_longname: "ICOS GPP"
+    Dataset_source: "ICOS Carbon portal"
+    Dataset_description: "Comparison of daily GPP produced by LPJ-GUESS to the ICOS measurment daily GPP station data from Hyltemossa, Svartberget & Norunda"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partitioning.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
+      rm.leap: "TRUE"
+      data.cleaning: "TRUE"
+      qc.threshold: 0.5
+  Simulations:
+    Simulation: ["ICOS"]
+    First_year: 2013
+    Last_year: 2021
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 ICOS_NEE:
   File_name: "NEE"
   Unit: "kgC/m2/day"
@@ -374,55 +1022,6 @@ FLUXNET_Reco:
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
         
         
-superset_test:
-  File_name: "agpp"
-  Unit: "kg/m2/y"
-  Id: "AGPP"
-  Name: "AGPP"
-  Description: "Annual GPP"
-  Layer: "Forest_sum"
-  Data:
-    Datasets: ["european_application"]
-    First_year: NULL
-    Last_year: NULL
-    year.aggregate.method:
-    spatial.aggregate.method:
-    Conversion_factor:
-    Layer_to_convert:
-    Dataset_name: "LRF-GPP"
-    Dataset_longname: "Light Response Function GPP (LRF-GPP)"
-    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
-    Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
-    ICOS_FLUXNET_Specific:
-      UT.threshold: "VUT"
-      partition.method: "REF"
-      day.night.method: "NT"
-      NEE.day.night: NULL
-  Simulations:
-    Simulation: ["european_applications"]
-    First_year: 2013
-    Last_year: 2021
-    year.aggregate.method: "mean"
-    spatial.aggregate.method: 
-    Conversion_factor:
-    Layer_to_convert:
-  Plotting:
-    Spatial_Difference:
-      Limits: [-1, 1]
-      Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
-    Spatial_Scatter:
-      Limits: [0, 3]
-  Statistics:
-    ME: F
-    NME: F
-    NMSE: F
-    RMSE: T
-    NME_2: F
-    NMSE_2: F
-    NME_3: F
-    NMSE_3: F
-    r: F
-    r2: T
-    r2_eff: F
+
     
        
