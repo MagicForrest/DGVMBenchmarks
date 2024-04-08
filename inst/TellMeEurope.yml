@@ -375,30 +375,32 @@ FLUXNET_Reco:
         
         
 superset_test:
-  File_name: "Reco"
-  Unit: "kgC/m2/day"
-  Format: "FLUXNET"
-  Id: "Reco"
-  Name: "Reco"
-  Layer: "Reco"
-  Description: "Daily Ecosystem Respiration"
+  File_name: "agpp"
+  Unit: "kg/m2/y"
+  Id: "AGPP"
+  Name: "AGPP"
+  Description: "Annual GPP"
+  Layer: "Forest_sum"
+  Description: "Annual GPP"
   Data:
+    Datasets: ["european_application"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method:
     spatial.aggregate.method:
     Conversion_factor:
     Layer_to_convert:
+    Dataset_name: "LRF-GPP"
+    Dataset_longname: "Light Response Function GPP (LRF-GPP)"
+    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
+    Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
     ICOS_FLUXNET_Specific:
       UT.threshold: "VUT"
       partition.method: "REF"
       day.night.method: "NT"
       NEE.day.night: NULL
-    Dataset_name: "FLUXNET"
-    Dataset_longname: "FLUXNET Ecosystem Respiration"
-    Dataset_source: "FLUXNET"
-    Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
   Simulations:
+    Simulation: ["bias_corrected"]
     First_year: 2013
     Last_year: 2021
     year.aggregate.method:
@@ -407,9 +409,21 @@ superset_test:
     Layer_to_convert:
   Plotting:
     Spatial_Difference:
-      Limits:
-      Breaks:
+      Limits: [-1, 1]
+      Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
     Spatial_Scatter:
-      Limits:
+      Limits: [0, 3]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: F
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
     
        
