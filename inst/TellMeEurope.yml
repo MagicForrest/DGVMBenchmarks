@@ -381,7 +381,6 @@ superset_test:
   Name: "AGPP"
   Description: "Annual GPP"
   Layer: "Forest_sum"
-  Description: "Annual GPP"
   Data:
     Datasets: ["european_application"]
     First_year: NULL
@@ -400,11 +399,11 @@ superset_test:
       day.night.method: "NT"
       NEE.day.night: NULL
   Simulations:
-    Simulation: ["bias_corrected"]
+    Simulation: ["european_applications"]
     First_year: 2013
     Last_year: 2021
-    year.aggregate.method:
-    spatial.aggregate.method:
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
   Plotting:
