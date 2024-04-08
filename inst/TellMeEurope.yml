@@ -509,8 +509,8 @@ superset_test6:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
-    First_year: 2010
-    Last_year: 2010
+    First_year: 
+    Last_year: 
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
