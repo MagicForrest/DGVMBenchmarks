@@ -385,17 +385,26 @@ superset_test:
   Data:
     First_year: NULL
     Last_year: NULL
+    year.aggregate.method:
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partition.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
     Dataset_name: "FLUXNET"
     Dataset_longname: "FLUXNET Ecosystem Respiration"
     Dataset_source: "FLUXNET"
     Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
-    UT.threshold: "VUT"
-    partition.method: "REF"
-    day.night.method: "NT"
-    NEE.day.night: NULL
   Simulations:
     First_year: 2013
     Last_year: 2021
+    year.aggregate.method:
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
   Plotting:
     Spatial_Difference:
       Limits:
