@@ -978,6 +978,60 @@ FLUXNET_GPP:
   Dataset_longname: "FLUXNET Gross Primary Production"
   Dataset_source: "FLUXNET"
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily GPP station data."
+
+superset_test12:
+  File_name: "GPP"
+  Unit: "kgC/m2/day"
+  Id: "GPP"
+  Name: "GPP"
+  Description: "Daily Gross Primary Production"  
+  Layer: "GPP"
+  Data:
+    Datasets: ["FLUXNET"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "FLUXNET"
+    Dataset_longname: "FLUXNET GPP"
+    Dataset_source: "FLUXNET"
+    Dataset_description: "Comparison of daily GPP produced by LPJ-GUESS to the FLUXNET measurment daily GPP station data."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partitioning.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
+      rm.leap: "TRUE"
+      data.cleaning: "TRUE"
+      qc.threshold: 0.5
+  Simulations:
+    Simulation: ["bias_corrected"]
+    First_year: 
+    Last_year: 
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
     
 FLUXNET_NEE:
   File_name: "NEE"
