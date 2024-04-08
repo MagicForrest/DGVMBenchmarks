@@ -373,3 +373,34 @@ FLUXNET_Reco:
   Dataset_source: "FLUXNET"
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
         
+        
+superset_test:
+  File_name: "Reco"
+  Unit: "kgC/m2/day"
+  Format: "FLUXNET"
+  Id: "Reco"
+  Name: "Reco"
+  Layer: "Reco"
+  Description: "Daily Ecosystem Respiration"
+  Data:
+    First_year: NULL
+    Last_year: NULL
+    Dataset_name: "FLUXNET"
+    Dataset_longname: "FLUXNET Ecosystem Respiration"
+    Dataset_source: "FLUXNET"
+    Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
+    UT.threshold: "VUT"
+    partition.method: "REF"
+    day.night.method: "NT"
+    NEE.day.night: NULL
+  Simulations:
+    First_year: 2013
+    Last_year: 2021
+  Plotting:
+    Spatial_Difference:
+      Limits:
+      Breaks:
+    Spatial_Scatter:
+      Limits:
+    
+       
