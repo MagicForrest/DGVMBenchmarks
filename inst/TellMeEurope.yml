@@ -50,7 +50,7 @@ AGPP:
   Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
   Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
 
-superset_test:
+AGPP1:
   File_name: "agpp"
   Unit: "kg/m2/y"
   Id: "AGPP"
@@ -123,7 +123,7 @@ CMASS:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Comparison of grid-cell level simulated values of above ground Carbon mass in forests from LPJ-GUESS to National Forest Inventory estimates for 2010."
 
-superset_test1:
+CMASS1:
   File_name: "cmass_plus10cm_sts"
   Unit: "kg/m2"
   Id: "Cmass"
@@ -196,7 +196,7 @@ W_GROWTH:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
 
-superset_test2:
+W_GROWTH1:
   File_name: "cmass_wood_inc_plus10cm_sts"
   Unit: "kg/m2/y"
   Id: "W_growth"
@@ -269,7 +269,7 @@ STEM_DENSITY:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "Stem density from NFI data compiled from tmp5"
 
-superset_test3:
+STEM_DENSITY1:
   File_name: "dens_plus10cm_sts"
   Unit: "indiv/ha"
   Id: "stem density"
@@ -342,7 +342,7 @@ QDBH:
   Dataset_source: "Global Forest Dynamics database"
   Dataset_description: "QDBH estimated from NFI measurments"
 
-superset_test4:
+QDBH1:
   File_name: "diam_g_plus10cm_sts"
   Unit: "cm"
   Id: "QDBH"
@@ -412,7 +412,7 @@ CMASS_pft:
   Dataset_source: "Simulation only"
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
-superset_test5:
+CMASS_pft1:
   File_name: "cmass_landscape_forest"
   Unit: "kg/m2"
   Id: "Cmass PFT"
@@ -480,7 +480,7 @@ Profound_csv:
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
   
-superset_test6:
+Profound_csv1:
   File_name: "lai"
   Unit: "m2^m2"
   Id: "lai"
@@ -562,7 +562,7 @@ Profound_cmass:
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
 
-superset_test7:
+Profound_cmass1:
   File_name: "cmass"
   Unit: "kg/m2"
   Id: "cmass"
@@ -591,8 +591,8 @@ superset_test7:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
-    First_year: 2010
-    Last_year: 2010
+    First_year: 
+    Last_year: 
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
@@ -630,7 +630,7 @@ Profound_dens:
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
 
-superset_test8:
+Profound_dens1:
   File_name: "dens"
   Unit: "indiv/ha"
   Id: "dens"
@@ -698,7 +698,7 @@ Profound_diam_g_plus10cm_sts_ext_st_mean:
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
 
-superset_test9:
+Profound_diam_g_plus10cm_sts_ext_st_mean1:
   File_name: "diam_g_plus10cm_sts_ext_st_mean"
   Unit: "cm"
   Id: ""
@@ -766,7 +766,7 @@ Profound_diam_plus10cm_sts_ext_st_mean:
   Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
   Dataset_description: "Site stand data from the ProfoundData database"
 
-superset_test10:
+Profound_diam_plus10cm_sts_ext_st_mean1:
   File_name: "diam_plus10cm_sts_ext_st_mean"
   Unit: "cm"
   Id: ""
@@ -841,7 +841,7 @@ ICOS_GPP:
   Dataset_source: "ICOS Carbon portal"
   Dataset_description: "Comparison of daily GPP produced by LPJ-GUESS to the ICOS measurment daily GPP station data from Hyltemossa, Svartberget & Norunda"
 
-superset_test11:
+ICOS_GPP1:
   File_name: "GPP"
   Unit: "kgC/m2/day"
   Id: "GPP"
@@ -916,6 +916,60 @@ ICOS_NEE:
   Dataset_source: "ICOS Carbon portal"
   Dataset_description: "Comparison of daily NEE produced by LPJ-GUESS to the ICOS measurment daily NEE station data from Hyltemossa, Svartberget & Norunda"
 
+ICOS_NEE1:
+  File_name: "NEE"
+  Unit: "kgC/m2/day"
+  Id: "NEE"
+  Name: "NEE"
+  Description: "Daily NEE"  
+  Layer: "NEE"
+  Data:
+    Datasets: ["ICOS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "ICOS"
+    Dataset_longname: "ICOS NEE"
+    Dataset_source: "ICOS Carbon portal"
+    Dataset_description: "Comparison of daily NEE produced by LPJ-GUESS to the ICOS measurment daily NEE station data from Hyltemossa, Svartberget & Norunda"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partitioning.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
+      rm.leap: "TRUE"
+      data.cleaning: "TRUE"
+      qc.threshold: 0.5
+  Simulations:
+    Simulation: ["ICOS"]
+    First_year: 2013
+    Last_year: 2021
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 ICOS_Reco:
   File_name: "Reco"
   Unit: "kgC/m2/day"
@@ -936,6 +990,114 @@ ICOS_Reco:
   Dataset_longname: "ICOS Reco"
   Dataset_source: "ICOS Carbon portal"
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the ICOS measurment daily Reco station data from Hyltemossa, Svartberget & Norunda"
+
+ICOS_Reco1:
+  File_name: "Reco"
+  Unit: "kgC/m2/day"
+  Id: "Reco"
+  Name: "Reco"
+  Description: "Daily Reco"  
+  Layer: "Reco"
+  Data:
+    Datasets: ["ICOS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "ICOS"
+    Dataset_longname: "ICOS Reco"
+    Dataset_source: "ICOS Carbon portal"
+    Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the ICOS measurment daily Reco station data from Hyltemossa, Svartberget & Norunda"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partitioning.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
+      rm.leap: "TRUE"
+      data.cleaning: "TRUE"
+      qc.threshold: 0.5
+  Simulations:
+    Simulation: ["ICOS"]
+    First_year: 2013
+    Last_year: 2021
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+
+ICOS_ET1:
+  File_name: "GPP"
+  Unit: "(GPP/2)"
+  Id: "ET"
+  Name: "ET"
+  Description: "Daily Evapotranspiration"  
+  Layer: "GPP"
+  Data:
+    Datasets: ["ICOS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "ICOS"
+    Dataset_longname: "ICOS Evapotranspiration (GPP/2)"
+    Dataset_source: "ICOS Carbon portal"
+    Dataset_description: "Comparison of daily ET produced by LPJ-GUESS to the ICOS measurment daily GPP station data from Hyltemossa, Svartberget & Norunda"
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partitioning.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
+      rm.leap: "TRUE"
+      data.cleaning: "TRUE"
+      qc.threshold: 0.5
+  Simulations:
+    Simulation: ["ICOS"]
+    First_year: 2013
+    Last_year: 2021
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
     
 ICOS_ET:
   File_name: "GPP"
@@ -979,7 +1141,7 @@ FLUXNET_GPP:
   Dataset_source: "FLUXNET"
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily GPP station data."
 
-superset_test12:
+FLUXNET_GPP1:
   File_name: "GPP"
   Unit: "kgC/m2/day"
   Id: "GPP"
@@ -1053,7 +1215,61 @@ FLUXNET_NEE:
   Dataset_longname: "FLUXNET Net Ecosystem Exchange"
   Dataset_source: "FLUXNET"
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily NEE station data."
-        
+
+FLUXNET_NEE1:
+  File_name: "NEE"
+  Unit: "kgC/m2/day"
+  Id: "NEE"
+  Name: "NEE"
+  Description: "Daily Net Ecosystem Exchange"  
+  Layer: "NEE"
+  Data:
+    Datasets: ["FLUXNET"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "FLUXNET"
+    Dataset_longname: "FLUXNET NEE"
+    Dataset_source: "FLUXNET"
+    Dataset_description: "Comparison of daily NEE produced by LPJ-GUESS to the FLUXNET measurment station data."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partitioning.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
+      rm.leap: "TRUE"
+      data.cleaning: "TRUE"
+      qc.threshold: 0.5
+  Simulations:
+    Simulation: ["bias_corrected"]
+    First_year: 2013
+    Last_year: 2021
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
 FLUXNET_Reco:
   File_name: "Reco"
   Unit: "kgC/m2/day"
@@ -1074,7 +1290,60 @@ FLUXNET_Reco:
   Dataset_longname: "FLUXNET Ecosystem Respiration"
   Dataset_source: "FLUXNET"
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
-        
+  
+FLUXNET_Reco1:
+  File_name: "Reco"
+  Unit: "kgC/m2/day"
+  Id: "Reco"
+  Name: "Reco"
+  Description: "Daily Ecosystem Respiration"  
+  Layer: "Reco"
+  Data:
+    Datasets: ["FLUXNET"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: 
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: "FLUXNET"
+    Dataset_longname: "FLUXNET Reco"
+    Dataset_source: "FLUXNET"
+    Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment station data."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: "VUT"
+      partitioning.method: "REF"
+      day.night.method: "NT"
+      NEE.day.night: NULL
+      rm.leap: "TRUE"
+      data.cleaning: "TRUE"
+      qc.threshold: 0.5
+  Simulations:
+    Simulation: ["bias_corrected"]
+    First_year: 2013
+    Last_year: 2021
+    year.aggregate.method: 
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  Plotting:
+    Spatial_Difference:
+      Limits: 
+      Breaks: 
+    Spatial_Scatter:
+      Limits: 
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F      
         
 
     
