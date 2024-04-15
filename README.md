@@ -137,7 +137,11 @@ setClass(
     limits = "list",
     breaks = "list",
     ax_limits = "list",
-    metrics = "character"
+    metrics = "character",
+    year.aggregate.method = "character",
+    spatial.aggregate.method = "character",
+    conversion_factor = "numeric",
+    Layer_to_convert = "list"
   )
 )
 ```
