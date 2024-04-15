@@ -52,7 +52,7 @@ Switches:
   do_ICOS_GPP: TRUE
   ```
 The rest of the objects are benchmark specific and should be filled out as per benchmark.
-Below is the object for a benchmark of annual GPP evaluated against satellite derived GPP. The information is used to build the benchmark using File_name, Unit, Id, first/last year and layer for processing the fields; limits, breaks and axis_lim for plotting; Name, source, description for tabular output.
+Below is the object for a benchmark of annual GPP evaluated against satellite derived GPP. The information is used to build the benchmark using File_name, Id, Name, Description and Layer which apply for both data and simulation. Additionally there are settings for how the user wants to process their data and simulations in more detail.
 
 ```yaml
 ##Benchmark (YML)
