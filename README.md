@@ -14,10 +14,9 @@ For temporal benchmarks it is possible to plot time-series Absolute values with 
 The report is in a three part structure where the 1st part is a YML instruction file, 2nd a configuration file and 3rd the actual report Rmd.
 
 ## TellMeEurope YAML
-The YAML instruction file is where the user defines and structures their benchmarks. This is built as multiple benchmark objects that reads as a list of lists where each list is a certain benchmark. There are three types of objects that is defined within the instruction file. The first two is defined only once and are ***Directory*** and ***Switches***. In ***Directory*** the user defines settings that apply to the whole report such as directory paths and spatial extent. In ***Switches*** the user can turn on or off parts of the report in the rendering process. The third object type is ***Benchmark*** here the user specify in more detail how they want to process their sources fo that specific benchmark. Each ***Benchmark*** object correspond to a specific benchmark. 
+The YAML instruction file is where the user defines and structures their benchmarks. This is built as multiple benchmark objects that reads as a list of lists where each list is a certain benchmark. There are three types of objects that is defined within the instruction file. The first two is defined only once and are ***Directory*** and ***Switches***. In ***Directory*** the user defines settings that apply to the whole report such as directory paths and spatial extent. In ***Switches*** you can turn on and off benchmark and choose to render plots or not. Logical ***TRUE***/***FALSE*** connected to the chunks in the Rmd. The third object type is ***Benchmark*** here the user specify in more detail how they want to process their sources fo that specific benchmark. Each ***Benchmark*** object correspond to a specific benchmark. 
 
-In ***Directory*** the user defines their path´s to Data, simulation 1 and simulation 2 (Simulation 1 is mandatory for the report to run, however it is optional to use Data and sim 2, skip by leaving empty or setting NULL). The users pathways should lead to the directory containing the users different simulations a level above the actual input files as the report is adapted to evaluate multiple simulations in the same session. The user then has to define which simulations will be evaluated. The simulation is the name of the folder containing your files to be evaluated. 
-Your path would hence be e.g. "/your/path/to/your/simulations". Here you have different folder for different simulations e.g. trunk, ICOS, Profound.... When running the report your path will be connected to the simulation of the specific benchmark hence if evaluation files from ICOS the report will connect your path with the simulation folder e.g. "/your/path/to/your/simulations/ICOS". Furthermore, the user is able to set the extent prior to evaluation either by choosing a pre-defined grid cell list (Most of the current available European countries) or using own grid list or setting extent limits. 
+***Directory***
 
 ```yaml
 # Directory (YML)
@@ -36,7 +35,8 @@ Directory:
   custom_ymin:
   gridlist:
   ```
-In ***Switches*** you can turn on and off benchmark and choose to render plots or not. Logical ***TRUE***/***FALSE*** connected to the chunks in the Rmd. 
+ 
+***Switches*** 
 ```yaml
 ##Switches (YML)
 Switches:
@@ -57,23 +57,58 @@ Below is the object for a benchmark of annual GPP evaluated against NFI data. Th
 ```yaml
 ##Benchmark (YML)
 AGPP:
-  File_name: "agpp"
-  Unit: "kg/m2/y"
-  Id: "AGPP"
-  Name: "AGPP"
-  Description: "Annual GPP"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  First_year: 2010
-  Last_year: 2010
-  Limits: [-1, 1]
-  Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
-  Axis_lim: [0, 3]
-  Layer: "Forest_sum"
-  Dataset_name: "LRF-GPP"
-  Dataset_longname: "Light Response Function GPP (LRF-GPP)"
-  Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
-  Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
+  File_name: "agpp" # The name of the files to process, should be the same for data and sim. (If ICOS or FLUXNET use data name)
+  Unit: "kg/m2/y" # The unit of the Benchmark
+  Id: "AGPP" # The ID used for tabular output
+  Name: "AGPP" # Used in plotting
+  Description: "Annual GPP" # Used in tabular output
+  Layer: "Forest_sum" # Layer/column in Fields to base the comparison on
+  Data:   
+    Datasets: ["european_application"] # Name of Dataset (name of subfolder in data source directory)
+    First_year: NULL # Set first and last year to limit the temporal span, set to null takes the whole timespan 
+    Last_year: NULL
+    year.aggregate.method: "mean" # The method to aggregate time dimention 
+    spatial.aggregate.method:
+    Conversion_factor: NULL # Numeric() list() the factor needed for conversion of dataset, leave empty or NULL if not used
+    Layer_to_convert: NULL # List holding the dataset names of the Fields to be converted
+    Dataset_name: "LRF-GPP" # Used in plotting and tabular output
+    Dataset_longname: "Light Response Function GPP (LRF-GPP)"
+    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
+    Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020)."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: NULL
+      partition.method: NULL
+      day.night.method: NULL
+      NEE.day.night: NULL
+      rm.leap: NULL
+      data.cleaning: NULL
+      qc.threshold: NULL # ICOS & FLUXNET specific settings.
+  Simulations:
+    Simulation: ["european_applications"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor: 
+    Layer_to_convert: 
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1, 1]
+      Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
+    Spatial_Scatter:
+      Limits: [0, 3] # Plotting settings limits and breaks list input []
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T 
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
 ```
 
 ## TellMeEurope_config
@@ -108,12 +143,12 @@ setClass(
 ```
 
 ## TellMeEurope report
-The TellMeEurope Rmd is where the rendering of the report takes place. This markdown script reads necessary libraries and initializes the connection between the instructions and the configuration by souring these when running. Its in the Rmd that the user make use of the DGVMBenchmark toolset to structure and evaluate their benchmarks. The report within the package displays the current version of the final rendered version. Make note of the markdown language to get a feel for how you want to structure your report. This version make use of tab-sets in order where each benchmark has its own section in the report with tabs to flick through the output. While creating your benchmark you may follow a workflow made to handle most input. Every benchmark has its own ***Chunk*** this means that each benchmark has an exclusive part of the code and should not be entangled with other benchmarks. Below is an example of how a benchmark chunk is structured. 
+The TellMeEurope Rmd is where the rendering of the report takes place. This markdown script reads necessary libraries and initializes the connection between the instruction file and the configuration file by souring these when running. Its in the Rmd that the user make use of the DGVMBenchmark toolset to structure and evaluate their benchmarks. The report within the package displays the current version of the final rendered version. Make note of the markdown language to get a feel for how you want to structure your report. This version make use of tab-sets in order where each benchmark has its own section in the report with tabs to flick through the output. While creating your benchmark you may follow a workflow made to handle most input. Every benchmark has its own ***Chunk*** this means that each benchmark has an exclusive part of the code and should not be entangled with other benchmarks. Below is an example of how a benchmark chunk is structured. 
 
 This example is the evaluation of Annual GPP between Data and two simulations. 
 
 The if check is connected to the set ***Switches*** and if ***FALSE*** will skip to the next chunk.
-You set the benchmark_name in order to connect to the correct benchmark object in the instruction file (must be same sting as the header of that YML object).
+You set the benchmark_name in order to connect to the correct benchmark object in the instruction file (must be same string as the header of that YML object).
 
 Then you process your data source, all necessary objects are made in the configuration but you need to now what format it is in. See all_GUESS_datasets, could also be all_NetCDF/all_ICOS_datasets.
 
@@ -123,7 +158,7 @@ When you have a defined benchmark you are able to process the simulation fields 
 
 Its now time to create comparison objects from your fields. A comparison object is a field that combines two fields by dimensions Lat/Lon, Year, Day, Season and keeps the information to compare for both layers where both layers match in dimension. The spatial or temporal range will always be limited by the range in data, so for spatial comparisons only grid cells that are present in both fields will be kept and  in temporal comparisons only points in time present in both layers will be kept. fullSpatial/fullTemporalComparison will make a comparison object of all possible field combinations.
 
-When all_comparisons have been created and filled whit comparison objects, its time to create output from these. There are many options available, for spatial output you would always use the same plotting tools as gridded fields will be handled the same. The options for spatial output is either to make difference maps; ***plotAllSpatialComparisons***, or to make scatterplots; ***plotFullScatter***. Temporal output may differ as information per station or in time may vary from source to source, as of this version there are plotting tools that are ICOS specific and Profound specific. This may change in future updates. Tabular output is created from the comparison objects where statistical metrics are calculated per automation. Use ***buildSummaryTable*** to get spatial mean´s of your fields to compare and ***makeMetricTable*** to extract the statistics you want to highlight. Both of these tables are initialized in the configuration where you are able to initialize multiple tables if you need to keep the tabular output to contain different sections and benchmarks.  
+When all_comparisons have been created and filled with comparison objects, its time to create output from these. There are many options available, for spatial output you would always use the same plotting tools as gridded fields will be handled the same. The options for spatial output is either to make difference maps; ***plotAllSpatialComparisons***, or to make scatterplots; ***plotFullScatter***. Temporal output may differ as information per station or in time may vary from source to source, as of this version there are plotting tools that are ICOS specific, FLUXNET specific and more general temporal plotting. Tabular output is created from the comparison objects where statistical metrics are calculated per automation. Use ***buildSummaryTable*** to get spatial mean´s of your fields to compare and ***makeMetricTable*** to extract the statistics you want to highlight. Both of these tables are initialized in the configuration where you are able to initialize multiple tables if you need to keep the tabular output to contain different sections and benchmarks.  
 
 ```{r Difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_agpp){
