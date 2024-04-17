@@ -66,7 +66,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
     }
     
     
-  }else if (length(benchmark@datasets[[1]]) != 0 && 
+  }else if (length(benchmark@datasets) != 0 && 
             (benchmark@datasets[[1]]@source@format@id == "ICOS" || 
              benchmark@datasets[[1]]@source@format@id == "FLUXNET") && 
             benchmark@file_name == "GPP")  {
@@ -108,7 +108,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         } 
       }
     }
-  } else if (length(benchmark@datasets[[1]]) != 0 &&
+  } else if (length(benchmark@datasets) != 0 &&
              (benchmark@datasets[[1]]@source@format@id == "ICOS" || 
               benchmark@datasets[[1]]@source@format@id == "FLUXNET") &&
              benchmark@file_name == "NEE") {
@@ -150,7 +150,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         } 
       }
     }
-  }else if (length(benchmark@datasets[[1]]) != 0 &&
+  }else if (length(benchmark@datasets) != 0 &&
             (benchmark@datasets[[1]]@source@format@id == "ICOS" ||
              benchmark@datasets[[1]]@source@format@id == "FLUXNET") &&
             benchmark@file_name == "Reco") {
