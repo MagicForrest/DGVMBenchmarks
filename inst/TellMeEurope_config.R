@@ -37,12 +37,12 @@ spatial.extent <- DGVMBenchmarks::setGridCellExtent(input = input)
 
 ## Set up spatial summary table will be built benchmark by-benchmark ##
 summary_col_names <- c("Quantity", "Unit")
-if (length(all_GUESS_simulation_Sources_list) != 0){
-  for(this_sim in all_GUESS_simulation_Sources_list){summary_col_names <- append(summary_col_names, this_sim@name)}
+if (length(all_simulation_Sources_list[["GUESS"]]) != 0){
+  for(this_sim in all_simulation_Sources_list[["GUESS"]]){summary_col_names <- append(summary_col_names, this_sim@name)}
   summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
   summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
-} else if (length(all_NetCDF_simulation_Sources_list) != 0){
-  for(this_sim in all_NetCDF_simulation_Sources_list){summary_col_names <- append(summary_col_names, this_sim@name)}
+} else if (length(all_simulation_Sources_list[["NetCDF"]]) != 0){
+  for(this_sim in all_simulation_Sources_list[["NetCDF"]]){summary_col_names <- append(summary_col_names, this_sim@name)}
   summary_col_names <- append(summary_col_names, c("Data", "Dataset", "Dataset ref."))
   summary_table <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)  
 }
