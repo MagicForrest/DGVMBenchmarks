@@ -39,8 +39,8 @@ AGPP1:
   Description: "Annual GPP" # Used in tabular output
   Layer: "Forest_sum" # Layer/column in Fields to base the comparison on
   Data:   
-    Datasets: ["european_applications"] # Name of Dataset (name of subfolder in data source directory)
-    Format: ["GUESS"]
+    Datasets: ["european_applications", "PROFOUND"] # Name of Dataset (name of subfolder in data source directory)
+    Format: ["GUESS", "SITE"]
     First_year: NULL # Set first and last year to limit the temporal span, set to null takes the whole timespan 
     Last_year: NULL
     year.aggregate.method: "mean" # The method to aggregate time dimention 
