@@ -22,7 +22,7 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
   seasonal_comparisons_list <- list()
   # determine the dataset names
   all_datasets <- c()
-  if(length(benchmark@datasets[[1]]) != 0){
+  if(length(benchmark@datasets) != 0){
   for(this_dataset in benchmark@datasets) {
     all_datasets <- append(all_datasets, this_dataset@source@name)
   }
