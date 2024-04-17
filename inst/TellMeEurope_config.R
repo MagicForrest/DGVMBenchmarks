@@ -1,7 +1,7 @@
 ## Read input file, set parameters ##
 input <- yaml::yaml.load_file(file.path(system.file("TellMeEurope.yml", package = "DGVMBenchmarks")))
 
-sources <-defineAllSources(input)
+sources <- defineAllSources(input)
 all_datasets <- sources[[1]]
 all_simulation_Sources_list <- sources[[2]]
 # ## Extract the file name and unit element from yml to define quantity and format
