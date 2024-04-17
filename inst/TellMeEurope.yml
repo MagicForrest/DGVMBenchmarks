@@ -31,6 +31,88 @@ Switches:
   do_FLUXNET_NEE: T
   do_FLUXNET_Reco: T
 
+AGPP1:
+  File_name: "agpp" # The name of the files to process, should be the same for data and sim. (If ICOS or FLUXNET use data name)
+  Unit: "kg/m2/y" # The unit of the Benchmark
+  Id: "AGPP" # The ID used for tabular output
+  Name: "AGPP" # Used in plotting
+  Description: "Annual GPP" # Used in tabular output
+  Layer: "Forest_sum" # Layer/column in Fields to base the comparison on
+  Data:   
+    Datasets: ["european_application"] # Name of Dataset (name of subfolder in data source directory)
+    Format: ["GUESS"]
+    First_year: NULL # Set first and last year to limit the temporal span, set to null takes the whole timespan 
+    Last_year: NULL
+    year.aggregate.method: "mean" # The method to aggregate time dimention 
+    spatial.aggregate.method:
+    Conversion_factor: NULL # Numeric() list() the factor needed for conversion of dataset, leave empty or NULL if not used
+    Layer_to_convert: NULL # List holding the dataset names of the Fields to be converted
+    Dataset_name: "LRF-GPP" # Used in plotting and tabular output
+    Dataset_longname: "Light Response Function GPP (LRF-GPP)"
+    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
+    Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: NULL
+      partition.method: NULL
+      day.night.method: NULL
+      NEE.day.night: NULL
+      rm.leap: NULL
+      data.cleaning: NULL
+      qc.threshold: NULL # ICOS & FLUXNET specific settings.
+  Simulations:
+    Simulation: ["european_applications"]
+    Format: ["GUESS"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor: 
+    Layer_to_convert: 
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1, 1]
+      Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
+    Spatial_Scatter:
+      Limits: [0, 3] # Plotting settings limits and breaks list input []
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T 
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 AGPP:
   File_name: "agpp"
   Unit: "kg/m2/y"
@@ -50,59 +132,7 @@ AGPP:
   Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
   Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
 
-AGPP1:
-  File_name: "agpp"
-  Unit: "kg/m2/y"
-  Id: "AGPP"
-  Name: "AGPP"
-  Description: "Annual GPP"
-  Layer: "Forest_sum"
-  Data:
-    Datasets: ["european_application"]
-    First_year: NULL
-    Last_year: NULL
-    year.aggregate.method: "mean"
-    spatial.aggregate.method:
-    Conversion_factor:
-    Layer_to_convert:
-    Dataset_name: "LRF-GPP"
-    Dataset_longname: "Light Response Function GPP (LRF-GPP)"
-    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
-    Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
-    ICOS_FLUXNET_Specific:
-      UT.threshold: NULL
-      partition.method: NULL
-      day.night.method: NULL
-      NEE.day.night: NULL
-      rm.leap: NULL
-      data.cleaning: NULL
-      qc.threshold: NULL
-  Simulations:
-    Simulation: ["european_applications"]
-    First_year: 2010
-    Last_year: 2010
-    year.aggregate.method: "mean"
-    spatial.aggregate.method: 
-    Conversion_factor:
-    Layer_to_convert:
-  Plotting:
-    Spatial_Difference:
-      Limits: [-1, 1]
-      Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
-    Spatial_Scatter:
-      Limits: [0, 3]
-  Statistics:
-    ME: F
-    NME: F
-    NMSE: T
-    RMSE: T
-    NME_2: F
-    NMSE_2: F
-    NME_3: F
-    NMSE_3: F
-    r: F
-    r2: T
-    r2_eff: F
+
     
 CMASS:
   File_name: "cmass_plus10cm_sts"
@@ -132,6 +162,7 @@ CMASS1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_application"]
+    Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "mean"
@@ -152,6 +183,7 @@ CMASS1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    Format: ["GUESS"]
     First_year: 2001
     Last_year: 2010
     year.aggregate.method: "mean"
@@ -205,6 +237,7 @@ W_GROWTH1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_application"]
+    Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "mean"
@@ -225,6 +258,7 @@ W_GROWTH1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    Format: ["GUESS"]
     First_year: 2001
     Last_year: 2010
     year.aggregate.method: "mean"
@@ -278,6 +312,7 @@ STEM_DENSITY1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_application"]
+    Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "mean"
@@ -298,6 +333,7 @@ STEM_DENSITY1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    Format: ["GUESS"]
     First_year: 2010
     Last_year: 2010
     year.aggregate.method: "mean"
@@ -351,6 +387,7 @@ QDBH1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_application"]
+    Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "mean"
@@ -371,6 +408,7 @@ QDBH1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    Format: ["GUESS"]
     First_year: 2010
     Last_year: 2010
     year.aggregate.method: "mean"
@@ -421,6 +459,7 @@ CMASS_pft1:
   Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
   Data:
     Datasets: ["european_application"]
+    Format: 
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -441,6 +480,7 @@ CMASS_pft1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    Format: ["GUESS"]
     First_year: 2000
     Last_year: 2010
     year.aggregate.method: "mean"
@@ -489,6 +529,7 @@ Profound_csv1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -509,6 +550,7 @@ Profound_csv1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: 
     Last_year: 
     year.aggregate.method: 
@@ -571,6 +613,7 @@ Profound_cmass1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -591,6 +634,7 @@ Profound_cmass1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: 
     Last_year: 
     year.aggregate.method: 
@@ -639,6 +683,7 @@ Profound_dens1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -659,6 +704,7 @@ Profound_dens1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: 2010
     Last_year: 2010
     year.aggregate.method: 
@@ -707,6 +753,7 @@ Profound_diam_g_plus10cm_sts_ext_st_mean1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -727,6 +774,7 @@ Profound_diam_g_plus10cm_sts_ext_st_mean1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: 2010
     Last_year: 2010
     year.aggregate.method: 
@@ -775,6 +823,7 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -795,6 +844,7 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    Format: ["SITE"]
     First_year: 2010
     Last_year: 2010
     year.aggregate.method: 
@@ -850,6 +900,7 @@ ICOS_GPP1:
   Layer: "GPP"
   Data:
     Datasets: ["ICOS"]
+    Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -870,6 +921,7 @@ ICOS_GPP1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
     year.aggregate.method: 
@@ -925,6 +977,7 @@ ICOS_NEE1:
   Layer: "NEE"
   Data:
     Datasets: ["ICOS"]
+    Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -945,6 +998,7 @@ ICOS_NEE1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
     year.aggregate.method: 
@@ -1000,6 +1054,7 @@ ICOS_Reco1:
   Layer: "Reco"
   Data:
     Datasets: ["ICOS"]
+    Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -1020,6 +1075,7 @@ ICOS_Reco1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
     year.aggregate.method: 
@@ -1054,6 +1110,7 @@ ICOS_ET1:
   Layer: "GPP"
   Data:
     Datasets: ["ICOS"]
+    Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -1074,6 +1131,7 @@ ICOS_ET1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
     year.aggregate.method: 
@@ -1150,6 +1208,7 @@ FLUXNET_GPP1:
   Layer: "GPP"
   Data:
     Datasets: ["FLUXNET"]
+    Format: ["FLUXNET"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -1170,6 +1229,7 @@ FLUXNET_GPP1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["bias_corrected"]
+    Format: ["GUESS"]
     First_year: 
     Last_year: 
     year.aggregate.method: 
@@ -1225,6 +1285,7 @@ FLUXNET_NEE1:
   Layer: "NEE"
   Data:
     Datasets: ["FLUXNET"]
+    Format: ["FLUXNET"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -1245,6 +1306,7 @@ FLUXNET_NEE1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["bias_corrected"]
+    Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
     year.aggregate.method: 
@@ -1300,6 +1362,7 @@ FLUXNET_Reco1:
   Layer: "Reco"
   Data:
     Datasets: ["FLUXNET"]
+    Format: ["FLUXNET"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: 
@@ -1320,6 +1383,7 @@ FLUXNET_Reco1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["bias_corrected"]
+    Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
     year.aggregate.method: 
