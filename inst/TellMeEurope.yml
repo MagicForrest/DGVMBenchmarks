@@ -47,7 +47,7 @@ AGPP1:
     spatial.aggregate.method:
     Conversion_factor: NULL # Numeric() list() the factor needed for conversion of dataset, leave empty or NULL if not used
     Layer_to_convert: NULL # List holding the dataset names of the Fields to be converted
-    Dataset_name: ["LRF-GPP"] # Used in plotting and tabular output
+    Dataset_name: ["LRF-GPP", "PROFOUND_GPP"] # Used in plotting and tabular output
     Dataset_longname: "Light Response Function GPP (LRF-GPP)"
     Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
     Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
