@@ -4,12 +4,10 @@
 \alias{defineAllSources}
 \title{Define all sources}
 \usage{
-defineAllSources(input, format)
+defineAllSources(input)
 }
 \arguments{
-\item{input}{yaml instruction file}
-
-\item{format}{Holding format}
+\item{input}{yaml instruction file holding Benchmark Formats}
 }
 \value{
 List of lists for the dataset source and the simulations sources
@@ -18,7 +16,7 @@ List of lists for the dataset source and the simulations sources
 Define all sources
 }
 \examples{
-defineAllSources(input = input_data, format = format)
+defineAllSources(input = input_data)
 }
 \author{
 Karl Piltz (karl.piltz@nateko.lu.se)
