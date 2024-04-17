@@ -17,19 +17,28 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
   if (this_comparison@source2@id == "Obs"){
     #Quick plot of comparison object
     DGVMTools::plotSpatialComparison(this_comparison, type = "difference")
-
+  
     #Get the Max, Min, Mean difference of Model - Observed data
     max_dif<-round(max(this_comparison@data[[5]]),2)
     mean_dif<-round(mean(this_comparison@data[[5]]),2)
     min_dif<-round(min(this_comparison@data[[5]]),2)
     mean_obs<-round(mean(this_comparison@data[[4]]),2)
     # Plotting difference maps
+    limits = range(this_comparison@data[[5]]) 
+    breaks = pretty(range(this_comparison@data[[5]]))
+    if (!is.null(Benchmark@limits) && length(Benchmark@limits) != 0){
+      limits = unlist(Benchmark@limits)
+    }
+    if (!is.null(Benchmark@breaks) && length(Benchmark@breaks) != 0){
+      breaks = unlist(Benchmark@breaks)
+    }
+    
     p1 <- DGVMTools::plotSpatialComparison(this_comparison, type = "difference", map.overlay = "world", panel.bg.col = "gray")+
       scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                            midpoint = 0,
                            na.value = "black",
-                           limits = unlist(Benchmark@limits),
-                           breaks = unlist(Benchmark@breaks))+
+                           limits = limits,
+                           breaks = breaks)+
       labs(title = paste(this_comparison@name), subtitle = paste("Max:", max_dif,
                                                                  "Mean:", mean_dif,
                                                                  "Min:", min_dif,
@@ -46,13 +55,21 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
       mean_dif<-round(mean(this_comparison@data[[5]]),2)
       min_dif<-round(min(this_comparison@data[[5]]),2)
       
+      limits = range(this_comparison@data[[5]]) 
+      breaks = pretty(range(this_comparison@data[[5]]))
+      if (!is.null(Benchmark@limits) && length(Benchmark@limits) != 0){
+        limits = unlist(Benchmark@limits)
+      }
+      if (!is.null(Benchmark@breaks) && length(Benchmark@breaks) != 0){
+        breaks = unlist(Benchmark@breaks)
+      }
       # Plotting difference maps
       p1 <- DGVMTools::plotSpatialComparison(this_comparison, type = "difference", map.overlay = "world", panel.bg.col = "gray")+
         scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                              midpoint = 0,
                              na.value = "black",
-                             limits = unlist(Benchmark@limits),
-                             breaks = unlist(Benchmark@breaks))+
+                             limits = limits,
+                             breaks = breaks)+
         labs(title = paste(this_comparison@name), subtitle = paste("Max:", max_dif,
                                                                    "Mean:", mean_dif,
                                                                    "Min:", min_dif
