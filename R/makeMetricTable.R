@@ -19,7 +19,14 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
   col_names <- c("Dataset","Quantity", "Metric")
   col_types <- c("character", "character", "character")
   
-  for(this_sim in simulation_sources) {
+  if (benchmark@simulation_format == "SITE") {
+    simulations <- simulation_sources[["SITE"]]}
+  if (benchmark@simulation_format == "GUESS") {
+    simulations <- simulation_sources[["GUESS"]]}
+  if (benchmark@simulation_format == "NetCDF") {
+    simulations <- simulation_sources[["NetCDF"]]}
+  
+  for(this_sim in simulations) {
     col_names <- append(col_names, this_sim@name)
     col_types <- append(col_types, "numeric")
   }
@@ -53,7 +60,7 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
   
   # read the scores from the 
   for(this_dataset in benchmark@datasets) {
-    for(this_sim_Source in simulation_sources) {
+    for(this_sim_Source in simulations) {
       for(this_metric in benchmark@metrics){
         metric_table[which(metric_table$Metric == this_metric), gsub(pattern = " ", replacement = ".", x = this_sim_Source@name)] <- signif(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", this_dataset@source@name)]]@stats[[this_metric]],3)
       }
