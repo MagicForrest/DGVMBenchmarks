@@ -60,8 +60,8 @@ AGPP1:
       data.cleaning: NULL
       qc.threshold: NULL # ICOS & FLUXNET specific settings.
   Simulations:
-    Simulation: ["european_applications"]
-    Format: ["GUESS"]
+    Simulation: ["european_applications", "PROFOUND"]
+    Format: ["GUESS", "SITE"]
     First_year: 2010
     Last_year: 2010
     year.aggregate.method: "mean"
