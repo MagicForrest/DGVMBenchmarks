@@ -1,7 +1,19 @@
 Settings:
-  new_directory:  "/home/mforrest/GuessRuns/Tellus_dev/output11690tls-3"
   new_name: "New run"
-  old_directory:  "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
   old_name: "Old run"
   data_directory: "/data/shared/Tellus"
   land_cover_file: "/data/mforrest/LandUseLandCover/LUH2_GCP2019/lu_1549_2019_luh2_aggregate_sum2x2_midpoint_nourban_gcp2019_2019_10_22.txt"
+
+# Here specify the models to benchmark  
+
+Models:
+  # Indents at this level define a unique ID for this model
+  New_run: 
+    # Each of these three things *must* be defined for each model
+    name: "New run" 
+    dir: "/home/mforrest/GuessRuns/Tellus_dev/output11690tls-3"
+    format: "GUESS"
+  Old_run:
+    name: "Old run"
+    dir: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
+    format: "GUESS"

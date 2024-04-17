@@ -74,7 +74,7 @@ modelSummaryTable <- function(simulations,
       this_period_df <- rbind(this_period_df, diff_row)
       
       # percentage difference
-      perc_diff_string <-  paste0(source_names[[params$new_name]], " - ", source_names[[params$old_name]], " (% diff)")
+      perc_diff_string <-  paste0(source_names[[new_sim]], " - ", source_names[[old_sim]], " (% diff)")
       perc_diff_row <- c(c("Source" = perc_diff_string), signif(100 * this_period_df[this_period_df$Source == difference_string, 2:ncol(this_period_df) ]/ this_period_df[this_period_df$Source == old_sim, 2:ncol(this_period_df) ], sigfigs ))
       this_period_df <- rbind(this_period_df, perc_diff_row)
       
