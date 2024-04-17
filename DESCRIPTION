@@ -3,6 +3,7 @@ Title: Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
 Version: 0.0.0.9000
 Authors@R: 
     c(person("Matthew", "Forrest", email = "matthew.forrest@senckenberg.de", role = c("aut", "cre"), comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Karl", "Piltz", email = "karl.piltz@nateko.lu.se", role = c("aut"), comment = c(ORCID = "YOUR-ORCID-ID")),
     person("Margot", "Knapen", email = "margot.knapen@nateko.lu.se", role = c("aut"), comment = c(ORCID = "YOUR-ORCID-ID")))
 Description: Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
 Imports: DGVMTools (>= 0.9),
