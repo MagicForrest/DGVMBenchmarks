@@ -16,6 +16,10 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
 createBenchmark <- function(benchmark_name, input, Datasets, spatial.extent = NULL){
   
+  if (is.null(input[[benchmark_name]][["Data"]][["Dataset_source"]])){
+    dataset_source = "none"
+  } else {dataset_source = input[[benchmark_name]][["Data"]][["Dataset_source"]]}
+  
   true_statistics <- character()
   for (stat in names(input[[benchmark_name]][["Statistics"]])) {
     if (input[[benchmark_name]][["Statistics"]][[stat]] == "T" || input[[benchmark_name]][["Statistics"]][[stat]] == "TRUE") {
@@ -38,7 +42,7 @@ createBenchmark <- function(benchmark_name, input, Datasets, spatial.extent = NU
                         year.aggregate.method = as.character(input[[benchmark_name]][["Simulations"]][["year.aggregate.method"]]),
                         agg.unit = input[[benchmark_name]][["Unit"]],
                         datasets = Datasets,
-                        dataset_source = input[[benchmark_name]][["Data"]][["Dataset_source"]],
+                        dataset_source = dataset_source,
                         simulation_format = input[[benchmark_name]][["Simulations"]][["Format"]],
                         first.year = as.numeric(input[[benchmark_name]][["Simulations"]][["First_year"]]),
                         last.year = as.numeric(input[[benchmark_name]][["Simulations"]][["Last_year"]]),
