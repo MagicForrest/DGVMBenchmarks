@@ -31,8 +31,7 @@ Switches:
   do_FLUXNET_NEE: T
   do_FLUXNET_Reco: T
 
-AGPP1:
-  File_name: "agpp" # The name of the files to process, should be the same for data and sim. (If ICOS or FLUXNET use data name)
+AGPP1: 
   Unit: "kg/m2/y" # The unit of the Benchmark
   Id: "AGPP" # The ID used for tabular output
   Name: "AGPP" # Used in plotting
@@ -40,6 +39,7 @@ AGPP1:
   Layer: "Forest_sum" # Layer/column in Fields to base the comparison on
   Data:   
     Datasets: ["european_applications"] # Name of Dataset (name of subfolder in data source directory)
+    File_name: ["agpp"] # The name of the files to process, should be the same for data and sim. (If ICOS or FLUXNET use data name)
     Format: ["GUESS"]
     First_year: NULL # Set first and last year to limit the temporal span, set to null takes the whole timespan 
     Last_year: NULL
@@ -61,6 +61,7 @@ AGPP1:
       qc.threshold: NULL # ICOS & FLUXNET specific settings.
   Simulations:
     Simulation: ["european_applications", "PROFOUND"]
+    File_name: ["agpp", "cmass"]
     Format: ["GUESS", "SITE"]
     First_year: 2010
     Last_year: 2010
