@@ -52,7 +52,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
           this_data_Source@dir <- this_dataset_run_dir
           
           Data.year.mean <- DGVMTools::getField(source = this_data_Source, 
-                                                quant = input[[benchmark_name]][["File_name"]],
+                                                quant = input[[benchmark_name]][["Data"]][["File_name"]][[i]],
                                                 layers = input[[benchmark_name]][["Layer"]],
                                                 units = input[[benchmark_name]][["Unit"]],
                                                 verbose = verbose_read,
