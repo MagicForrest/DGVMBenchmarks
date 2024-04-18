@@ -24,26 +24,37 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
   if (!is.null(benchmark@year.aggregate.method) && length(benchmark@year.aggregate.method) != 0){year.aggregate.method <- benchmark@year.aggregate.method}
   if (!is.null(benchmark@spatial.aggregate.method) && length(benchmark@spatial.aggregate.method) != 0){spatial.aggregate.method <- benchmark@spatial.aggregate.method}
   
-  
-  
   if (length(benchmark@datasets) != 0) {
     for (i in seq_along(benchmark@datasets))
       all_Fields_list[[benchmark@datasets[[i]]@source@name]] <- benchmark@datasets[[i]]
   }
   
-  if (benchmark@simulation_format == "SITE") {
-    for (this_sim_Source in all_simulation_Sources_list[["SITE"]]) {
+  if (length(benchmark@simulation_format) == 1) {
+    duplicated_format <- benchmark@simulation_format[1]
+    benchmark@simulation_format <- c(benchmark@simulation_format, duplicated_format)
+    duplicated_simulation <- benchmark@simulation[1]
+    benchmark@simulation <- c(benchmark@simulation, duplicated_simulation)
+    duplicated_filename <- benchmark@file_name[1]
+    benchmark@file_name <- c(benchmark@file_name, duplicated_filename)}
+    
+    for (format_index in seq_along(benchmark@simulation_format)) {
+      current_format <- benchmark@simulation_format[[format_index]]
+  
+  
+  
+  
+  if (current_format == "SITE") {
       
       # check if file is present (if not don't include this run)
-      this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation)
-      if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".csv")))){        
+      this_benchmark_run_dir <- file.path(all_simulation_Sources_list[["SITE"]][[format_index]]@dir, benchmark@simulation[[format_index]])
+      if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".csv")))){        
         # make local sources pointing to the simulation directory
-        this_Source <- this_sim_Source
+        this_Source <- all_simulation_Sources_list[["SITE"]][[format_index]]
         this_Source@dir <- this_benchmark_run_dir
         
         # read the data
         this_simulation <- DGVMTools::getField(source = this_Source,
-                                               quant = benchmark@file_name,
+                                               quant = benchmark@file_name[[format_index]],
                                                first.year = first.year,
                                                last.year = last.year,
                                                layers = benchmark@guess_layers,
@@ -55,36 +66,31 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         )
         setKeyDGVM(this_simulation@data)
         
-        all_sim_full[[this_sim_Source@name]] <- this_simulation
-        all_Fields_list[[this_sim_Source@name]] <- this_simulation
-        if (this_sim_Source@name %in% this_benchmark@Layer_to_convert){
-          all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
-          all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
+        all_sim_full[[this_Source@name]] <- this_simulation
+        all_Fields_list[[this_Source@name]] <- this_simulation
+        if (this_Source@name %in% this_benchmark@Layer_to_convert){
+          all_sim_full[[this_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
+          all_Fields_list[[this_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
         } 
         
       }
-    }
-    
-    
   }else if (length(benchmark@datasets) != 0 && 
             (benchmark@datasets[[1]]@source@format@id == "ICOS" || 
-             benchmark@datasets[[1]]@source@format@id == "FLUXNET") && 
-            benchmark@file_name == "GPP")  {
-    if(benchmark@simulation_format == "GUESS"){all_simulation_Sources <- all_simulation_Sources_list[["GUESS"]]}
-    if(benchmark@simulation_format == "NetCDF"){all_simulation_Sources <- all_simulation_Sources_list[["NetCDF"]]}
-    for (this_sim_Source in all_simulation_Sources) {
+             benchmark@datasets[[1]]@source@format@id == "FLUXNET"))  {
+    if(current_format == "GUESS"){this_sim_source <- all_simulation_Sources_list[["GUESS"]][[format_index]]}
+    if(current_format == "NetCDF"){this_sim_source <- all_simulation_Sources_list[["NetCDF"]][[format_index]]}
       
       # check if file is present (if not don't include this run)
-      this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation)
-      if (file.exists(file.path(this_benchmark_run_dir, paste0("dgpp", ".out"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0("dgpp", ".out.gz"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0("dgpp", ".nc")))) {
+      this_benchmark_run_dir <- file.path(this_sim_source@dir, benchmark@simulation[[format_index]])
+      if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".out"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".out.gz"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".nc")))) {
         
         # make local sources pointing to the simulation directory
-        this_Source <- this_sim_Source
+        this_Source <- this_sim_source
         this_Source@dir <- this_benchmark_run_dir
         
         # read the data
         this_simulation <- DGVMTools::getField(source = this_Source,
-                                               quant = "dgpp",
+                                               quant = benchmark@file_name[[format_index]],
                                                first.year = first.year,
                                                last.year = last.year,
                                                layers = NULL,
@@ -100,117 +106,29 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
           rename(GPP = Total)}
         
         
-        all_sim_full[[this_sim_Source@name]] <- this_simulation
-        all_Fields_list[[this_sim_Source@name]] <- this_simulation
-        if (this_sim_Source@name %in% this_benchmark@Layer_to_convert){
-          all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
-          all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
+        all_sim_full[[this_sim_source@name]] <- this_simulation
+        all_Fields_list[[this_sim_source@name]] <- this_simulation
+        if (this_sim_source@name %in% this_benchmark@Layer_to_convert){
+          all_sim_full[[this_sim_source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
+          all_Fields_list[[this_sim_source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
         } 
       }
-    }
-  } else if (length(benchmark@datasets) != 0 &&
-             (benchmark@datasets[[1]]@source@format@id == "ICOS" || 
-              benchmark@datasets[[1]]@source@format@id == "FLUXNET") &&
-             benchmark@file_name == "NEE") {
-    if(benchmark@simulation_format == "GUESS"){all_simulation_Sources <- all_simulation_Sources_list[["GUESS"]]}
-    if(benchmark@simulation_format == "NetCDF"){all_simulation_Sources <- all_simulation_Sources_list[["NetCDF"]]}
-    
-    for (this_sim_Source in all_simulation_Sources) {
-      
-      # check if file is present (if not don't include this run)
-      this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation)
-      if (file.exists(file.path(this_benchmark_run_dir, paste0("dnee", ".out"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0("dnee", ".out.gz"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0("dnee", ".nc")))) {
-        
-        # make local sources pointing to the simulation directory
-        this_Source <- this_sim_Source
-        this_Source@dir <- this_benchmark_run_dir
-        
-        # read the data
-        this_simulation <- DGVMTools::getField(source = this_Source,
-                                               quant = "dnee",
-                                               first.year = first.year,
-                                               last.year = last.year,
-                                               layers = NULL,
-                                               units = benchmark@unit,
-                                               verbose = verbose_read,
-                                               quick.read = quick_read,
-                                               quick.read.file = paste(benchmark@id, version_label, sep = "_")
-        )
-        
-        if ("Forest_sum" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
-          rename(NEE = Forest_sum)}
-        if ("Total" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
-          rename(NEE = Total)}
-        
-        all_sim_full[[this_sim_Source@name]] <- this_simulation
-        all_Fields_list[[this_sim_Source@name]] <- this_simulation
-        if (this_sim_Source@name %in% this_benchmark@Layer_to_convert){
-          all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
-          all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
-        } 
-      }
-    }
-  }else if (length(benchmark@datasets) != 0 &&
-            (benchmark@datasets[[1]]@source@format@id == "ICOS" ||
-             benchmark@datasets[[1]]@source@format@id == "FLUXNET") &&
-            benchmark@file_name == "Reco") {
-    if(benchmark@simulation_format == "GUESS"){all_simulation_Sources <- all_simulation_Sources_list[["GUESS"]]}
-    if(benchmark@simulation_format == "NetCDF"){all_simulation_Sources <- all_simulation_Sources_list[["NetCDF"]]}
-    
-    for (this_sim_Source in all_simulation_Sources) {
-      
-      # check if file is present (if not don't include this run)
-      this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation)
-      if (file.exists(file.path(this_benchmark_run_dir, paste0("dreco", ".out"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0("dreco", ".out.gz"))) ||  file.exists(file.path(this_benchmark_run_dir, paste0("dreco", ".nc")))) {
-        
-        # make local sources pointing to the simulation directory
-        this_Source <- this_sim_Source
-        this_Source@dir <- this_benchmark_run_dir
-        
-        # read the data
-        this_simulation <- DGVMTools::getField(source = this_Source,
-                                               quant = "dreco",
-                                               first.year = first.year,
-                                               last.year = last.year,
-                                               layers = NULL,
-                                               units = benchmark@unit,
-                                               verbose = verbose_read,
-                                               quick.read = quick_read,
-                                               quick.read.file = paste(benchmark@id, version_label, sep = "_")
-        )
-        
-        if ("Forest_sum" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
-          rename(Reco = Forest_sum)}
-        if ("Total" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
-          rename(Reco = Total)}
-        
-        all_sim_full[[this_sim_Source@name]] <- this_simulation
-        all_Fields_list[[this_sim_Source@name]] <- this_simulation
-        if (this_sim_Source@name %in% this_benchmark@Layer_to_convert){
-          all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
-          all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
-        } 
-      }
-    }
   }else {
-    if(benchmark@simulation_format == "GUESS"){all_simulation_Sources <- all_simulation_Sources_list[["GUESS"]]}
-    if(benchmark@simulation_format == "NetCDF"){all_simulation_Sources <- all_simulation_Sources_list[["NetCDF"]]}
-    
-    for (this_sim_Source in all_simulation_Sources) {
-      
+    if(current_format == "GUESS"){this_sim_Source <- all_simulation_Sources_list[["GUESS"]][[format_index]]}
+    if(current_format == "NetCDF"){this_sim_Source <- all_simulation_Sources_list[["NetCDF"]][[format_index]]}
       
       # check if file is present (if not don't include this run)
-      this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation)
-      if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".out"))) ||
-          file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".out.gz"))) ||
-          file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name, ".nc")))){        
+      this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation[[format_index]])
+      if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".out"))) ||
+          file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".out.gz"))) ||
+          file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".nc")))){        
         # make local sources pointing to the simulation directory
         this_Source <- this_sim_Source
         this_Source@dir <- this_benchmark_run_dir
         
         # read the data
         this_simulation <- DGVMTools::getField(source = this_Source,
-                                               quant = benchmark@file_name,
+                                               quant = benchmark@file_name[[format_index]],
                                                first.year = first.year,
                                                last.year = last.year,
                                                spatial.extent.id = benchmark@spatial_extent_id,
@@ -227,13 +145,13 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         all_sim_full[[this_sim_Source@name]] <- this_simulation
         all_Fields_list[[this_sim_Source@name]] <- this_simulation
         if (this_sim_Source@name %in% this_benchmark@Layer_to_convert){
-          all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
-          all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(this_benchmark@conversion_factor)
+          all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
+          all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
         } 
       }
     }
-    
-  }
+    }
+  
   
   return(list(all_sim_full, all_Fields_list))
 }

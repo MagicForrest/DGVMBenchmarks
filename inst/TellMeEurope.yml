@@ -4,8 +4,6 @@ Directory:
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
   Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Simulaitons_240122_to_karl\\231221_european_applications_full_reineke"
   Sim2_id: "Euapp with thinning"
-  Format: ["GUESS","ICOS","SITE", "FLUXNET"]
-  Simulation_name: ["european_applications", "PROFOUND", "ICOS", "Bias_corrected", "CRUJRA_v2.4.5d", "FLUXNET"]
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -60,9 +58,9 @@ AGPP1:
       data.cleaning: NULL
       qc.threshold: NULL # ICOS & FLUXNET specific settings.
   Simulations:
-    Simulation: ["european_applications", "PROFOUND"]
-    File_name: ["agpp", "cmass"]
-    Format: ["GUESS", "SITE"]
+    Simulation: ["european_applications"]
+    File_name: ["agpp"]
+    Format: ["GUESS"]
     First_year: 2010
     Last_year: 2010
     year.aggregate.method: "mean"
@@ -155,7 +153,6 @@ CMASS:
   Dataset_description: "Comparison of grid-cell level simulated values of above ground Carbon mass in forests from LPJ-GUESS to National Forest Inventory estimates for 2010."
 
 CMASS1:
-  File_name: "cmass_plus10cm_sts"
   Unit: "kg/m2"
   Id: "Cmass"
   Name: "Cmass"
@@ -163,6 +160,7 @@ CMASS1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_applications"]
+    File_name: ["cmass_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
@@ -184,6 +182,7 @@ CMASS1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    File_name: ["cmass_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: 2001
     Last_year: 2010
@@ -230,7 +229,6 @@ W_GROWTH:
   Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
 
 W_GROWTH1:
-  File_name: "cmass_wood_inc_plus10cm_sts"
   Unit: "kg/m2/y"
   Id: "W_growth"
   Name: "W_growth"
@@ -238,6 +236,7 @@ W_GROWTH1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_applications"]
+    File_name: ["cmass_wood_inc_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
@@ -259,6 +258,7 @@ W_GROWTH1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    File_name: ["cmass_wood_inc_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: 2001
     Last_year: 2010
@@ -305,7 +305,6 @@ STEM_DENSITY:
   Dataset_description: "Stem density from NFI data compiled from tmp5"
 
 STEM_DENSITY1:
-  File_name: "dens_plus10cm_sts"
   Unit: "indiv/ha"
   Id: "stem density"
   Name: "stem density"
@@ -313,6 +312,7 @@ STEM_DENSITY1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_applications"]
+    File_name: ["dens_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
@@ -334,6 +334,7 @@ STEM_DENSITY1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    File_name: ["dens_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: 2010
     Last_year: 2010
@@ -380,7 +381,6 @@ QDBH:
   Dataset_description: "QDBH estimated from NFI measurments"
 
 QDBH1:
-  File_name: "diam_g_plus10cm_sts"
   Unit: "cm"
   Id: "QDBH"
   Name: "QDBH"
@@ -388,6 +388,7 @@ QDBH1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["european_applications"]
+    File_name: ["diam_g_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
@@ -409,6 +410,7 @@ QDBH1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    File_name: ["diam_g_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: 2010
     Last_year: 2010
@@ -452,14 +454,14 @@ CMASS_pft:
   Dataset_description: "Biomass estimate based on national forest inventory data"
 
 CMASS_pft1:
-  File_name: "cmass_landscape_forest"
   Unit: "kg/m2"
   Id: "Cmass PFT"
   Name: "Cmass PFT"
   Description: "Cmass PFT"  
   Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
   Data:
-    Datasets: ["european_applications"]
+    Datasets: 
+    File_name: 
     Format: 
     First_year: NULL
     Last_year: NULL
@@ -481,6 +483,7 @@ CMASS_pft1:
       qc.threshold: 
   Simulations:
     Simulation: ["european_applications"]
+    File_name: ["cmass_landscape_forest"]
     Format: ["GUESS"]
     First_year: 2000
     Last_year: 2010
@@ -522,7 +525,6 @@ Profound_csv:
   Dataset_description: "Site stand data from the ProfoundData database"
   
 Profound_csv1:
-  File_name: "lai"
   Unit: "m2^m2"
   Id: "lai"
   Name: "lai"
@@ -530,6 +532,7 @@ Profound_csv1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    File_name: ["lai"]
     Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
@@ -551,6 +554,7 @@ Profound_csv1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    File_name: ["lai"]
     Format: ["SITE"]
     First_year: 
     Last_year: 
@@ -606,7 +610,6 @@ Profound_cmass:
   Dataset_description: "Site stand data from the ProfoundData database"
 
 Profound_cmass1:
-  File_name: "cmass"
   Unit: "kg/m2"
   Id: "cmass"
   Name: "cmass"
@@ -614,6 +617,7 @@ Profound_cmass1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    File_name: ["cmass"]
     Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
@@ -635,6 +639,7 @@ Profound_cmass1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    File_name: ["cmass"]
     Format: ["SITE"]
     First_year: 
     Last_year: 
@@ -676,7 +681,6 @@ Profound_dens:
   Dataset_description: "Site stand data from the ProfoundData database"
 
 Profound_dens1:
-  File_name: "dens"
   Unit: "indiv/ha"
   Id: "dens"
   Name: "dens"
@@ -684,6 +688,7 @@ Profound_dens1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    File_name: ["dens"]
     Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
@@ -705,6 +710,7 @@ Profound_dens1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    File_name: ["dens"]
     Format: ["SITE"]
     First_year: 2010
     Last_year: 2010
@@ -731,22 +737,8 @@ Profound_dens1:
     r2: T
     r2_eff: F
     
-Profound_diam_g_plus10cm_sts_ext_st_mean:
-  File_name: "diam_g_plus10cm_sts_ext_st_mean"
-  Unit: "cm"
-  Id: ""
-  Name: ""
-  Description: ""
-  First_year: 2010
-  Last_year: 2010
-  Layer: "Forest_sum"
-  Dataset_name: "Profound"
-  Dataset_longname: "ProfoundData"
-  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
-  Dataset_description: "Site stand data from the ProfoundData database"
 
 Profound_diam_g_plus10cm_sts_ext_st_mean1:
-  File_name: "diam_g_plus10cm_sts_ext_st_mean"
   Unit: "cm"
   Id: ""
   Name: ""
@@ -754,6 +746,7 @@ Profound_diam_g_plus10cm_sts_ext_st_mean1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    File_name: ["diam_g_plus10cm_sts_ext_st_mean"]
     Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
@@ -775,6 +768,7 @@ Profound_diam_g_plus10cm_sts_ext_st_mean1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    File_name: ["diam_g_plus10cm_sts_ext_st_mean"]
     Format: ["SITE"]
     First_year: 2010
     Last_year: 2010
@@ -801,22 +795,8 @@ Profound_diam_g_plus10cm_sts_ext_st_mean1:
     r2: T
     r2_eff: F
     
-Profound_diam_plus10cm_sts_ext_st_mean:
-  File_name: "diam_plus10cm_sts_ext_st_mean"
-  Unit: "cm"
-  Id: ""
-  Name: ""
-  Description: ""
-  First_year: 2010
-  Last_year: 2010
-  Layer: "Forest_sum"
-  Dataset_name: "Profound"
-  Dataset_longname: "ProfoundData"
-  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
-  Dataset_description: "Site stand data from the ProfoundData database"
 
 Profound_diam_plus10cm_sts_ext_st_mean1:
-  File_name: "diam_plus10cm_sts_ext_st_mean"
   Unit: "cm"
   Id: ""
   Name: ""
@@ -824,6 +804,7 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
   Layer: "Forest_sum"
   Data:
     Datasets: ["PROFOUND"]
+    File_name: ["diam_plus10cm_sts_ext_st_mean"]
     Format: ["SITE"]
     First_year: NULL
     Last_year: NULL
@@ -845,6 +826,7 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
       qc.threshold: 
   Simulations:
     Simulation: ["PROFOUND"]
+    File_name: ["diam_plus10cm_sts_ext_st_mean"]
     Format: ["SITE"]
     First_year: 2010
     Last_year: 2010
@@ -893,7 +875,6 @@ ICOS_GPP:
   Dataset_description: "Comparison of daily GPP produced by LPJ-GUESS to the ICOS measurment daily GPP station data from Hyltemossa, Svartberget & Norunda"
 
 ICOS_GPP1:
-  File_name: "GPP"
   Unit: "kgC/m2/day"
   Id: "GPP"
   Name: "GPP"
@@ -901,6 +882,7 @@ ICOS_GPP1:
   Layer: "GPP"
   Data:
     Datasets: ["ICOS"]
+    File_name: ["GPP"]
     Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
@@ -922,6 +904,7 @@ ICOS_GPP1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    File_name: ["dgpp"]
     Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
@@ -949,7 +932,6 @@ ICOS_GPP1:
     r2_eff: F
     
 ICOS_NEE:
-  File_name: "NEE"
   Unit: "kgC/m2/day"
   Format: "ICOS"
   Id: "NEE"
@@ -970,7 +952,6 @@ ICOS_NEE:
   Dataset_description: "Comparison of daily NEE produced by LPJ-GUESS to the ICOS measurment daily NEE station data from Hyltemossa, Svartberget & Norunda"
 
 ICOS_NEE1:
-  File_name: "NEE"
   Unit: "kgC/m2/day"
   Id: "NEE"
   Name: "NEE"
@@ -978,6 +959,7 @@ ICOS_NEE1:
   Layer: "NEE"
   Data:
     Datasets: ["ICOS"]
+    File_name: ["NEE"]
     Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
@@ -999,6 +981,7 @@ ICOS_NEE1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    File_name: ["dnee"]
     Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
@@ -1047,7 +1030,6 @@ ICOS_Reco:
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the ICOS measurment daily Reco station data from Hyltemossa, Svartberget & Norunda"
 
 ICOS_Reco1:
-  File_name: "Reco"
   Unit: "kgC/m2/day"
   Id: "Reco"
   Name: "Reco"
@@ -1055,6 +1037,7 @@ ICOS_Reco1:
   Layer: "Reco"
   Data:
     Datasets: ["ICOS"]
+    File_name: ["Reco"]
     Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
@@ -1076,6 +1059,7 @@ ICOS_Reco1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    File_name: ["dreco"]
     Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
@@ -1103,7 +1087,6 @@ ICOS_Reco1:
     r2_eff: F
 
 ICOS_ET1:
-  File_name: "GPP"
   Unit: "(GPP/2)"
   Id: "ET"
   Name: "ET"
@@ -1111,6 +1094,7 @@ ICOS_ET1:
   Layer: "GPP"
   Data:
     Datasets: ["ICOS"]
+    File_name: ["GPP"]
     Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
@@ -1132,6 +1116,7 @@ ICOS_ET1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
+    File_name: ["dgpp"]
     Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
@@ -1201,7 +1186,6 @@ FLUXNET_GPP:
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily GPP station data."
 
 FLUXNET_GPP1:
-  File_name: "GPP"
   Unit: "kgC/m2/day"
   Id: "GPP"
   Name: "GPP"
@@ -1209,6 +1193,7 @@ FLUXNET_GPP1:
   Layer: "GPP"
   Data:
     Datasets: ["FLUXNET"]
+    File_name: ["GPP"]
     Format: ["FLUXNET"]
     First_year: NULL
     Last_year: NULL
@@ -1230,6 +1215,7 @@ FLUXNET_GPP1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["bias_corrected"]
+    File_name: ["dgpp"]
     Format: ["GUESS"]
     First_year: 
     Last_year: 
@@ -1278,7 +1264,6 @@ FLUXNET_NEE:
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily NEE station data."
 
 FLUXNET_NEE1:
-  File_name: "NEE"
   Unit: "kgC/m2/day"
   Id: "NEE"
   Name: "NEE"
@@ -1286,6 +1271,7 @@ FLUXNET_NEE1:
   Layer: "NEE"
   Data:
     Datasets: ["FLUXNET"]
+    File_name: ["NEE"]
     Format: ["FLUXNET"]
     First_year: NULL
     Last_year: NULL
@@ -1307,6 +1293,7 @@ FLUXNET_NEE1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["bias_corrected"]
+    File_name: ["dnee"]
     Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
@@ -1355,7 +1342,6 @@ FLUXNET_Reco:
   Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
   
 FLUXNET_Reco1:
-  File_name: "Reco"
   Unit: "kgC/m2/day"
   Id: "Reco"
   Name: "Reco"
@@ -1363,6 +1349,7 @@ FLUXNET_Reco1:
   Layer: "Reco"
   Data:
     Datasets: ["FLUXNET"]
+    File_name: ["Reco"]
     Format: ["FLUXNET"]
     First_year: NULL
     Last_year: NULL
@@ -1384,6 +1371,7 @@ FLUXNET_Reco1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["bias_corrected"]
+    File_name: ["dreco"]
     Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021

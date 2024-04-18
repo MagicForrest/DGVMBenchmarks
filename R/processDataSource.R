@@ -47,7 +47,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
       if (input[[benchmark_name]][["Data"]][["Format"]][[i]] == "SITE"){
         this_dataset_run_dir <- file.path(all_datasets[["SITE"]][[1]]@dir, input[[benchmark_name]][["Data"]][["Datasets"]][[i]])
         
-        if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".csv")))){
+        if(file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["Data"]][["File_name"]][[i]], ".csv")))){
           this_data_Source <- all_datasets[["SITE"]][[1]]
           this_data_Source@dir <- this_dataset_run_dir
           
@@ -94,7 +94,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
           
           Data.year.mean <- DGVMTools::getField(
             source = this_data_Source,
-            quant = input[[benchmark_name]][["File_name"]],
+            quant = input[[benchmark_name]][["Data"]][["File_name"]][[i]],
             layers = NULL,
             UT.threshold = UT.threshold,
             partition.method = partition.method,
@@ -137,7 +137,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
           
           Data.year.mean <- DGVMTools::getField(
             source = this_data_Source,
-            quant = input[[benchmark_name]][["File_name"]],
+            quant = input[[benchmark_name]][["Data"]][["File_name"]][[i]],
             layers = NULL,
             UT.threshold = UT.threshold,
             partition.method = partition.method,
@@ -168,8 +168,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
         this_dataset_run_dir <- file.path(all_datasets[["GUESS"]][[1]]@dir, input[[benchmark_name]][["Data"]][["Datasets"]][[i]])
         
         if (dir.exists(this_dataset_run_dir) &&
-            (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out"))) ||
-             file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".out.gz"))))) {
+            (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["Data"]][["File_name"]][[i]], ".out"))) ||
+             file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["Data"]][["File_name"]][[i]], ".out.gz"))))) {
           
           this_data_Source <- all_datasets[["GUESS"]][[1]]
           this_data_Source@dir <- file.path(this_dataset_run_dir)
@@ -177,7 +177,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
           
           Data.year.mean <- DGVMTools::getField(
             source = this_data_Source,
-            quant = input[[benchmark_name]][["File_name"]],
+            quant = input[[benchmark_name]][["Data"]][["File_name"]][[i]],
             layers = input[[benchmark_name]][["Layer"]],
             first.year = first.year,
             last.year = last.year,
@@ -202,8 +202,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
         this_dataset_run_dir <- file.path(all_datasets[["NetCDF"]][[1]]@dir, input[[benchmark_name]][["Data"]][["Datasets"]][[i]])
         
         if (dir.exists(this_dataset_run_dir) &&
-            (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".nc"))) ||
-             file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["File_name"]], ".nc.gz"))))) {
+            (file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["Data"]][["File_name"]][[i]], ".nc"))) ||
+             file.exists(file.path(this_dataset_run_dir, paste0(input[[benchmark_name]][["Data"]][["File_name"]][[i]], ".nc.gz"))))) {
           
           this_data_Source <- all_datasets[["NetCDF"]][[1]]
           this_data_Source@dir <- file.path(this_dataset_run_dir)
@@ -211,7 +211,7 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
           
           Data.year.mean <- DGVMTools::getField(
             source = this_data_Source,
-            quant = input[[benchmark_name]][["File_name"]],
+            quant = input[[benchmark_name]][["Data"]][["File_name"]][[i]],
             layers = input[[benchmark_name]][["Layer"]],
             first.year = first.year,
             last.year = last.year,
