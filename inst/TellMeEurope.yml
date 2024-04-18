@@ -712,8 +712,8 @@ Profound_dens1:
     Simulation: ["PROFOUND"]
     File_name: ["dens"]
     Format: ["SITE"]
-    First_year: 2010
-    Last_year: 2010
+    First_year: 
+    Last_year: 
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
@@ -770,8 +770,8 @@ Profound_diam_g_plus10cm_sts_ext_st_mean1:
     Simulation: ["PROFOUND"]
     File_name: ["diam_g_plus10cm_sts_ext_st_mean"]
     Format: ["SITE"]
-    First_year: 2010
-    Last_year: 2010
+    First_year: 
+    Last_year: 
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
@@ -828,8 +828,8 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
     Simulation: ["PROFOUND"]
     File_name: ["diam_plus10cm_sts_ext_st_mean"]
     Format: ["SITE"]
-    First_year: 2010
-    Last_year: 2010
+    First_year: 
+    Last_year: 
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
