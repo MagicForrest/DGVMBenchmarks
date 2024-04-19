@@ -86,72 +86,6 @@ AGPP1:
     r2: T
     r2_eff: F
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-AGPP:
-  File_name: "agpp"
-  Unit: "kg/m2/y"
-  Id: "AGPP"
-  Name: "AGPP"
-  Description: "Annual GPP"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  First_year: 2010
-  Last_year: 2010
-  Limits: [-1, 1]
-  Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
-  Axis_lim: [0, 3]
-  Layer: "Forest_sum"
-  Dataset_name: "LRF-GPP"
-  Dataset_longname: "Light Response Function GPP (LRF-GPP)"
-  Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
-  Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
-
-
-    
-CMASS:
-  File_name: "cmass_plus10cm_sts"
-  Unit: "kg/m2"
-  Id: "Cmass"
-  Name: "Cmass"
-  Description: "Cmass"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  First_year: 2001
-  Last_year: 2010
-  Limits: [-15, 18]
-  Breaks: [-15, -10, -5, 0, 5, 10, 15]
-  Axis_lim: [0, 30]
-  Layer: "Forest_sum"
-  Dataset_name: "NFI"
-  Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Global Forest Dynamics database"
-  Dataset_description: "Comparison of grid-cell level simulated values of above ground Carbon mass in forests from LPJ-GUESS to National Forest Inventory estimates for 2010."
-
 CMASS1:
   Unit: "kg/m2"
   Id: "Cmass"
@@ -209,24 +143,6 @@ CMASS1:
     r2: T
     r2_eff: F
     
-W_GROWTH:
-  File_name: "cmass_wood_inc_plus10cm_sts"
-  Unit: "kg/m2/y"
-  Id: "W_growth"
-  Name: "W_growth"
-  Description: "Woody Growth"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  First_year: 2001
-  Last_year: 2010
-  Limits: [-1, 0.4]
-  Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
-  Axis_lim: [0, 1]
-  Layer: "Forest_sum"
-  Dataset_name: "NFI"
-  Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Global Forest Dynamics database"
-  Dataset_description: "Woody biomass growth which has been estimated from inventory plots"
 
 W_GROWTH1:
   Unit: "kg/m2/y"
@@ -285,24 +201,6 @@ W_GROWTH1:
     r2: T
     r2_eff: F
     
-STEM_DENSITY:
-  File_name: "dens_plus10cm_sts"
-  Unit: "indiv/ha"
-  Id: "stem density"
-  Name: "stem density"
-  Description: "stem density"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  First_year: 2010
-  Last_year: 2010
-  Limits: [-1000, 1000]
-  Breaks: [-1000, -750, -500, -250, 0, 250, 500, 750, 1000]
-  Axis_lim: [0, 1500]
-  Layer: "Forest_sum"
-  Dataset_name: "NFI"
-  Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Global Forest Dynamics database"
-  Dataset_description: "Stem density from NFI data compiled from tmp5"
 
 STEM_DENSITY1:
   Unit: "indiv/ha"
@@ -361,24 +259,6 @@ STEM_DENSITY1:
     r2: T
     r2_eff: F
     
-QDBH:
-  File_name: "diam_g_plus10cm_sts"
-  Unit: "cm"
-  Id: "QDBH"
-  Name: "QDBH"
-  Description: "QDBH"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  First_year: 2010
-  Last_year: 2010
-  Limits: [-30, 30]
-  Breaks: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
-  Axis_lim: [0, 60]
-  Layer: "Forest_sum"
-  Dataset_name: "NFI"
-  Dataset_longname: "National Forest Inventory (NFI)"
-  Dataset_source: "Global Forest Dynamics database"
-  Dataset_description: "QDBH estimated from NFI measurments"
 
 QDBH1:
   Unit: "cm"
@@ -437,21 +317,6 @@ QDBH1:
     r2: T
     r2_eff: F
     
-CMASS_pft:
-  File_name: "cmass_landscape_forest"
-  Unit: "kg/m2"
-  Id: ""
-  Name: ""
-  Description: ""
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  First_year: 2000
-  Last_year: 2010
-  Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
-  Dataset_name: "LPJ GUESS"
-  Dataset_longname: "LPJ GUESS"
-  Dataset_source: "Simulation only"
-  Dataset_description: "Biomass estimate based on national forest inventory data"
 
 CMASS_pft1:
   Unit: "kg/m2"
@@ -510,19 +375,6 @@ CMASS_pft1:
     r2: T
     r2_eff: F
     
-Profound_csv:
-  File_name: "lai"
-  Unit: "m2^m2"
-  Id: "lai"
-  Name: "lai"
-  Description: ""
-  First_year: 2010
-  Last_year: 2010
-  Layer: "Forest_sum"
-  Dataset_name: "Profound"
-  Dataset_longname: "ProfoundData"
-  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
-  Dataset_description: "Site stand data from the ProfoundData database"
   
 Profound_csv1:
   Unit: "m2^m2"
@@ -581,34 +433,7 @@ Profound_csv1:
     r2: T
     r2_eff: F
     
-Profound_lai:
-  File_name: "lai"
-  Unit: "m2^m2"
-  Id: ""
-  Name: ""
-  Description: ""
-  First_year: 2010
-  Last_year: 2010
-  Layer: "Forest_sum"
-  Dataset_name: "Profound"
-  Dataset_longname: "ProfoundData"
-  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
-  Dataset_description: "Site stand data from the ProfoundData database"
   
-Profound_cmass:
-  File_name: "cmass"
-  Unit: "kg/m2"
-  Id: ""
-  Name: ""
-  Description: ""
-  First_year: 2010
-  Last_year: 2010
-  Layer: "Forest_sum"
-  Dataset_name: "Profound"
-  Dataset_longname: "ProfoundData"
-  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
-  Dataset_description: "Site stand data from the ProfoundData database"
-
 Profound_cmass1:
   Unit: "kg/m2"
   Id: "cmass"
@@ -666,19 +491,6 @@ Profound_cmass1:
     r2: T
     r2_eff: F
     
-Profound_dens:
-  File_name: "dens"
-  Unit: "indiv/ha"
-  Id: ""
-  Name: ""
-  Description: ""
-  First_year: 2010
-  Last_year: 2010
-  Layer: "Forest_sum"
-  Dataset_name: "Profound"
-  Dataset_longname: "ProfoundData"
-  Dataset_source: "Reyer, C.P, et al. (2020) https://doi.org/10.5194/essd-12-1295-2020"
-  Dataset_description: "Site stand data from the ProfoundData database"
 
 Profound_dens1:
   Unit: "indiv/ha"
@@ -853,26 +665,6 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
     r2: T
     r2_eff: F
     
-ICOS_GPP:
-  File_name: "GPP"
-  Unit: "kgC/m2/day"
-  Format: "ICOS"
-  Id: "GPP"
-  Name: "GPP"
-  Description: "Daily GPP"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  UT.threshold: "VUT"
-  partition.method: "REF"
-  day.night.method: "NT"
-  NEE.day.night: NULL
-  First_year: 2013
-  Last_year: 2021
-  Layer: "GPP"
-  Dataset_name: "ICOS"
-  Dataset_longname: "ICOS GPP"
-  Dataset_source: "ICOS Carbon portal"
-  Dataset_description: "Comparison of daily GPP produced by LPJ-GUESS to the ICOS measurment daily GPP station data from Hyltemossa, Svartberget & Norunda"
 
 ICOS_GPP1:
   Unit: "kgC/m2/day"
@@ -931,25 +723,6 @@ ICOS_GPP1:
     r2: T
     r2_eff: F
     
-ICOS_NEE:
-  Unit: "kgC/m2/day"
-  Format: "ICOS"
-  Id: "NEE"
-  Name: "NEE"
-  Description: "Daily NEE"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  UT.threshold: "VUT"
-  partition.method: "REF"
-  day.night.method: "NT"
-  NEE.day.night: NULL
-  First_year: 2013
-  Last_year: 2021
-  Layer: "NEE"
-  Dataset_name: "ICOS"
-  Dataset_longname: "ICOS NEE"
-  Dataset_source: "ICOS Carbon portal"
-  Dataset_description: "Comparison of daily NEE produced by LPJ-GUESS to the ICOS measurment daily NEE station data from Hyltemossa, Svartberget & Norunda"
 
 ICOS_NEE1:
   Unit: "kgC/m2/day"
@@ -1008,26 +781,6 @@ ICOS_NEE1:
     r2: T
     r2_eff: F
     
-ICOS_Reco:
-  File_name: "Reco"
-  Unit: "kgC/m2/day"
-  Format: "ICOS"
-  Id: "Reco"
-  Name: "Reco"
-  Description: "Daily Reco"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  UT.threshold: "VUT"
-  partition.method: "REF"
-  day.night.method: "NT"
-  NEE.day.night: NULL
-  First_year: 2013
-  Last_year: 2021
-  Layer: "Reco"
-  Dataset_name: "ICOS"
-  Dataset_longname: "ICOS Reco"
-  Dataset_source: "ICOS Carbon portal"
-  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the ICOS measurment daily Reco station data from Hyltemossa, Svartberget & Norunda"
 
 ICOS_Reco1:
   Unit: "kgC/m2/day"
@@ -1143,48 +896,7 @@ ICOS_ET1:
     r2: T
     r2_eff: F
     
-ICOS_ET:
-  File_name: "GPP"
-  Unit: "(GPP/2)"
-  Format: "ICOS"
-  Id: "ET"
-  Name: "ET"
-  Description: "Daily Evapotranspiration"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  UT.threshold: "VUT"
-  partition.method: "REF"
-  day.night.method: "NT"
-  NEE.day.night: NULL
-  First_year: 2013
-  Last_year: 2021
-  Layer: "GPP"
-  Dataset_name: "ICOS"
-  Dataset_longname: "ICOS Evapotranspiration (GPP/2)"
-  Dataset_source: "ICOS Carbon portal"
-  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the ICOS measurment daily ET station data from Hyltemossa, Svartberget & Norunda"
-    
-FLUXNET_GPP:
-  File_name: "GPP"
-  Unit: "kgC/m2/day"
-  Format: "FLUXNET"
-  Id: "GPP"
-  Name: "GPP"
-  Description: "Daily Evapotranspiration"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  UT.threshold: "VUT"
-  partition.method: "REF"
-  day.night.method: "NT"
-  NEE.day.night: NULL
-  First_year: 2013
-  Last_year: 2021
-  Layer: "GPP"
-  Dataset_name: "FLUXNET"
-  Dataset_longname: "FLUXNET Gross Primary Production"
-  Dataset_source: "FLUXNET"
-  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily GPP station data."
-
+  
 FLUXNET_GPP1:
   Unit: "kgC/m2/day"
   Id: "GPP"
@@ -1242,27 +954,6 @@ FLUXNET_GPP1:
     r2: T
     r2_eff: F
     
-FLUXNET_NEE:
-  File_name: "NEE"
-  Unit: "kgC/m2/day"
-  Format: "FLUXNET"
-  Id: "NEE"
-  Name: "NEE"
-  Description: "Daily Net Ecosystem Exchange"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  UT.threshold: "VUT"
-  partition.method: "REF"
-  day.night.method: "NT"
-  NEE.day.night: NULL
-  First_year: 2013
-  Last_year: 2021
-  Layer: "NEE"
-  Dataset_name: "FLUXNET"
-  Dataset_longname: "FLUXNET Net Ecosystem Exchange"
-  Dataset_source: "FLUXNET"
-  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily NEE station data."
-
 FLUXNET_NEE1:
   Unit: "kgC/m2/day"
   Id: "NEE"
@@ -1320,27 +1011,6 @@ FLUXNET_NEE1:
     r2: T
     r2_eff: F
     
-FLUXNET_Reco:
-  File_name: "Reco"
-  Unit: "kgC/m2/day"
-  Format: "FLUXNET"
-  Id: "Reco"
-  Name: "Reco"
-  Description: "Daily Ecosystem Respiration"
-  First_year_Data: NULL
-  Last_year_Data: NULL
-  UT.threshold: "VUT"
-  partition.method: "REF"
-  day.night.method: "NT"
-  NEE.day.night: NULL
-  First_year: 2013
-  Last_year: 2021
-  Layer: "Reco"
-  Dataset_name: "FLUXNET"
-  Dataset_longname: "FLUXNET Ecosystem Respiration"
-  Dataset_source: "FLUXNET"
-  Dataset_description: "Comparison of daily Reco produced by LPJ-GUESS to the FLUXNET measurment daily Reco station data."
-  
 FLUXNET_Reco1:
   Unit: "kgC/m2/day"
   Id: "Reco"
