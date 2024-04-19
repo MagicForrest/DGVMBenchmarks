@@ -131,6 +131,13 @@ CMASS1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: [-15, 18]
@@ -189,6 +196,13 @@ W_GROWTH1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: [-1, 0.4]
@@ -247,6 +261,13 @@ STEM_DENSITY1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: [-1000, 1000]
@@ -305,6 +326,13 @@ QDBH1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: [-30, 30]
@@ -363,6 +391,13 @@ CMASS_pft1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -421,6 +456,13 @@ Profound_csv1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -479,6 +521,13 @@ Profound_cmass1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -537,6 +586,13 @@ Profound_dens1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -595,6 +651,13 @@ Profound_diam_g_plus10cm_sts_ext_st_mean1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -653,6 +716,13 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -711,6 +781,13 @@ ICOS_GPP1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -769,6 +846,13 @@ ICOS_NEE1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -827,6 +911,13 @@ ICOS_Reco1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -884,6 +975,13 @@ ICOS_ET1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -942,6 +1040,13 @@ FLUXNET_GPP1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -999,6 +1104,13 @@ FLUXNET_NEE1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 
@@ -1056,6 +1168,13 @@ FLUXNET_Reco1:
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: 

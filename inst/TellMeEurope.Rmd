@@ -59,28 +59,28 @@ do_FLUXNET_Reco <- as.logical(input[["Switches"]][["do_FLUXNET_Reco"]])
 # AGPP {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["AGPP"]][["Dataset_description"]])
+cat(input[["AGPP1"]][["Data"]][["Dataset_description"]])
 ```
 
 ## AGPP difference Plots 
 ```{r Difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_agpp){
   # Define which benchmark to do
-benchmark_name <- "AGPP"
+benchmark_name <- "AGPP1"
 
 # Process your dataset
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 1)
+Datasets <- processDataSource(all_datasets = all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
 
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 ## Spatial plotting of your comparisons, handels multiple layers to.
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
@@ -88,71 +88,71 @@ if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmar
 ## Table making, extracts the spatial mean from your fields.
 summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
 ## AGPP Scatterplots 
 ```{r AGPP_SCATTER, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if (do_plots && length(all_GUESS_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if (do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # Cmass {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["CMASS"]][["Dataset_description"]])
+cat(input[["CMASS1"]][["Data"]][["Dataset_description"]])
 ```
 
 ## Cmass Difference plots
 ```{r Cmass, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_cmass){
-benchmark_name <- "CMASS"
+benchmark_name <- "CMASS1"
   
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name, spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name, spatial.extent = spatial.extent)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
 ## Cmass Scatterplots
 ```{r cmass scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(all_GUESS_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # Stem Density {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["STEM_DENSITY"]][["Dataset_description"]])
+cat(input[["STEM_DENSITY1"]][["Data"]][["Dataset_description"]])
 ```
 
 ## Difference 
 ```{r Stemdensity, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_stem_density){
-benchmark_name <- "STEM_DENSITY"
+benchmark_name <- "STEM_DENSITY1"
 
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name,spatial.extent = spatial.extent)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 all_sim_full[[2]] <- convertUnits(all_sim_full[[2]],"indiv/m2","indiv/ha")
@@ -160,118 +160,117 @@ all_sim_full[[1]] <- convertUnits(all_sim_full[[1]],"indiv/m2","indiv/ha")
 all_Fields_list[[2]] <- convertUnits(all_Fields_list[[2]],"indiv/m2","indiv/ha")
 all_Fields_list[[3]] <- convertUnits(all_Fields_list[[3]],"indiv/m2","indiv/ha")
 
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
 ## Stem Density Scatterplots
 ```{r Stemdensity scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(all_GUESS_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # QDBH {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["QDBH"]][["Dataset_description"]])
+cat(input[["QDBH1"]][["Data"]][["Dataset_description"]])
 ```
 
 ## QDBH Difference
 ```{r QDBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_qdbh){
-benchmark_name <- "QDBH"
+benchmark_name <- "QDBH1"
 
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name, spatial.extent = spatial.extent)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
 ## QDBH Scatterplots
 ```{r QDBH Scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(all_GUESS_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # Woody Growth {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["W_GROWTH"]][["Dataset_description"]])
+cat(input[["W_GROWTH1"]][["Data"]][["Dataset_description"]])
 ```
 
 ## Woody Growth Difference
 ```{r Woody growth difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_woody_growth){
-benchmark_name <- "W_GROWTH" 
+benchmark_name <- "W_GROWTH1" 
 
-Data.year.mean <- processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name, spatial.extent = spatial.extent)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 
 summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
 
-if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
+if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
 ## Woody Growth Scatter
 ```{r Woody growth scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(all_GUESS_datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # PFT CMASS {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
-cat(input[["CMASS_pft"]][["Dataset_description"]])
+cat(input[["CMASS_pft1"]][["Data"]][["Dataset_description"]])
 ```
 
 ## Difference
 
 ```{r pft cmass difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
 if (do_cmass_pft){
-benchmark_name <- "CMASS_pft" 
+benchmark_name <- "CMASS_pft1" 
 
-Data.year.mean <- list()
-  processDataSource(all_datasets = all_GUESS_datasets, input, benchmark_name,spatial.extent = spatial.extent, simulation = 1, dataset = 1)
+Datasets <- list()
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
 }
@@ -283,13 +282,13 @@ if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmar
 
 ```{r pft cmass, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
 if (do_cmass_pft1){
-benchmark_name <- "CMASS_pft" 
+benchmark_name <- "CMASS_pft1" 
 
 Data.year.mean <- list()
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 1, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Data.year.mean, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -319,13 +318,13 @@ if(nrow(metric_table) > 0) {
 ## LAI Total
 ```{r Profound LAI.csv, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
-benchmark_name <- "Profound_csv"
+benchmark_name <- "Profound_csv1"
 
-Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
+Data.year.mean <- processDataSource(all_datasets = all_datasets, input, benchmark_name)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Data.year.mean, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -347,14 +346,14 @@ all_Fields_list[[3]]@data[
   on = "Site"
 ]
 
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
  
 plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
 
-if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -366,12 +365,12 @@ plotAllTemporalComparisons(this_benchmark,all_comparisons)
 ## CMASS Total
 ```{r Profound CMASS, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
-benchmark_name <- "Profound_cmass"
-Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
+benchmark_name <- "Profound_cmass1"
+Data.year.mean <- processDataSource(all_datasets = all_datasets, input, benchmark_name)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Data.year.mean, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -404,14 +403,14 @@ all_Fields_list[[3]]@data[
 setkey(all_Fields_list[[2]]@data)
 setkey(all_Fields_list[[3]]@data)
 
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
  
 plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
 
-if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -423,12 +422,13 @@ plotAllTemporalComparisons(this_benchmark,all_comparisons)
 ## DENSITY Total
 ```{r Profound DENS, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
-benchmark_name <- "Profound_dens"
-Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
+benchmark_name <- "Profound_dens1"
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -453,14 +453,14 @@ all_Fields_list[[3]]@data[
 setkey(all_Fields_list[[2]]@data)
 setkey(all_Fields_list[[3]]@data)
 
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
  
 plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
 
-if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -473,13 +473,13 @@ plotAllTemporalComparisons(this_benchmark,all_comparisons)
 ## QDBH Total
 ```{r Profound QDBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
-benchmark_name <- "Profound_diam_g_plus10cm_sts_ext_st_mean"
+benchmark_name <- "Profound_diam_g_plus10cm_sts_ext_st_mean1"
 
-Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -504,14 +504,14 @@ all_Fields_list[[3]]@data[
 setkey(all_Fields_list[[2]]@data)
 setkey(all_Fields_list[[3]]@data)
 
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
  
 plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
 
-if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -523,12 +523,12 @@ plotAllTemporalComparisons(this_benchmark,all_comparisons)
 ## DBH Total
 ```{r Profound DBH, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_profound){
-benchmark_name <- "Profound_diam_plus10cm_sts_ext_st_mean"
-Data.year.mean <- processDataSource(all_datasets = all_SITE_datasets, input, benchmark_name, simulation = 2, dataset = 1)
+benchmark_name <- "Profound_diam_plus10cm_sts_ext_st_mean1"
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name)
 
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 2, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_SITE_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -553,14 +553,14 @@ all_Fields_list[[3]]@data[
 setkey(all_Fields_list[[2]]@data)
 setkey(all_Fields_list[[3]]@data)
 
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_SITE_simulation_Sources_list[[1]]@name, old_model = all_SITE_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
  
 plotTemporalFields(Benchmark = this_benchmark,all_comparisons = all_comparisons, all_Fields_list = all_Fields_list, plot.option = "joined", uncertainty ="SD")
 
-if(length(this_benchmark@datasets[[1]]) != 0){Profound_table <- rbind(Profound_table,
+if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -589,16 +589,16 @@ if(nrow(Profound_table) > 0) {
 ```{r ICOS GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_ICOS_GPP){
   # Define which benchmark to do
-benchmark_name <- "ICOS_GPP"
+benchmark_name <- "ICOS_GPP1"
 
 # Process your dataset
-Data.year.mean <- processDataSource(all_ICOS_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 3)
+Data.year.mean <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
 
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 3, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Data.year.mean, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -649,14 +649,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
   
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
+if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -692,16 +692,16 @@ plotICOSScatter(this_benchmark,all_comparisons,fill="station")
 ```{r ICOS NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_ICOS_NEE){
   # Define which benchmark to do
-benchmark_name <- "ICOS_NEE"
+benchmark_name <- "ICOS_NEE1"
 
 # Process your dataset
-Data.year.mean <- processDataSource(all_ICOS_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 3)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
 
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 3, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -750,14 +750,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
   
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
+if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -792,16 +792,16 @@ plotICOSScatter(this_benchmark,all_comparisons,fill="station")
 ```{r ICOS Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_ICOS_Reco){
   # Define which benchmark to do
-benchmark_name <- "ICOS_Reco"
+benchmark_name <- "ICOS_Reco1"
 
 # Process your dataset
-Data.year.mean <- processDataSource(all_ICOS_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 3)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
 
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 3, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -850,14 +850,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
   
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
+if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -892,16 +892,16 @@ plotICOSScatter(this_benchmark,all_comparisons,fill="station")
 ```{r ICOS ET, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_ICOS_ET){
   # Define which benchmark to do
-benchmark_name <- "ICOS_ET"
+benchmark_name <- "ICOS_ET1"
 
 # Process your dataset
-Data.year.mean <- processDataSource(all_ICOS_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 3)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
 
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 3, Data.year.mean, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -954,14 +954,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   all_Fields_list[[2]]@data$GPP <- all_Fields_list[[2]]@data$GPP/2
   all_Fields_list[[3]]@data$GPP <- all_Fields_list[[3]]@data$GPP/2
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){ICOS_table <- rbind(ICOS_table,
+if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -1010,18 +1010,18 @@ if(nrow(ICOS_table) > 0) {
 ```{r FLUXNET GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_FLUXNET_GPP){
   # Define which benchmark to do
-benchmark_name <- "FLUXNET_GPP"
+benchmark_name <- "FLUXNET_GPP1"
 
 # Process your dataset
-Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name = benchmark_name)
 
-Data <- correctFLUXNETDataset(Data)
+Datasets <- correctFLUXNETDataset(Datasets)
 
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 4, Data, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -1087,14 +1087,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
-plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"per_source")
+plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -1122,17 +1122,17 @@ plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
 ```{r FLUXNET NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_FLUXNET_NEE){
   # Define which benchmark to do
-benchmark_name <- "FLUXNET_NEE"
+benchmark_name <- "FLUXNET_NEE1"
 
 # Process your dataset
-Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name = benchmark_name)
 
-Data <- correctFLUXNETDataset(Data)
+Datasets <- correctFLUXNETDataset(Datasets)
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 4, Data, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -1198,14 +1198,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -1232,17 +1232,17 @@ plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
 ```{r FLUXNET Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_FLUXNET_Reco){
   # Define which benchmark to do
-benchmark_name <- "FLUXNET_Reco"
+benchmark_name <- "FLUXNET_Reco1"
 
 # Process your dataset
-Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name = benchmark_name)
 
-Data <- correctFLUXNETDataset(Data)
+Datasets <- correctFLUXNETDataset(Datasets)
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 4, Data, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -1308,14 +1308,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -1343,17 +1343,17 @@ plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
 ```{r FLUXNET GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_FLUXNET_GPP){
   # Define which benchmark to do
-benchmark_name <- "FLUXNET_GPP"
+benchmark_name <- "FLUXNET_GPP1"
 
 # Process your dataset
-Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name = benchmark_name)
 
-Data <- correctFLUXNETDataset(Data)
+Datasets <- correctFLUXNETDataset(Datasets)
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 5, Data, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -1419,14 +1419,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -1452,17 +1452,17 @@ plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
 ```{r FLUXNET NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_FLUXNET_NEE){
   # Define which benchmark to do
-benchmark_name <- "FLUXNET_NEE"
+benchmark_name <- "FLUXNET_NEE1"
 
 # Process your dataset
-Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name = benchmark_name)
 
-Data <- correctFLUXNETDataset(Data)
+Datasets <- correctFLUXNETDataset(Datasets)
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 5, Data, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -1528,14 +1528,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
@@ -1560,17 +1560,17 @@ plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
 ```{r FLUXNET Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_FLUXNET_Reco){
   # Define which benchmark to do
-benchmark_name <- "FLUXNET_Reco"
+benchmark_name <- "FLUXNET_Reco1"
 
 # Process your dataset
-Data <- processDataSource(all_FLUXNET_datasets, input, spatial.extent = spatial.extent, benchmark_name, simulation = 6, dataset = 1)
+Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name = benchmark_name)
 
-Data <- correctFLUXNETDataset(Data)
+Datasets <- correctFLUXNETDataset(Datasets)
 # Build your current benchmark from input YAML file  
-this_benchmark <- createBenchmark(benchmark_name, input, simulation = 5, Data, spatial.extent)
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
@@ -1636,14 +1636,14 @@ all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
   ) 
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 plotFLUXNETFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets[[1]]) != 0){FLUXNET_table <- rbind(FLUXNET_table,
+if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 

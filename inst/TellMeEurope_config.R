@@ -80,7 +80,12 @@ setClass(
     spatial.aggregate.method = "character",
     conversion_factor = "numeric",
     Layer_to_convert = "list",
-    simulation_format = "character"
+    simulation_format = "character",
+    adgvm.file.type = "character",
+    adgvm.fire = "numeric",
+    adgvm.climate = "numeric",
+    adgvm2.scheme = "numeric",
+    adgvm2.daily = "logical"
   )
 )
 # quick read switch and version label (for making quick read files)

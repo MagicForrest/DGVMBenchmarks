@@ -18,11 +18,26 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
   last.year = NULL
   year.aggregate.method = NULL
   spatial.aggregate.method = NULL
+  adgvm.file.type = "Yearly"
+  adgvm.fire = 1
+  adgvm.climate = 0
+  adgvm2.scheme = 1
+  adgvm2.daily = TRUE
   
   if (!is.null(benchmark@first.year) && length(benchmark@first.year) != 0){first.year <- benchmark@first.year}
   if (!is.null(benchmark@last.year) && length(benchmark@last.year) != 0){last.year <- benchmark@last.year}
   if (!is.null(benchmark@year.aggregate.method) && length(benchmark@year.aggregate.method) != 0){year.aggregate.method <- benchmark@year.aggregate.method}
   if (!is.null(benchmark@spatial.aggregate.method) && length(benchmark@spatial.aggregate.method) != 0){spatial.aggregate.method <- benchmark@spatial.aggregate.method}
+  if (!is.null(benchmark@adgvm.file.type) && length(benchmark@adgvm.file.type) != 0){adgvm.file.type <- benchmark@adgvm.file.type}
+  if (!is.null(benchmark@adgvm.fire) && length(benchmark@adgvm.fire) != 0){adgvm.fire <- benchmark@adgvm.fire}
+  if (!is.null(benchmark@adgvm.climate) && length(benchmark@adgvm.climate) != 0){adgvm.climate <- benchmark@adgvm.climate}
+  if (!is.null(benchmark@adgvm2.scheme) && length(benchmark@adgvm2.scheme) != 0){adgvm2.scheme <- benchmark@adgvm2.scheme}
+  if (!is.null(benchmark@adgvm2.daily) && length(benchmark@adgvm2.daily) != 0){adgvm2.daily <- benchmark@adgvm2.daily}
+  
+  
+  
+  
+  
   
   if (length(benchmark@datasets) != 0) {
     for (i in seq_along(benchmark@datasets))
@@ -113,6 +128,79 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
           all_Fields_list[[this_sim_source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
         } 
       }
+  }else if (current_format == "aDGVM"){
+    this_sim_Source <- all_simulation_Sources_list[["aDGVM"]][[format_index]]
+    
+    
+    # check if file is present (if not don't include this run)
+    this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation[[format_index]])
+    if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".nc")))){        
+      # make local sources pointing to the simulation directory
+      this_Source <- this_sim_Source
+      this_Source@dir <- this_benchmark_run_dir
+      
+      # read the data
+      this_simulation <- DGVMTools::getField(source = this_Source,
+                                             quant = benchmark@file_name[[format_index]],
+                                             first.year = first.year,
+                                             last.year = last.year,
+                                             spatial.extent.id = benchmark@spatial_extent_id,
+                                             spatial.extent = benchmark@spatial.extent,
+                                             layers = benchmark@guess_layers,
+                                             units = benchmark@unit,
+                                             verbose = verbose_read,
+                                             adgvm.file.type = adgvm.file.type,
+                                             adgvm.fire = adgvm.fire,
+                                             adgvm.climate = adgvm.climate,
+                                             quick.read = quick_read,
+                                             quick.read.file = paste(benchmark@id, version_label, sep = "_"),
+                                             year.aggregate.method = year.aggregate.method,
+                                             spatial.aggregate.method = spatial.aggregate.method
+      )
+      
+      all_sim_full[[this_sim_Source@name]] <- this_simulation
+      all_Fields_list[[this_sim_Source@name]] <- this_simulation
+      if (this_sim_Source@name %in% this_benchmark@Layer_to_convert){
+        all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
+        all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
+      } 
+    }
+  }else if (current_format == "aDGVM2"){
+    this_sim_Source <- all_simulation_Sources_list[["aDGVM2"]][[format_index]]
+    
+    
+    # check if file is present (if not don't include this run)
+    this_benchmark_run_dir <- file.path(this_sim_Source@dir, benchmark@simulation[[format_index]])
+    if (file.exists(file.path(this_benchmark_run_dir, paste0(benchmark@file_name[[format_index]], ".nc")))){        
+      # make local sources pointing to the simulation directory
+      this_Source <- this_sim_Source
+      this_Source@dir <- this_benchmark_run_dir
+      
+      # read the data
+      this_simulation <- DGVMTools::getField(source = this_Source,
+                                             quant = benchmark@file_name[[format_index]],
+                                             first.year = first.year,
+                                             last.year = last.year,
+                                             spatial.extent.id = benchmark@spatial_extent_id,
+                                             spatial.extent = benchmark@spatial.extent,
+                                             layers = benchmark@guess_layers,
+                                             units = benchmark@unit,
+                                             verbose = verbose_read,
+                                             adgvm2.scheme = adgvm2.scheme,
+                                             adgvm2.daily = adgvm2.daily,
+                                             quick.read = quick_read,
+                                             quick.read.file = paste(benchmark@id, version_label, sep = "_"),
+                                             year.aggregate.method = year.aggregate.method,
+                                             spatial.aggregate.method = spatial.aggregate.method
+      )
+      
+      all_sim_full[[this_sim_Source@name]] <- this_simulation
+      all_Fields_list[[this_sim_Source@name]] <- this_simulation
+      if (this_sim_Source@name %in% this_benchmark@Layer_to_convert){
+        all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_sim_full[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
+        all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] <- all_Fields_list[[this_sim_Source@name]]@data[[benchmark@guess_layers]] * as.numeric(benchmark@conversion_factor)
+      } 
+    }
   }else {
     if(current_format == "GUESS"){this_sim_Source <- all_simulation_Sources_list[["GUESS"]][[format_index]]}
     if(current_format == "NetCDF"){this_sim_Source <- all_simulation_Sources_list[["NetCDF"]][[format_index]]}

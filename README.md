@@ -8,7 +8,7 @@ Within the package structure are files and grid lists that can be used as predef
 
 # TellMeEurope
 
-TellMeEurope is a benchmarking report using the functionality of DGVMBenchmarks tailored for European scale data input and simulation output. The report handles both spatial (gridded) and temporal (time-series) evaluation. As of this version the available file formats compatible with the evaluation structure are LPJ-GUESS (.out), NetCDF (.nc) ICOS, FLUXNET and SITE. ICOS and FLUXNET specially defined formats for ICOS and FLUXNET dataset time-series input, this is processed from raw station input (.csv) (should not be altered before use). SITE is a format to handle more general stations measurement data. For site the format handles .csv file types as most station data is in this format, additionally it also looks for a site name identifier "Site". 
+TellMeEurope is a benchmarking report using the functionality of DGVMBenchmarks tailored for European scale data input and simulation output. The report handles both spatial (gridded) and temporal (time-series) evaluation. As of this version the available file formats compatible with the evaluation structure are LPJ-GUESS (.out), NetCDF (.nc), aDGVM (.nc), aDGVM2 (.nc), ICOS, FLUXNET and SITE. ICOS and FLUXNET specially defined formats for ICOS and FLUXNET dataset time-series input, this is processed from raw station input (.csv) (should not be altered before use). SITE is a format to handle more general stations measurement data. For site the format handles .csv file types as most station data is in this format, additionally it also looks for a site name identifier "Site". 
 
 Several different sets of benchmarks are defined. 
 
