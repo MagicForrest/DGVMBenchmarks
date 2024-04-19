@@ -4,33 +4,6 @@ input <- yaml::yaml.load_file(file.path(system.file("TellMeEurope.yml", package 
 sources <- DGVMBenchmarks::defineAllSources(input)
 all_datasets <- sources[[1]]
 all_simulation_Sources_list <- sources[[2]]
-# ## Extract the file name and unit element from yml to define quantity and format
-# Formats <- unique(input[["Directory"]][["Format"]])
-# 
-# ## Set Model and reference sources ##
-# all_GUESS_simulation_Sources_list <- list()
-# if ("GUESS" %in% Formats){
-#   GUESS_sources <- DGVMBenchmarks::define_GUESS_Sources(input = input)
-#   all_GUESS_datasets <- GUESS_sources[[1]]
-#   all_GUESS_simulation_Sources_list <- GUESS_sources[[2]]}
-# 
-# all_NetCDF_simulation_Sources_list <- list()
-# if ("NetCDF" %in% Formats){
-#   NetCDF_sources <- DGVMBenchmarks::define_NetCDF_Sources(input = input)
-#   all_NetCDF_datasets <- NetCDF_sources[[1]]
-#   all_NetCDF_simulation_Sources_list <- NetCDF_sources[[2]]}
-# 
-# all_SITE_simulation_Sources_list <- list()
-# if ("SITE" %in% Formats){
-#   SITE_sources <- DGVMBenchmarks::define_SITE_Sources(input = input)
-#   all_SITE_datasets <- SITE_sources[[1]]
-#   all_SITE_simulation_Sources_list <- SITE_sources[[2]]}
-# 
-# if ("ICOS" %in% Formats){
-#   all_ICOS_datasets <- DGVMBenchmarks::define_ICOS_DatasetSource(input = input)}
-# 
-# if ("FLUXNET" %in% Formats){
-#   all_FLUXNET_datasets <- DGVMBenchmarks::define_FLUXNET_DatasetSource(input = input)}
 
 ## Set the grid cell spatial extent see list of predefined options or choose "Full", "Custom" or grid list.
 spatial.extent <- DGVMBenchmarks::setGridCellExtent(input = input)
