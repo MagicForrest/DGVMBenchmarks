@@ -67,6 +67,13 @@ AGPP1:
     spatial.aggregate.method: 
     Conversion_factor: 
     Layer_to_convert: 
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
       Limits: [-1, 1]
