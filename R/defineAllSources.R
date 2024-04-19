@@ -57,5 +57,23 @@ defineAllSources <- function(input){
     all_FLUXNET_datasets <- DGVMBenchmarks::define_FLUXNET_DatasetSource(input = input)
     all_datasets[["FLUXNET"]] <- all_FLUXNET_datasets
   }
+  
+  all_aDGVM_simulation_Sources_list <- list()
+  if ("aDGVM" %in% Formats){
+    aDGVM_sources <- DGVMBenchmarks::define_aDGVM_Sources(input = input)
+    all_aDGVM_datasets <- aDGVM_sources[[1]]
+    all_datasets[["aDGVM"]] <- all_aDGVM_datasets
+    all_aDGVM_simulation_Sources_list <- aDGVM_sources[[2]]
+    all_simulation_Sources_list[["aDGVM"]] <- all_aDGVM_simulation_Sources_list
+  }
+  
+  all_aDGVM2_simulation_Sources_list <- list()
+  if ("aDGVM2" %in% Formats){
+    aDGVM2_sources <- DGVMBenchmarks::define_aDGVM2_Sources(input = input)
+    all_aDGVM2_datasets <- aDGVM2_sources[[1]]
+    all_datasets[["aDGVM2"]] <- all_aDGVM2_datasets
+    all_aDGVM2_simulation_Sources_list <- aDGVM2_sources[[2]]
+    all_simulation_Sources_list[["aDGVM2"]] <- all_aDGVM2_simulation_Sources_list
+  }
   return(sources <- list(all_datasets,all_simulation_Sources_list))
 }

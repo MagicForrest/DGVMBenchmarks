@@ -4,24 +4,16 @@
 \alias{createBenchmark}
 \title{Create benchmark}
 \usage{
-createBenchmark(
-  benchmark_name,
-  input,
-  simulation,
-  Data.year.mean,
-  spatial.extent = NULL
-)
+createBenchmark(benchmark_name, input, Datasets, spatial.extent = NULL)
 }
 \arguments{
 \item{benchmark_name}{The name of the current benchmark,
 should follow the benchmark object name from ins file.}
 
-\item{input}{YAML ins file}
-
-\item{simulation}{Specifies the simulation to work with.
+\item{input}{YAML ins file
 Value should be integer specifying the correct simulation name from the list in ins.}
 
-\item{Data.year.mean}{The dataset defined previously in benchmark panel,
+\item{Datasets}{The dataset list defined previously in benchmark panel,
 can be empty and should be left as is.}
 
 \item{spatial.extent}{The spatial extent set through yaml ins,
