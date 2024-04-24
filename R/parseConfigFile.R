@@ -5,7 +5,13 @@ parseConfigFile <- function(yml_file) {
   input <- yaml::yaml.load_file(yml_file)
   
   # Global settings are easy
-  config <- input$Settings
+  config <- input$Config
+  
+  settings <- input$Settings
+    
+
+  
+  
   
   #### MODELS ####
   # For models we loop over Models and create Source objects
@@ -24,12 +30,15 @@ parseConfigFile <- function(yml_file) {
                                format = this_model_format)
     
   }
+  settings$simulation_sources <- models
+  
   
   #### BENCHMARKS ####
   benchmarks <- list()
   
   return(
     list(config = config,
+         settings = settings,
          models = models,
          benchmarks = benchmarks)
   )

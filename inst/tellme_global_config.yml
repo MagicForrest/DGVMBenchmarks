@@ -1,8 +1,42 @@
-Settings:
-  new_name: "New run"
-  old_name: "Old run"
+Config:
+  new_name: "New run" # remove
+  old_name: "Old run" # change to "baseline"
   data_directory: "/data/shared/Tellus"
   land_cover_file: "/data/mforrest/LandUseLandCover/LUH2_GCP2019/lu_1549_2019_luh2_aggregate_sum2x2_midpoint_nourban_gcp2019_2019_10_22.txt"
+
+Settings:
+  do_maps: TRUE
+  analysis_version: "tellus_v1.3"
+  # quick read switch 
+  quick_read: TRUE
+  # do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
+  verbose_read: FALSE
+  # do publication plots
+  doPublicationPlots: FALSE
+  # plot maps (turn off to save time if they are not needed)
+  doMapPlots: TRUE
+  # summary periods
+  summary_periods: [ [1961, 1990],
+                     [1990, 2000]]
+  # Spatial extent - note that this only applies to some benchmarks - typically the spatially explicit global ones
+  # it will be ignored for benchmarks such as the regrowth and Pan forest biomass benchmarks
+  # spatial extent (can be a raster:: extent or a two column data.frame of gridcells), set to NULL for no subsetting
+  spatial_extent:  NULL
+  # spatial_extent <- subset_1600_gridcells 
+  # spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
+    
+  # set to a string to describe the spatial subset and use "Global" if not cropping area
+  spatial_extent_id: "Global" 
+  #spatial_extent_id <- "The1600"
+  # spatial_extent_id <- "Europe" 
+    
+  # Standard plot formatting arguments
+  num_cols: 1
+  map_overlay: "coastlines"
+  stats_lon: -130
+  stats_lat: -20
+  map_text_multiplier: 2.5
+  map_annotation_text_size: 7
 
 # Here specify the models to benchmark  
 
