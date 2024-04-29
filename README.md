@@ -320,7 +320,7 @@ The full code example can be found below the text description. The description t
 The if check is connected to the set ***Switches*** and if ***FALSE*** will skip to the next chunk.
 You set the benchmark_name in order to connect to the correct benchmark object in the instruction file (must be same string as the header of that YML object).
 
-Then you process your data source, all necessary objects are made in the configuration but you need to now what format it is in. See all_GUESS_datasets, could also be all_NetCDF/all_ICOS_datasets.
+Then you process your data source, all necessary lists and objects are made in the configuration.
 
 Next step is to define the current benchmark. This is done using the benchmark_name to connect to the yml object (see YAML and setclass ***benchmark*** in configuration).
 
@@ -343,12 +343,12 @@ Datasets <- processDataSource(all_datasets = all_datasets, input, spatial.extent
 this_benchmark <- createBenchmark(benchmark_name, input, Datasets, spatial.extent)
 
 # Process simulations and order together with dataset, the lists returned are needed in later functions.
-field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_GUESS_simulation_Sources_list)
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_GUESS_simulation_Sources_list[[1]]@name, old_model = all_GUESS_simulation_Sources_list[[2]]@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_fill[[1]]@name, old_model = all_sim_full[[2]]@name)
 
 ## Spatial plotting of your comparisons, handels multiple layers to.
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
@@ -359,7 +359,7 @@ summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, a
 if(length(this_benchmark@datasets[[1]]) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_GUESS_simulation_Sources_list))}
+                                      simulation_sources = all_simulation_Sources_list))}
 }
 ```
 
