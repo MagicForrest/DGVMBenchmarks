@@ -18,7 +18,7 @@ Switches:
   do_stem_density: T
   do_qdbh: T
   do_woody_growth: T
-  do_profound: T
+  do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: F
   do_ICOS_GPP: F
