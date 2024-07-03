@@ -34,7 +34,7 @@ tic()
 ```{r settings,  echo=F, warning=FALSE}
 source(file.path(system.file("TellMeEurope_config.R", package = "DGVMBenchmarks"))) 
 
-str(input, max.level = 2)
+str(input, max.level = 3)
 
 # plot maps (turn off to save time)
 do_plots <- as.logical(input[["Switches"]][["do_plots"]])
@@ -359,7 +359,7 @@ if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
 
 ## LAI Difference
 ```{r Profound LAI difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_profound){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## CMASS Total
@@ -416,7 +416,7 @@ if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
 
 ## Cmass Difference
 ```{r Profound Cmass difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_profound){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## DENSITY Total
@@ -466,7 +466,7 @@ if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
 
 ## Density Difference
 ```{r Profound density difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_profound){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 
@@ -517,7 +517,7 @@ if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
 
 ## QDBH Difference
 ```{r Profound QDBH difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_profound){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## DBH Total
@@ -566,7 +566,7 @@ if(length(this_benchmark@datasets) != 0){Profound_table <- rbind(Profound_table,
 
 ## DBH Difference
 ```{r Profound DBH difference, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_profound){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 
@@ -662,27 +662,27 @@ if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
 
 ## GPP Daily Difference
 ```{r ICOS GPP Diff, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_ICOS_GPP){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## GPP per land cover
 ```{r ICOS GPP lu, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_ICOS_GPP){plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 ## GPP per Climate
 ```{r ICOS GPP clim, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="climate")
+if (do_ICOS_GPP){plotICOSScatter(this_benchmark,all_comparisons,fill="climate")}
 ```
 
 ## GPP per country
 ```{r ICOS GPP country, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="country")
+if (do_ICOS_GPP){plotICOSScatter(this_benchmark,all_comparisons,fill="country")}
 ```
 
 ## GPP per site
 ```{r ICOS GPP site, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="station")
+if (do_ICOS_GPP){plotICOSScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 
@@ -763,27 +763,27 @@ if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
 
 ## NEE Daily Difference
 ```{r ICOS NEE Diff, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_ICOS_NEE){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## NEE per land cover
 ```{r ICOS NEE lu, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_ICOS_NEE){plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 ## NEE per Climate
 ```{r ICOS NEE clim, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="climate")
+if (do_ICOS_NEE){plotICOSScatter(this_benchmark,all_comparisons,fill="climate")}
 ```
 
 ## NEE per country
 ```{r ICOS NEE country, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="country")
+if (do_ICOS_NEE){plotICOSScatter(this_benchmark,all_comparisons,fill="country")}
 ```
 
 ## NEE per site
 ```{r ICOS NEE site, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="station")
+if (do_ICOS_NEE){plotICOSScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 # ICOS Reco{.tabset}
@@ -863,27 +863,27 @@ if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
 
 ## Reco Daily Difference
 ```{r ICOS Reco Diff, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_ICOS_Reco){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## Reco per land cover
 ```{r ICOS Reco lu, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_ICOS_Reco){plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 ## Reco per Climate
 ```{r ICOS Reco clim, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="climate")
+if (do_ICOS_Reco){plotICOSScatter(this_benchmark,all_comparisons,fill="climate")}
 ```
 
 ## Reco per country
 ```{r ICOS Reco country, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="country")
+if (do_ICOS_Reco){plotICOSScatter(this_benchmark,all_comparisons,fill="country")}
 ```
 
 ## Reco per site
 ```{r ICOS Reco site, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="station")
+if (do_ICOS_Reco){plotICOSScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 # ICOS Evapotranspiration{.tabset}
@@ -967,27 +967,27 @@ if(length(this_benchmark@datasets) != 0){ICOS_table <- rbind(ICOS_table,
 
 ## ET Daily Difference
 ```{r ICOS ET Diff, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_ICOS_ET){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## ET per land cover
 ```{r ICOS ET lu, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_ICOS_ET){plotICOSScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 ## ET per Climate
 ```{r ICOS ET clim, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="climate")
+if (do_ICOS_ET){plotICOSScatter(this_benchmark,all_comparisons,fill="climate")}
 ```
 
 ## ET per country
 ```{r ICOS ET country, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="country")
+if (do_ICOS_ET){plotICOSScatter(this_benchmark,all_comparisons,fill="country")}
 ```
 
 ## ET per site
 ```{r ICOS ET site, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotICOSScatter(this_benchmark,all_comparisons,fill="station")
+if (do_ICOS_ET){plotICOSScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 
@@ -1100,18 +1100,18 @@ if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
 
 ## Daily Difference
 ```{r Difference Flux GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_FLUXNET_GPP){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 
 ## GPP per site
 ```{r per site flux GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+if (do_FLUXNET_GPP){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 ## GPP per Land cover
 ```{r per lc flux GPP, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_FLUXNET_GPP){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 
@@ -1212,18 +1212,18 @@ if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
 
 ## NEE Daily Difference
 ```{r Difference Flux NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_FLUXNET_NEE){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 
 ## NEE per site
 ```{r per site flux NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+if (do_FLUXNET_NEE){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 ## NEE per Land cover
 ```{r per lc flux NEE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_FLUXNET_NEE){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 # FLUXNET bias corrected Reco {.tabset}
@@ -1322,18 +1322,18 @@ if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
 
 ## Reco Daily Difference
 ```{r Difference Flux Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_FLUXNET_Reco){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 
 ## Reco per site
 ```{r per site flux Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+if (do_FLUXNET_Reco){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 ## Reco per Land cover
 ```{r per lc flux Reco, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_FLUXNET_Reco){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 
@@ -1432,18 +1432,18 @@ if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
 
 ## Daily Difference
 ```{r Difference Flux GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_FLUXNET_GPP){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 
 ## GPP per site
 ```{r per site flux GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+if (do_FLUXNET_GPP){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 ## GPP per Land cover
 ```{r per lc flux GPP crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_FLUXNET_GPP){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 # FLUXNET CRUJRA_v2.4.5d NEE {.tabset}
@@ -1541,17 +1541,17 @@ if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
 
 ## NEE Daily Difference
 ```{r Difference Flux NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_FLUXNET_NEE){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## NEE per site
 ```{r per site flux NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+if (do_FLUXNET_NEE){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 ## NEE per Land cover
 ```{r per lc flux NEE crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_FLUXNET_NEE){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 # FLUXNET CRUJRA_v2.4.5d Reco {.tabset}
@@ -1649,17 +1649,17 @@ if(length(this_benchmark@datasets) != 0){FLUXNET_table <- rbind(FLUXNET_table,
 
 ## Reco Daily Difference
 ```{r Difference Flux Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotAllTemporalComparisons(this_benchmark,all_comparisons)
+if (do_FLUXNET_Reco){plotAllTemporalComparisons(this_benchmark,all_comparisons)}
 ```
 
 ## Reco per site
 ```{r per site flux Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")
+if (do_FLUXNET_Reco){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="station")}
 ```
 
 ## Reco per Land cover
 ```{r per lc flux Reco crujra, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")
+if (do_FLUXNET_Reco){plotFLUXNETScatter(this_benchmark,all_comparisons,fill="landcover")}
 ```
 
 # FLUXNET metric table
