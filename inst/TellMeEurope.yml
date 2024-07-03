@@ -2,7 +2,7 @@ Directory:
   Sim1: "C:\\Users\\Admin\\Documents\\tellus\\norm_establ"
   Sim1_id: "Normal Establishment"
   Data: "C:/Users/Admin/Documents/tellus/Data_240122"
-  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\flex_estab"
+  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\flex_establ"
   Sim2_id: "Relaxed Establishment"
   spatial_extent_id: "Full"
   custom_xmax: 
