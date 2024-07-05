@@ -44,7 +44,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
       all_Fields_list[[benchmark@datasets[[i]]@source@name]] <- benchmark@datasets[[i]]
   }
   
-  if (length(benchmark@simulation_format) == 1) {
+  if (length(benchmark@simulation_format) == 1 && length(all_simulation_Sources_list[[1]]) != 1) {
     duplicated_format <- benchmark@simulation_format[1]
     benchmark@simulation_format <- c(benchmark@simulation_format, duplicated_format)
     duplicated_simulation <- benchmark@simulation[1]
