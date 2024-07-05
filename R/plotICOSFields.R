@@ -62,7 +62,7 @@ plotICOSFields <- function(Benchmark = this_benchmark, all_Fields_list = all_Fie
       plot(densplot)
     }
   } else if (plot.option == "joined") {
-    for (i in seq_along(all_comparisons)) {
+    for (i in seq_along(all_comparisons[[1]])) {
       this_comparison <- all_comparisons[[1]][[i]]
       stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")      
       stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
