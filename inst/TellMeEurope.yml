@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\run_4"
-  Sim1_id: "Probabilistic harvest"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\run_2"
+  Sim1_id: "No thinning"
   Data: "C:\\Users\\Admin\\Documents\\tellus\\Data_240122"
-  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\simulations_061923\\230617_trunk"
-  Sim2_id: "Trunk"
+  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\run_3"
+  Sim2_id: "Reineke thinning"
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
