@@ -13,7 +13,7 @@ plotICOSScatter <- function(Benchmark = this_benchmark, all_comparisons = all_co
   
   
 if (fill == "climate"){
-for (i in seq_along(all_comparisons)) {
+for (i in seq_along(all_comparisons[[1]])) {
   this_comparison <- all_comparisons[[1]][[i]]
   # this_comparison@data$Code <- sapply(this_comparison@data$Lon, function(lon) {
   #   matching_row <- spatial_extent[spatial_extent$Lon %in% lon & spatial_extent$Lat %in% this_comparison@data$Lat]
@@ -146,7 +146,7 @@ for (i in seq_along(all_comparisons)) {
   #   plot(densplot1)
 }
 }else if (fill == "landcover"){
-  for (i in seq_along(all_comparisons)) {
+  for (i in seq_along(all_comparisons[[1]])) {
     this_comparison <- all_comparisons[[1]][[i]]
     stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
@@ -270,7 +270,7 @@ for (i in seq_along(all_comparisons)) {
     # plot(densplot1)
   }
 } else if (fill == "country"){
-  for (i in seq_along(all_comparisons)) {
+  for (i in seq_along(all_comparisons[[1]])) {
     this_comparison <- all_comparisons[[1]][[i]]
     stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
@@ -394,7 +394,7 @@ for (i in seq_along(all_comparisons)) {
     # plot(densplot1)
   }
 }else if (fill == "station"){
-  for (i in seq_along(all_comparisons)) {
+  for (i in seq_along(all_comparisons[[1]])) {
     this_comparison <- all_comparisons[[1]][[i]]
     stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
@@ -495,7 +495,7 @@ for (i in seq_along(all_comparisons)) {
     print(plot1)
 }
   }else {
-  for (i in seq_along(all_comparisons)) {
+  for (i in seq_along(all_comparisons[[1]])) {
   this_comparison <- all_comparisons[[1]][[i]]
   
   densplot1<-ggplot(data = this_comparison@data, aes(x  = this_comparison@data[[6]], y = this_comparison@data[[5]])) +
