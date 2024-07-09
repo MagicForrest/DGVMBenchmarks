@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\ICOS\\OUT"
-  Sim1_id: "European Applications"
-  Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data"
-  Sim2: ""
-  Sim2_id: ""
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\run_4"
+  Sim1_id: "Probabilistic harvest"
+  Data: "C:\\Users\\Admin\\Documents\\tellus\\Data_240122"
+  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\run_3"
+  Sim2_id: "Reineke thinning"
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -13,18 +13,18 @@ Directory:
 
 Switches:
   do_plots: T
-  do_agpp: F
-  do_cmass: F
-  do_stem_density: F
-  do_qdbh: F
-  do_woody_growth: F
+  do_agpp: T
+  do_cmass: T
+  do_stem_density: T
+  do_qdbh: T
+  do_woody_growth: T
   do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: F
-  do_ICOS_GPP: T
-  do_ICOS_NEE: T
-  do_ICOS_Reco: T
-  do_ICOS_ET: T
+  do_ICOS_GPP: F
+  do_ICOS_NEE: F
+  do_ICOS_Reco: F
+  do_ICOS_ET: F
   do_FLUXNET_GPP: F
   do_FLUXNET_NEE: F
   do_FLUXNET_Reco: F
