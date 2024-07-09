@@ -15,7 +15,7 @@ plotICOSScatter(
 
 \item{all_comparisons}{List holding the comparison objects}
 
-\item{fill}{fill is used to classify points by different characteristics. Use "climate" for koppen climate zones and "landuse" for land cover information.}
+\item{fill}{fill is used to classify points by different characteristics. Use "climate" for koppen climate zones and "landuse" for land cover information, "country" or "station".}
 }
 \value{
 Scatter plots of ICOS comparisons.

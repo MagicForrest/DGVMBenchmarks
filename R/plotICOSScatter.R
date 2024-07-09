@@ -14,7 +14,7 @@ plotICOSScatter <- function(Benchmark = this_benchmark, all_comparisons = all_co
   
 if (fill == "climate"){
 for (i in seq_along(all_comparisons)) {
-  this_comparison <- all_comparisons[[1]][[1]]
+  this_comparison <- all_comparisons[[1]][[i]]
   # this_comparison@data$Code <- sapply(this_comparison@data$Lon, function(lon) {
   #   matching_row <- spatial_extent[spatial_extent$Lon %in% lon & spatial_extent$Lat %in% this_comparison@data$Lat]
   #   if (nrow(matching_row) > 0) {
@@ -26,7 +26,7 @@ for (i in seq_along(all_comparisons)) {
   stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
   stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
   stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-  decimals <- 5  # Specify the number of decimal places you want to round to
+  decimals <- 4  # Specify the number of decimal places you want to round to
   
   # Round Lon and Lat columns in stations
   stations$Lon <- round(as.numeric(stations$Lon), decimals)
@@ -151,7 +151,7 @@ for (i in seq_along(all_comparisons)) {
     stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
     stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-    decimals <- 5  # Specify the number of decimal places you want to round to
+    decimals <- 4  # Specify the number of decimal places you want to round to
     
     # Round Lon and Lat columns in stations
     stations$Lon <- round(as.numeric(stations$Lon), decimals)
@@ -275,7 +275,7 @@ for (i in seq_along(all_comparisons)) {
     stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
     stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-    decimals <- 5  # Specify the number of decimal places you want to round to
+    decimals <- 4  # Specify the number of decimal places you want to round to
     
     # Round Lon and Lat columns in stations
     stations$Lon <- round(as.numeric(stations$Lon), decimals)
@@ -399,7 +399,7 @@ for (i in seq_along(all_comparisons)) {
     stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
     stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-    decimals <- 5  # Specify the number of decimal places you want to round to
+    decimals <- 4  # Specify the number of decimal places you want to round to
     
     # Round Lon and Lat columns in stations
     stations$Lon <- round(as.numeric(stations$Lon), decimals)
