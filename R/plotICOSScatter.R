@@ -481,7 +481,7 @@ for (i in seq_along(all_comparisons[[1]])) {
            color = "Station") +
       guides(fill = FALSE) +  # This removes the fill legend
       theme_bw() +
-      theme(legend.position = "bottom",
+      theme(legend.position = "left",
             legend.direction = "vertical",
             legend.title = element_text(size = 12, face = "bold"),
             legend.text = element_text(size = 12),
