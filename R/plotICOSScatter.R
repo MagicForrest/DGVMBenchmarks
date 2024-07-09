@@ -483,8 +483,8 @@ for (i in seq_along(all_comparisons[[1]])) {
       theme_bw() +
       theme(legend.position = "left",
             legend.direction = "vertical",
-            legend.title = element_text(size = 12, face = "bold"),
-            legend.text = element_text(size = 12),
+            legend.title = element_text(size = 9, face = "bold"),
+            legend.text = element_text(size = 9),
             plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
             axis.title.x = element_text(size = 25),
             axis.title.y = element_text(size = 25),
