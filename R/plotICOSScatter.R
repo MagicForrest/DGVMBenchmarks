@@ -490,7 +490,8 @@ for (i in seq_along(all_comparisons[[1]])) {
             axis.title.y = element_text(size = 25),
             axis.text = element_text(size = 15),
             legend.key = element_blank(),
-            legend.box.background = element_rect(color = "transparent", fill = "transparent"))
+            legend.box.background = element_rect(color = "transparent", fill = "transparent"),
+            plot.margin = margin(5, 10, 5, 10))
     
     print(plot1)
 }
