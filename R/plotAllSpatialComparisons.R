@@ -19,6 +19,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
     #Quick plot of comparison object
     DGVMTools::plotSpatialComparison(this_comparison, type = type)
   
+    if (type == "percentage.difference"){this_comparison@data[[5]] <- ifelse(is.nan(this_comparison@data[[5]]), 0, this_comparison@data[[5]])}
     #Get the Max, Min, Mean difference of Model - Observed data
     max_dif<-round(max(this_comparison@data[[5]]),2)
     mean_dif<-round(mean(this_comparison@data[[5]]),2)
@@ -51,6 +52,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
     else{
       DGVMTools::plotSpatialComparison(this_comparison, type = type)
       
+      if (type == "percentage.difference"){this_comparison@data[[5]] <- ifelse(is.nan(this_comparison@data[[5]]), 0, this_comparison@data[[5]])}
       #Get the Max, Min, Mean difference of Model - Observed data
       max_dif<-round(max(this_comparison@data[[5]]),2)
       mean_dif<-round(mean(this_comparison@data[[5]]),2)
