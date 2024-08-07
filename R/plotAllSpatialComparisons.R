@@ -2,13 +2,14 @@
 #'
 #' @param Benchmark Benchmark holds the settings for the benchmark currently being performed used to set range parameters to the plotting.
 #' @param all_comparisons List holding all comparison objects
-#'
+#' @param type A character specifying what type of plot to make. Can be "difference" (default, for a difference plot), "percentage.difference", "values" (actual values, side-by-side).
+#' 
 #' @return Returns difference for every possible comparison in your comparison list.
 #' @export
 #'
 #' @examples plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
-plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
+plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "difference") {
 
   if(length(Benchmark@guess_layers) < 2){
   for (i in seq_along(all_comparisons[["Values"]])) {
@@ -16,7 +17,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
 
   if (this_comparison@source2@id == "Obs"){
     #Quick plot of comparison object
-    DGVMTools::plotSpatialComparison(this_comparison, type = "difference")
+    DGVMTools::plotSpatialComparison(this_comparison, type = type)
   
     #Get the Max, Min, Mean difference of Model - Observed data
     max_dif<-round(max(this_comparison@data[[5]]),2)
@@ -33,7 +34,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
       breaks = unlist(Benchmark@breaks)
     }
     
-    p1 <- DGVMTools::plotSpatialComparison(this_comparison, type = "difference", map.overlay = "world", panel.bg.col = "gray")+
+    p1 <- DGVMTools::plotSpatialComparison(this_comparison, type = type, map.overlay = "world", panel.bg.col = "gray")+
       scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                            midpoint = 0,
                            na.value = "black",
@@ -48,7 +49,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
     plot(p1)
   }
     else{
-      DGVMTools::plotSpatialComparison(this_comparison, type = "difference")
+      DGVMTools::plotSpatialComparison(this_comparison, type = type)
       
       #Get the Max, Min, Mean difference of Model - Observed data
       max_dif<-round(max(this_comparison@data[[5]]),2)
@@ -64,7 +65,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
         breaks = unlist(Benchmark@breaks)
       }
       # Plotting difference maps
-      p1 <- DGVMTools::plotSpatialComparison(this_comparison, type = "difference", map.overlay = "world", panel.bg.col = "gray")+
+      p1 <- DGVMTools::plotSpatialComparison(this_comparison, type = type, map.overlay = "world", panel.bg.col = "gray")+
         scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                              midpoint = 0,
                              na.value = "black",
@@ -82,7 +83,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons) {
   }
 
   if(length(Benchmark@guess_layers) > 1){
-    p1 <- DGVMTools::plotSpatialComparison(all_comparisons[["Values"]], type = "difference",text.multiplier = 1.1)+ #, map.overlay = "world", panel.bg.col = "gray")+
+    p1 <- DGVMTools::plotSpatialComparison(all_comparisons[["Values"]], type = type,text.multiplier = 1.1)+ #, map.overlay = "world", panel.bg.col = "gray")+
        scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                             midpoint = 0,
                             na.value = "black",
