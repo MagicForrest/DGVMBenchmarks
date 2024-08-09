@@ -481,17 +481,19 @@ for (i in seq_along(all_comparisons[[1]])) {
            color = "Station") +
       guides(fill = FALSE) +  # This removes the fill legend
       theme_bw() +
-      theme(legend.position = "left",
-            legend.direction = "vertical",
-            legend.title = element_text(size = 9, face = "bold"),
-            legend.text = element_text(size = 9),
-            plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
-            axis.title.x = element_text(size = 25),
-            axis.title.y = element_text(size = 25),
-            axis.text = element_text(size = 15),
-            legend.key = element_blank(),
-            legend.box.background = element_rect(color = "transparent", fill = "transparent"),
-            plot.margin = margin(5, 10, 5, 10))
+      theme(
+        legend.position = "bottom",  # Change to "bottom" to try fitting the legend horizontally
+        legend.direction = "horizontal",  # Arrange legend items horizontally
+        legend.title = element_text(size = 9, face = "bold"),
+        legend.text = element_text(size = 10),  # Reduce legend text size
+        legend.key.size = unit(0.5, "cm"),  # Reduce the size of the legend keys
+        legend.margin = margin(0, 0, 0, 0),  # Remove legend margins
+        plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
+        axis.title.x = element_text(size = 25),
+        axis.title.y = element_text(size = 25),
+        axis.text = element_text(size = 15),
+        plot.margin = margin(10, 10, 10, 10)  # Adjust plot margins
+      )
     
     print(plot1)
 }
