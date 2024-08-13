@@ -156,6 +156,11 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
             breaks = unlist(Benchmark@percentage.difference_breaks)
           }
           
+          DGVMTools::plotSpatialComparison(this_comparison,
+                                           type = type,
+                                           map.overlay = "world",
+                                           panel.bg.col = "gray")
+          
           this_comparison@data <- na.omit(this_comparison@data)
           
           p1 <- DGVMTools::plotSpatialComparison(this_comparison,
@@ -199,6 +204,11 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
           if (!is.null(Benchmark@percentage.difference_breaks[[1]]) && length(Benchmark@percentage.difference_breaks[[1]]) != 0){
             breaks = unlist(Benchmark@percentage.difference_breaks)
           }
+          
+          DGVMTools::plotSpatialComparison(this_comparison,
+                                           type = type,
+                                           map.overlay = "world",
+                                           panel.bg.col = "gray")
           
          this_comparison@data <- na.omit(this_comparison@data)
           # Plotting difference maps
@@ -290,10 +300,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                  na.value = "black",
                                  limits = limits,
                                  breaks = breaks)+
-            labs(title = paste(this_comparison@name),
-            subtitle = paste("Max:", round(max(this_comparison@data[[5]]),2),
-                             "Mean:", round(mean(this_comparison@data[[5]]),2),
-                             "Min:", round(min(this_comparison@data[[5]]),2)))+
+            labs(title = paste(this_comparison@name))+
             theme(plot.title = element_text(size = 30),
                   plot.subtitle = element_text(size = 20),
                   axis.title.x = element_text(size = 25),
@@ -329,10 +336,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                  na.value = "black",
                                  limits = limits,
                                  breaks = breaks)+
-            labs(title = paste(this_comparison@name),
-            subtitle = paste("Max:", round(max(this_comparison@data[[5]]),2),
-                             "Mean:", round(mean(this_comparison@data[[5]]),2),
-                             "Min:", round(min(this_comparison@data[[5]]),2)))+
+            labs(title = paste(this_comparison@name))+
             theme(plot.title = element_text(size = 30),
                   plot.subtitle = element_text(size = 20),
                   axis.title.x = element_text(size = 25),
