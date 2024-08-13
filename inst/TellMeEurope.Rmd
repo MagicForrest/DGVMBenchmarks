@@ -16,6 +16,7 @@ library(DGVMTools)
 library(TellMeEurope)
 library(knitr)
 library(dplyr)
+library(tidyr)
 library(kableExtra)
 library(tictoc)
 library(ggpubr)
@@ -34,7 +35,7 @@ tic()
 ```{r settings,  echo=F, warning=FALSE}
 source(file.path(system.file("TellMeEurope_config.R", package = "DGVMBenchmarks"))) 
 
-str(input, max.level = 3)
+str(input, max.level = 4)
 
 # plot maps (turn off to save time)
 do_plots <- as.logical(input[["Switches"]][["do_plots"]])
@@ -83,7 +84,7 @@ all_Fields_list <- field_lists[[2]]
 all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
 
 ## Spatial plotting of your comparisons, handels multiple layers to.
-if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)}
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "difference")}
 
 ## Table making, extracts the spatial mean from your fields.
 summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
@@ -97,7 +98,7 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 
 ## AGPP Scatterplots 
 ```{r AGPP_SCATTER, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if (do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if (do_plots && do_agpp){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # Cmass {.tabset}
@@ -134,7 +135,7 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 
 ## Cmass Scatterplots
 ```{r cmass scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && do_cmass){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # Stem Density {.tabset}
@@ -174,7 +175,7 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 
 ## Stem Density Scatterplots
 ```{r Stemdensity scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && do_stem_density){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # QDBH {.tabset}
@@ -210,7 +211,7 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 
 ## QDBH Scatterplots
 ```{r QDBH Scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && do_qdbh){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # Woody Growth {.tabset}
@@ -247,7 +248,7 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 
 ## Woody Growth Scatter
 ```{r Woody growth scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
-if(do_plots && length(this_benchmark@datasets) > 0){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+if(do_plots && do_woody_growth){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
 # PFT CMASS {.tabset}
@@ -608,48 +609,116 @@ correctICOSDataset(all_Fields_list, site.type = "Ecosystem")
 ##Use the correct Lat Lon from dataset to match the simulated grid format to station location
 lats <- unique(all_Fields_list[[1]]@data$Lat)
 lons <- unique(all_Fields_list[[1]]@data$Lon)
+
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
   mutate(
     Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lat == 51.25 & Lon == 4.75 ~ lats[[1]], # BE-Bra
+      Lat == 50.25 & Lon == 4.75 ~ lats[[2]], # BE-Dor
+      Lat == 50.75 & Lon == 4.75 ~ lats[[3]], # BE-Lon
+      Lat == 50.75 & Lon == 5.75 ~ lats[[4]], # BE-Maa
+      Lat == 50.25 & Lon == 5.75 ~ lats[[5]], # BE-Vie
+      Lat == 46.75 & Lon == 9.75 ~ lats[[6]], # CH-Dav
+      Lat == 49.75 & Lon == 18.75 ~ lats[[7]], # CZ-BK1
+      Lat == 48.75 & Lon == 16.75 ~ lats[[8]], # CZ-Lnz
+      Lat == 51.25 & Lon == 10.75 ~ lats[[9]], # DE-Geb
+      Lat == 52.25 & Lon == 11.25 ~ lats[[10]], # DE-HoH
+      Lat == 50.75 & Lon == 6.25 ~ lats[[11]], # DE-RuS
+      Lat == 50.75 & Lon == 13.75 ~ lats[[12]], # DE-Tha
+      Lat == 55.25 & Lon == 11.75 ~ lats[[13]], # DK-Sor
+      Lat == 56.25 & Lon == 9.25 ~ lats[[14]], # DK-Vng
+      Lat == 61.75 & Lon == 24.25 ~ lats[[15]], # FI-Hyy
+      Lat == 67.25 & Lon == 26.75 ~ lats[[17]], # FI-Sod
+      Lat == 44.25 & Lon == -0.75 ~ NA, # FR-Bil
+      Lat == 43.25 & Lon == 5.75 ~ lats[[19]], # FR-FBn
+      Lat == 48.25 & Lon == 2.75 ~ lats[[20]], # FR-Fon
+      Lat == 48.75 & Lon == 1.75 ~ lats[[21]], # FR-Gri
+      Lat == 48.75 & Lon == 7.25 ~ lats[[22]], # FR-Hes
+      Lat == 43.25 & Lon == 1.25 ~ lats[[23]], # FR-Lam
+      Lat == 45.75 & Lon == 2.75 ~ lats[[24]], # FR-Lqu
+      Lat == 46.25 & Lon == 0.25 ~ lats[[25]], # FR-Lus
+      Lat == 43.75 & Lon == 3.75 ~ lats[[26]], # FR-Pue
+      Lat == 40.75 & Lon == 14.75 ~ lats[[28]], # IT-BCi
+      Lat == 41.75 & Lon == 12.25 ~ lats[[29]], # IT-Cp2
+      Lat == 46.25 & Lon == 11.25 ~ lats[[30]], # IT-MBo
+      Lat == 46.75 & Lon == 11.25 ~ lats[[31]], # IT-Ren
+      Lat == 43.75 & Lon == 10.25 ~ lats[[32]], # IT-SR2
+      Lat == 52.25 & Lon == 5.75 ~ lats[[33]], # NL-Loo
+      Lat == 56.25 & Lon == 13.25 ~ lats[[35]], # SE-Htm
+      Lat == 60.25 & Lon == 17.25 ~ lats[[36]], # SE-Nor
+      Lat == 68.25 & Lon == 19.25 ~ lats[[37]], # SE-Sto
+      Lat == 64.25 & Lon == 19.75 ~ lats[[38]], # SE-Svb
+      Lat == 55.75 & Lon == -3.25 ~ lats[[39]], # UK-AMo
+      TRUE ~ Lat  # Keep the original value if none of the conditions match
     ),
     Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lon == 4.75 & Lat == lats[[1]] ~ lons[[1]],   # BE-Bra
+      Lon == 4.75 & Lat == lats[[2]] ~ lons[[2]],   # BE-Dor
+      Lon == 4.75 & Lat == lats[[3]] ~ lons[[3]],   # BE-Lon
+      Lon == 5.75 & Lat == lats[[4]] ~ lons[[4]],   # BE-Maa
+      Lon == 5.75 & Lat == lats[[5]] ~ lons[[5]],   # BE-Vie
+      Lon == 9.75 & Lat == lats[[6]] ~ lons[[6]],   # CH-Dav
+      Lon == 18.75 & Lat == lats[[7]] ~ lons[[7]],  # CZ-BK1
+      Lon == 16.75 & Lat == lats[[8]] ~ lons[[8]],  # CZ-Lnz
+      Lon == 10.75 & Lat == lats[[9]] ~ lons[[9]],  # DE-Geb
+      Lon == 11.25 & Lat == lats[[10]] ~ lons[[10]], # DE-HoH
+      Lon == 6.25 & Lat == lats[[11]] ~ lons[[11]],  # DE-RuS
+      Lon == 13.75 & Lat == lats[[12]] ~ lons[[12]], # DE-Tha
+      Lon == 11.75 & Lat == lats[[13]] ~ lons[[13]], # DK-Sor
+      Lon == 9.25 & Lat == lats[[14]] ~ lons[[14]],  # DK-Vng
+      Lon == 24.25 & Lat == lats[[15]] ~ lons[[15]], # FI-Hyy
+      Lon == 26.75 & Lat == lats[[17]] ~ lons[[17]], # FI-Sod
+      Lon == -0.75 & Lat == NA ~ NA,         # FR-Bil
+      Lon == 5.75 & Lat == lats[[19]] ~ lons[[19]],  # FR-FBn
+      Lon == 2.75 & Lat == lats[[20]] ~ lons[[20]],  # FR-Fon
+      Lon == 1.75 & Lat == lats[[21]] ~ lons[[21]],  # FR-Gri
+      Lon == 7.25 & Lat == lats[[22]] ~ lons[[22]],  # FR-Hes
+      Lon == 1.25 & Lat == lats[[23]] ~ lons[[23]],  # FR-Lam
+      Lon == 2.75 & Lat == lats[[24]] ~ lons[[24]],  # FR-Lqu
+      Lon == 0.25 & Lat == lats[[25]] ~ lons[[25]],  # FR-Lus
+      Lon == 3.75 & Lat == lats[[26]] ~ lons[[26]],  # FR-Pue
+      Lon == 14.75 & Lat == lats[[28]] ~ lons[[28]], # IT-BCi
+      Lon == 12.25 & Lat == lats[[29]] ~ lons[[29]], # IT-Cp2
+      Lon == 11.25 & Lat == lats[[30]] ~ lons[[30]], # IT-MBo
+      Lon == 11.25 & Lat == lats[[31]] ~ lons[[31]], # IT-Ren
+      Lon == 10.25 & Lat == lats[[32]] ~ lons[[32]], # IT-SR2
+      Lon == 5.75 & Lat == lats[[33]] ~ lons[[33]],  # NL-Loo
+      Lon == 13.25 & Lat == lats[[35]] ~ lons[[35]], # SE-Htm
+      Lon == 17.25 & Lat == lats[[36]] ~ lons[[36]], # SE-Nor
+      Lon == 19.25 & Lat == lats[[37]] ~ lons[[37]], # SE-Sto
+      Lon == 19.75 & Lat == lats[[38]] ~ lons[[38]], # SE-Svb
+      Lon == -3.25 & Lat == lats[[39]] ~ lons[[39]], # UK-AMo
+      TRUE ~ Lon  # Keep the original value if none of the conditions match
     )
-  ) 
+  )
 
-all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
-  mutate(
-    Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    ),
-    Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    )
-  ) 
+
+
+
+# all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
+#   mutate(
+#     Lat = case_when(
+#       Lat == 56.25 ~ lats[[2]],
+#       Lat == 60.25 ~ lats[[3]],
+#       Lat == 64.25 ~ lats[[4]],
+#       TRUE ~ Lat
+#       # Add more conditions if needed
+#         # Keep the original value if none of the conditions match
+#     ),
+#     Lon = case_when(
+#       Lon == 13.25 ~ lons[[2]],
+#       Lon == 17.25 ~ lons[[3]],
+#       Lon == 19.75 ~ lons[[4]],
+#       TRUE ~ Lon
+#       # Add more conditions if needed
+#         # Keep the original value if none of the conditions match
+#     )
+#   ) 
+
   
+
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
@@ -712,45 +781,87 @@ lons <- unique(all_Fields_list[[1]]@data$Lon)
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
   mutate(
     Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lat == 51.25 & Lon == 4.75 ~ lats[[1]], # BE-Bra
+      Lat == 50.25 & Lon == 4.75 ~ lats[[2]], # BE-Dor
+      Lat == 50.75 & Lon == 4.75 ~ lats[[3]], # BE-Lon
+      Lat == 50.75 & Lon == 5.75 ~ lats[[4]], # BE-Maa
+      Lat == 50.25 & Lon == 5.75 ~ lats[[5]], # BE-Vie
+      Lat == 46.75 & Lon == 9.75 ~ lats[[6]], # CH-Dav
+      Lat == 49.75 & Lon == 18.75 ~ lats[[7]], # CZ-BK1
+      Lat == 48.75 & Lon == 16.75 ~ lats[[8]], # CZ-Lnz
+      Lat == 51.25 & Lon == 10.75 ~ lats[[9]], # DE-Geb
+      Lat == 52.25 & Lon == 11.25 ~ lats[[10]], # DE-HoH
+      Lat == 50.75 & Lon == 6.25 ~ lats[[11]], # DE-RuS
+      Lat == 50.75 & Lon == 13.75 ~ lats[[12]], # DE-Tha
+      Lat == 55.25 & Lon == 11.75 ~ lats[[13]], # DK-Sor
+      Lat == 56.25 & Lon == 9.25 ~ lats[[14]], # DK-Vng
+      Lat == 61.75 & Lon == 24.25 ~ lats[[15]], # FI-Hyy
+      Lat == 67.25 & Lon == 26.75 ~ lats[[17]], # FI-Sod
+      Lat == 44.25 & Lon == -0.75 ~ NA, # FR-Bil
+      Lat == 43.25 & Lon == 5.75 ~ lats[[19]], # FR-FBn
+      Lat == 48.25 & Lon == 2.75 ~ lats[[20]], # FR-Fon
+      Lat == 48.75 & Lon == 1.75 ~ lats[[21]], # FR-Gri
+      Lat == 48.75 & Lon == 7.25 ~ lats[[22]], # FR-Hes
+      Lat == 43.25 & Lon == 1.25 ~ lats[[23]], # FR-Lam
+      Lat == 45.75 & Lon == 2.75 ~ lats[[24]], # FR-Lqu
+      Lat == 46.25 & Lon == 0.25 ~ lats[[25]], # FR-Lus
+      Lat == 43.75 & Lon == 3.75 ~ lats[[26]], # FR-Pue
+      Lat == 40.75 & Lon == 14.75 ~ lats[[28]], # IT-BCi
+      Lat == 41.75 & Lon == 12.25 ~ lats[[29]], # IT-Cp2
+      Lat == 46.25 & Lon == 11.25 ~ lats[[30]], # IT-MBo
+      Lat == 46.75 & Lon == 11.25 ~ lats[[31]], # IT-Ren
+      Lat == 43.75 & Lon == 10.25 ~ lats[[32]], # IT-SR2
+      Lat == 52.25 & Lon == 5.75 ~ lats[[33]], # NL-Loo
+      Lat == 56.25 & Lon == 13.25 ~ lats[[35]], # SE-Htm
+      Lat == 60.25 & Lon == 17.25 ~ lats[[36]], # SE-Nor
+      Lat == 68.25 & Lon == 19.25 ~ lats[[37]], # SE-Sto
+      Lat == 64.25 & Lon == 19.75 ~ lats[[38]], # SE-Svb
+      Lat == 55.75 & Lon == -3.25 ~ lats[[39]], # UK-AMo
+      TRUE ~ Lat  # Keep the original value if none of the conditions match
     ),
     Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lon == 4.75 & Lat == lats[[1]] ~ lons[[1]],   # BE-Bra
+      Lon == 4.75 & Lat == lats[[2]] ~ lons[[2]],   # BE-Dor
+      Lon == 4.75 & Lat == lats[[3]] ~ lons[[3]],   # BE-Lon
+      Lon == 5.75 & Lat == lats[[4]] ~ lons[[4]],   # BE-Maa
+      Lon == 5.75 & Lat == lats[[5]] ~ lons[[5]],   # BE-Vie
+      Lon == 9.75 & Lat == lats[[6]] ~ lons[[6]],   # CH-Dav
+      Lon == 18.75 & Lat == lats[[7]] ~ lons[[7]],  # CZ-BK1
+      Lon == 16.75 & Lat == lats[[8]] ~ lons[[8]],  # CZ-Lnz
+      Lon == 10.75 & Lat == lats[[9]] ~ lons[[9]],  # DE-Geb
+      Lon == 11.25 & Lat == lats[[10]] ~ lons[[10]], # DE-HoH
+      Lon == 6.25 & Lat == lats[[11]] ~ lons[[11]],  # DE-RuS
+      Lon == 13.75 & Lat == lats[[12]] ~ lons[[12]], # DE-Tha
+      Lon == 11.75 & Lat == lats[[13]] ~ lons[[13]], # DK-Sor
+      Lon == 9.25 & Lat == lats[[14]] ~ lons[[14]],  # DK-Vng
+      Lon == 24.25 & Lat == lats[[15]] ~ lons[[15]], # FI-Hyy
+      Lon == 26.75 & Lat == lats[[17]] ~ lons[[17]], # FI-Sod
+      Lon == -0.75 & Lat == NA ~ NA,         # FR-Bil
+      Lon == 5.75 & Lat == lats[[19]] ~ lons[[19]],  # FR-FBn
+      Lon == 2.75 & Lat == lats[[20]] ~ lons[[20]],  # FR-Fon
+      Lon == 1.75 & Lat == lats[[21]] ~ lons[[21]],  # FR-Gri
+      Lon == 7.25 & Lat == lats[[22]] ~ lons[[22]],  # FR-Hes
+      Lon == 1.25 & Lat == lats[[23]] ~ lons[[23]],  # FR-Lam
+      Lon == 2.75 & Lat == lats[[24]] ~ lons[[24]],  # FR-Lqu
+      Lon == 0.25 & Lat == lats[[25]] ~ lons[[25]],  # FR-Lus
+      Lon == 3.75 & Lat == lats[[26]] ~ lons[[26]],  # FR-Pue
+      Lon == 14.75 & Lat == lats[[28]] ~ lons[[28]], # IT-BCi
+      Lon == 12.25 & Lat == lats[[29]] ~ lons[[29]], # IT-Cp2
+      Lon == 11.25 & Lat == lats[[30]] ~ lons[[30]], # IT-MBo
+      Lon == 11.25 & Lat == lats[[31]] ~ lons[[31]], # IT-Ren
+      Lon == 10.25 & Lat == lats[[32]] ~ lons[[32]], # IT-SR2
+      Lon == 5.75 & Lat == lats[[33]] ~ lons[[33]],  # NL-Loo
+      Lon == 13.25 & Lat == lats[[35]] ~ lons[[35]], # SE-Htm
+      Lon == 17.25 & Lat == lats[[36]] ~ lons[[36]], # SE-Nor
+      Lon == 19.25 & Lat == lats[[37]] ~ lons[[37]], # SE-Sto
+      Lon == 19.75 & Lat == lats[[38]] ~ lons[[38]], # SE-Svb
+      Lon == -3.25 & Lat == lats[[39]] ~ lons[[39]], # UK-AMo
+      TRUE ~ Lon  # Keep the original value if none of the conditions match
     )
-  ) 
-
-all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
-  mutate(
-    Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    ),
-    Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    )
-  ) 
+  )
   
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
@@ -812,45 +923,87 @@ lons <- unique(all_Fields_list[[1]]@data$Lon)
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
   mutate(
     Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lat == 51.25 & Lon == 4.75 ~ lats[[1]], # BE-Bra
+      Lat == 50.25 & Lon == 4.75 ~ lats[[2]], # BE-Dor
+      Lat == 50.75 & Lon == 4.75 ~ lats[[3]], # BE-Lon
+      Lat == 50.75 & Lon == 5.75 ~ lats[[4]], # BE-Maa
+      Lat == 50.25 & Lon == 5.75 ~ lats[[5]], # BE-Vie
+      Lat == 46.75 & Lon == 9.75 ~ lats[[6]], # CH-Dav
+      Lat == 49.75 & Lon == 18.75 ~ lats[[7]], # CZ-BK1
+      Lat == 48.75 & Lon == 16.75 ~ lats[[8]], # CZ-Lnz
+      Lat == 51.25 & Lon == 10.75 ~ lats[[9]], # DE-Geb
+      Lat == 52.25 & Lon == 11.25 ~ lats[[10]], # DE-HoH
+      Lat == 50.75 & Lon == 6.25 ~ lats[[11]], # DE-RuS
+      Lat == 50.75 & Lon == 13.75 ~ lats[[12]], # DE-Tha
+      Lat == 55.25 & Lon == 11.75 ~ lats[[13]], # DK-Sor
+      Lat == 56.25 & Lon == 9.25 ~ lats[[14]], # DK-Vng
+      Lat == 61.75 & Lon == 24.25 ~ lats[[15]], # FI-Hyy
+      Lat == 67.25 & Lon == 26.75 ~ lats[[17]], # FI-Sod
+      Lat == 44.25 & Lon == -0.75 ~ NA, # FR-Bil
+      Lat == 43.25 & Lon == 5.75 ~ lats[[19]], # FR-FBn
+      Lat == 48.25 & Lon == 2.75 ~ lats[[20]], # FR-Fon
+      Lat == 48.75 & Lon == 1.75 ~ lats[[21]], # FR-Gri
+      Lat == 48.75 & Lon == 7.25 ~ lats[[22]], # FR-Hes
+      Lat == 43.25 & Lon == 1.25 ~ lats[[23]], # FR-Lam
+      Lat == 45.75 & Lon == 2.75 ~ lats[[24]], # FR-Lqu
+      Lat == 46.25 & Lon == 0.25 ~ lats[[25]], # FR-Lus
+      Lat == 43.75 & Lon == 3.75 ~ lats[[26]], # FR-Pue
+      Lat == 40.75 & Lon == 14.75 ~ lats[[28]], # IT-BCi
+      Lat == 41.75 & Lon == 12.25 ~ lats[[29]], # IT-Cp2
+      Lat == 46.25 & Lon == 11.25 ~ lats[[30]], # IT-MBo
+      Lat == 46.75 & Lon == 11.25 ~ lats[[31]], # IT-Ren
+      Lat == 43.75 & Lon == 10.25 ~ lats[[32]], # IT-SR2
+      Lat == 52.25 & Lon == 5.75 ~ lats[[33]], # NL-Loo
+      Lat == 56.25 & Lon == 13.25 ~ lats[[35]], # SE-Htm
+      Lat == 60.25 & Lon == 17.25 ~ lats[[36]], # SE-Nor
+      Lat == 68.25 & Lon == 19.25 ~ lats[[37]], # SE-Sto
+      Lat == 64.25 & Lon == 19.75 ~ lats[[38]], # SE-Svb
+      Lat == 55.75 & Lon == -3.25 ~ lats[[39]], # UK-AMo
+      TRUE ~ Lat  # Keep the original value if none of the conditions match
     ),
     Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lon == 4.75 & Lat == lats[[1]] ~ lons[[1]],   # BE-Bra
+      Lon == 4.75 & Lat == lats[[2]] ~ lons[[2]],   # BE-Dor
+      Lon == 4.75 & Lat == lats[[3]] ~ lons[[3]],   # BE-Lon
+      Lon == 5.75 & Lat == lats[[4]] ~ lons[[4]],   # BE-Maa
+      Lon == 5.75 & Lat == lats[[5]] ~ lons[[5]],   # BE-Vie
+      Lon == 9.75 & Lat == lats[[6]] ~ lons[[6]],   # CH-Dav
+      Lon == 18.75 & Lat == lats[[7]] ~ lons[[7]],  # CZ-BK1
+      Lon == 16.75 & Lat == lats[[8]] ~ lons[[8]],  # CZ-Lnz
+      Lon == 10.75 & Lat == lats[[9]] ~ lons[[9]],  # DE-Geb
+      Lon == 11.25 & Lat == lats[[10]] ~ lons[[10]], # DE-HoH
+      Lon == 6.25 & Lat == lats[[11]] ~ lons[[11]],  # DE-RuS
+      Lon == 13.75 & Lat == lats[[12]] ~ lons[[12]], # DE-Tha
+      Lon == 11.75 & Lat == lats[[13]] ~ lons[[13]], # DK-Sor
+      Lon == 9.25 & Lat == lats[[14]] ~ lons[[14]],  # DK-Vng
+      Lon == 24.25 & Lat == lats[[15]] ~ lons[[15]], # FI-Hyy
+      Lon == 26.75 & Lat == lats[[17]] ~ lons[[17]], # FI-Sod
+      Lon == -0.75 & Lat == NA ~ NA,         # FR-Bil
+      Lon == 5.75 & Lat == lats[[19]] ~ lons[[19]],  # FR-FBn
+      Lon == 2.75 & Lat == lats[[20]] ~ lons[[20]],  # FR-Fon
+      Lon == 1.75 & Lat == lats[[21]] ~ lons[[21]],  # FR-Gri
+      Lon == 7.25 & Lat == lats[[22]] ~ lons[[22]],  # FR-Hes
+      Lon == 1.25 & Lat == lats[[23]] ~ lons[[23]],  # FR-Lam
+      Lon == 2.75 & Lat == lats[[24]] ~ lons[[24]],  # FR-Lqu
+      Lon == 0.25 & Lat == lats[[25]] ~ lons[[25]],  # FR-Lus
+      Lon == 3.75 & Lat == lats[[26]] ~ lons[[26]],  # FR-Pue
+      Lon == 14.75 & Lat == lats[[28]] ~ lons[[28]], # IT-BCi
+      Lon == 12.25 & Lat == lats[[29]] ~ lons[[29]], # IT-Cp2
+      Lon == 11.25 & Lat == lats[[30]] ~ lons[[30]], # IT-MBo
+      Lon == 11.25 & Lat == lats[[31]] ~ lons[[31]], # IT-Ren
+      Lon == 10.25 & Lat == lats[[32]] ~ lons[[32]], # IT-SR2
+      Lon == 5.75 & Lat == lats[[33]] ~ lons[[33]],  # NL-Loo
+      Lon == 13.25 & Lat == lats[[35]] ~ lons[[35]], # SE-Htm
+      Lon == 17.25 & Lat == lats[[36]] ~ lons[[36]], # SE-Nor
+      Lon == 19.25 & Lat == lats[[37]] ~ lons[[37]], # SE-Sto
+      Lon == 19.75 & Lat == lats[[38]] ~ lons[[38]], # SE-Svb
+      Lon == -3.25 & Lat == lats[[39]] ~ lons[[39]], # UK-AMo
+      TRUE ~ Lon  # Keep the original value if none of the conditions match
     )
-  ) 
-
-all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
-  mutate(
-    Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    ),
-    Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    )
-  ) 
+  )
   
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
@@ -912,49 +1065,91 @@ lons <- unique(all_Fields_list[[1]]@data$Lon)
 all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
   mutate(
     Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lat == 51.25 & Lon == 4.75 ~ lats[[1]], # BE-Bra
+      Lat == 50.25 & Lon == 4.75 ~ lats[[2]], # BE-Dor
+      Lat == 50.75 & Lon == 4.75 ~ lats[[3]], # BE-Lon
+      Lat == 50.75 & Lon == 5.75 ~ lats[[4]], # BE-Maa
+      Lat == 50.25 & Lon == 5.75 ~ lats[[5]], # BE-Vie
+      Lat == 46.75 & Lon == 9.75 ~ lats[[6]], # CH-Dav
+      Lat == 49.75 & Lon == 18.75 ~ lats[[7]], # CZ-BK1
+      Lat == 48.75 & Lon == 16.75 ~ lats[[8]], # CZ-Lnz
+      Lat == 51.25 & Lon == 10.75 ~ lats[[9]], # DE-Geb
+      Lat == 52.25 & Lon == 11.25 ~ lats[[10]], # DE-HoH
+      Lat == 50.75 & Lon == 6.25 ~ lats[[11]], # DE-RuS
+      Lat == 50.75 & Lon == 13.75 ~ lats[[12]], # DE-Tha
+      Lat == 55.25 & Lon == 11.75 ~ lats[[13]], # DK-Sor
+      Lat == 56.25 & Lon == 9.25 ~ lats[[14]], # DK-Vng
+      Lat == 61.75 & Lon == 24.25 ~ lats[[15]], # FI-Hyy
+      Lat == 67.25 & Lon == 26.75 ~ lats[[17]], # FI-Sod
+      Lat == 44.25 & Lon == -0.75 ~ NA, # FR-Bil
+      Lat == 43.25 & Lon == 5.75 ~ lats[[19]], # FR-FBn
+      Lat == 48.25 & Lon == 2.75 ~ lats[[20]], # FR-Fon
+      Lat == 48.75 & Lon == 1.75 ~ lats[[21]], # FR-Gri
+      Lat == 48.75 & Lon == 7.25 ~ lats[[22]], # FR-Hes
+      Lat == 43.25 & Lon == 1.25 ~ lats[[23]], # FR-Lam
+      Lat == 45.75 & Lon == 2.75 ~ lats[[24]], # FR-Lqu
+      Lat == 46.25 & Lon == 0.25 ~ lats[[25]], # FR-Lus
+      Lat == 43.75 & Lon == 3.75 ~ lats[[26]], # FR-Pue
+      Lat == 40.75 & Lon == 14.75 ~ lats[[28]], # IT-BCi
+      Lat == 41.75 & Lon == 12.25 ~ lats[[29]], # IT-Cp2
+      Lat == 46.25 & Lon == 11.25 ~ lats[[30]], # IT-MBo
+      Lat == 46.75 & Lon == 11.25 ~ lats[[31]], # IT-Ren
+      Lat == 43.75 & Lon == 10.25 ~ lats[[32]], # IT-SR2
+      Lat == 52.25 & Lon == 5.75 ~ lats[[33]], # NL-Loo
+      Lat == 56.25 & Lon == 13.25 ~ lats[[35]], # SE-Htm
+      Lat == 60.25 & Lon == 17.25 ~ lats[[36]], # SE-Nor
+      Lat == 68.25 & Lon == 19.25 ~ lats[[37]], # SE-Sto
+      Lat == 64.25 & Lon == 19.75 ~ lats[[38]], # SE-Svb
+      Lat == 55.75 & Lon == -3.25 ~ lats[[39]], # UK-AMo
+      TRUE ~ Lat  # Keep the original value if none of the conditions match
     ),
     Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
+      Lon == 4.75 & Lat == lats[[1]] ~ lons[[1]],   # BE-Bra
+      Lon == 4.75 & Lat == lats[[2]] ~ lons[[2]],   # BE-Dor
+      Lon == 4.75 & Lat == lats[[3]] ~ lons[[3]],   # BE-Lon
+      Lon == 5.75 & Lat == lats[[4]] ~ lons[[4]],   # BE-Maa
+      Lon == 5.75 & Lat == lats[[5]] ~ lons[[5]],   # BE-Vie
+      Lon == 9.75 & Lat == lats[[6]] ~ lons[[6]],   # CH-Dav
+      Lon == 18.75 & Lat == lats[[7]] ~ lons[[7]],  # CZ-BK1
+      Lon == 16.75 & Lat == lats[[8]] ~ lons[[8]],  # CZ-Lnz
+      Lon == 10.75 & Lat == lats[[9]] ~ lons[[9]],  # DE-Geb
+      Lon == 11.25 & Lat == lats[[10]] ~ lons[[10]], # DE-HoH
+      Lon == 6.25 & Lat == lats[[11]] ~ lons[[11]],  # DE-RuS
+      Lon == 13.75 & Lat == lats[[12]] ~ lons[[12]], # DE-Tha
+      Lon == 11.75 & Lat == lats[[13]] ~ lons[[13]], # DK-Sor
+      Lon == 9.25 & Lat == lats[[14]] ~ lons[[14]],  # DK-Vng
+      Lon == 24.25 & Lat == lats[[15]] ~ lons[[15]], # FI-Hyy
+      Lon == 26.75 & Lat == lats[[17]] ~ lons[[17]], # FI-Sod
+      Lon == -0.75 & Lat == NA ~ NA,         # FR-Bil
+      Lon == 5.75 & Lat == lats[[19]] ~ lons[[19]],  # FR-FBn
+      Lon == 2.75 & Lat == lats[[20]] ~ lons[[20]],  # FR-Fon
+      Lon == 1.75 & Lat == lats[[21]] ~ lons[[21]],  # FR-Gri
+      Lon == 7.25 & Lat == lats[[22]] ~ lons[[22]],  # FR-Hes
+      Lon == 1.25 & Lat == lats[[23]] ~ lons[[23]],  # FR-Lam
+      Lon == 2.75 & Lat == lats[[24]] ~ lons[[24]],  # FR-Lqu
+      Lon == 0.25 & Lat == lats[[25]] ~ lons[[25]],  # FR-Lus
+      Lon == 3.75 & Lat == lats[[26]] ~ lons[[26]],  # FR-Pue
+      Lon == 14.75 & Lat == lats[[28]] ~ lons[[28]], # IT-BCi
+      Lon == 12.25 & Lat == lats[[29]] ~ lons[[29]], # IT-Cp2
+      Lon == 11.25 & Lat == lats[[30]] ~ lons[[30]], # IT-MBo
+      Lon == 11.25 & Lat == lats[[31]] ~ lons[[31]], # IT-Ren
+      Lon == 10.25 & Lat == lats[[32]] ~ lons[[32]], # IT-SR2
+      Lon == 5.75 & Lat == lats[[33]] ~ lons[[33]],  # NL-Loo
+      Lon == 13.25 & Lat == lats[[35]] ~ lons[[35]], # SE-Htm
+      Lon == 17.25 & Lat == lats[[36]] ~ lons[[36]], # SE-Nor
+      Lon == 19.25 & Lat == lats[[37]] ~ lons[[37]], # SE-Sto
+      Lon == 19.75 & Lat == lats[[38]] ~ lons[[38]], # SE-Svb
+      Lon == -3.25 & Lat == lats[[39]] ~ lons[[39]], # UK-AMo
+      TRUE ~ Lon  # Keep the original value if none of the conditions match
     )
-  ) 
-
-all_Fields_list[[3]]@data <- all_Fields_list[[3]]@data %>%
-  mutate(
-    Lat = case_when(
-      Lat == 56.25 ~ lats[[2]],
-      Lat == 60.25 ~ lats[[3]],
-      Lat == 64.25 ~ lats[[4]],
-      TRUE ~ Lat
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    ),
-    Lon = case_when(
-      Lon == 13.25 ~ lons[[2]],
-      Lon == 17.25 ~ lons[[3]],
-      Lon == 19.75 ~ lons[[4]],
-      TRUE ~ Lon
-      # Add more conditions if needed
-        # Keep the original value if none of the conditions match
-    )
-  ) 
+  )
 
 
   all_Fields_list[[1]]@data$GPP <- all_Fields_list[[1]]@data$GPP/2
   all_Fields_list[[2]]@data$GPP <- all_Fields_list[[2]]@data$GPP/2
-  all_Fields_list[[3]]@data$GPP <- all_Fields_list[[3]]@data$GPP/2
+  
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name)
 
 plotICOSFields(this_benchmark,all_Fields_list,all_comparisons,"joined")
 ## Extracts statistical metrics from your fields.
