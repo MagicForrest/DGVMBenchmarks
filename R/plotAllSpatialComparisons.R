@@ -131,11 +131,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                         color = "black",
                                         size = 0.5))
 
-
-
-
-      
-    plot(p1)
+      plot(p1)
     }
   }
   if (type == "percentage.difference"){
