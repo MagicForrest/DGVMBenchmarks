@@ -39,6 +39,8 @@ str(input, max.level = 4)
 
 # plot maps (turn off to save time)
 do_plots <- as.logical(input[["Switches"]][["do_plots"]])
+# Make table for forest fraction
+do_forest_fraction <- as.logical(input[["Switches"]][["do_forest_fraction"]])
 # switches for which benchmarks to do
 do_agpp <- as.logical(input[["Switches"]][["do_agpp"]])
 do_cmass <- as.logical(input[["Switches"]][["do_cmass"]])
@@ -48,6 +50,8 @@ do_woody_growth <- as.logical(input[["Switches"]][["do_woody_growth"]])
 do_profound <- as.logical(input[["Switches"]][["do_profound"]])
 do_cmass_pft <- as.logical(input[["Switches"]][["do_cmass_pft"]])
 do_cmass_pft1 <- as.logical(input[["Switches"]][["do_cmass_pft1"]])
+do_cpool <- as.logical(input[["Switches"]][["do_cpool"]])
+do_SIMFIRE <- as.logical(input[["Switches"]][["do_SIMFIRE"]])
 do_ICOS_GPP <- as.logical(input[["Switches"]][["do_ICOS_GPP"]])
 do_ICOS_NEE <- as.logical(input[["Switches"]][["do_ICOS_NEE"]])
 do_ICOS_Reco <- as.logical(input[["Switches"]][["do_ICOS_Reco"]])
@@ -130,6 +134,7 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
                                       simulation_sources = all_simulation_Sources_list))}
+
 }
 ```
 
@@ -243,6 +248,8 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
                      DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
                                       all_comparisons_list = all_comparisons,
                                       simulation_sources = all_simulation_Sources_list))}
+
+
 }
 ```
 
@@ -312,6 +319,101 @@ if(nrow(metric_table) > 0) {
   #metric_table$input[["Directory"]][["New_id"]] <- sprintf("%.3f", metric_table$input[["Directory"]][["New_id"]])
    #print the table
   kable(metric_table) %>% kable_styling(full_width = TRUE)}
+```
+
+# Forest fraction
+
+```{r Forest fraction fraction,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
+if (do_forest_fraction){
+  
+  if (do_cmass){
+benchmark_name <- "CMASS1"
+  
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name, spatial.extent = spatial.extent)
+
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+Forest_fraction_table <- bind_rows(Forest_fraction_table, DGVMBenchmarks::ForestFraction(benchmark = this_benchmark, all_Fields_list = all_Fields_list)) %>%
+  dplyr::mutate(across(everything(), ~ replace_na(.x, NA)))
+  }
+  if (do_woody_growth){
+benchmark_name <- "W_GROWTH1" 
+
+Datasets <- processDataSource(all_datasets = all_datasets, input, benchmark_name, spatial.extent = spatial.extent)
+
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+Forest_fraction_table <- bind_rows(Forest_fraction_table, DGVMBenchmarks::ForestFraction(benchmark = this_benchmark, all_Fields_list = all_Fields_list)) %>%
+  dplyr::mutate(across(everything(), ~ replace_na(.x, NA)))
+}
+
+
+if (do_cpool){
+benchmark_name <- "cpool" 
+
+Datasets <- list()
+
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+all_Fields_list[[1]]@data$tot <- all_Fields_list[[1]]@data$SoilC + all_Fields_list[[1]]@data$LitterC
+all_Fields_list[[2]]@data$tot <- all_Fields_list[[2]]@data$SoilC + all_Fields_list[[2]]@data$LitterC
+
+this_benchmark@guess_var <- "tot"
+
+Forest_fraction_table <- bind_rows(Forest_fraction_table, DGVMBenchmarks::ForestFraction(benchmark = this_benchmark, all_Fields_list = all_Fields_list)) %>%
+  dplyr::mutate(across(everything(), ~ replace_na(.x, NA)))
+}
+}
+```
+
+```{r forest fraction table, echo=FALSE, message=FALSE, warning=FALSE}
+ if(nrow(Forest_fraction_table) > 0) {
+   kable(Forest_fraction_table) %>% kable_styling(full_width = TRUE)}
+```
+
+# SIMFIRE difference Plots 
+```{r SIMFIRE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_SIMFIRE){
+  # Define which benchmark to do
+benchmark_name <- "SIMFIRE"
+
+# Process your dataset
+Datasets <- processDataSource(all_datasets = all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
+
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+
+## Spatial plotting of your comparisons, handels multiple layers to.
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "difference")}
+
+## Table making, extracts the spatial mean from your fields.
+summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_simulation_Sources_list))}
+}
 ```
 
 # Profound {.tabset}

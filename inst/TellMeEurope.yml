@@ -13,21 +13,25 @@ Directory:
 
 Switches:
   do_plots: T
+  do_forest_fraction: T
   do_agpp: T
-  do_cmass: F
+  do_cmass: T
   do_stem_density: F
   do_qdbh: F
-  do_woody_growth: F
+  do_woody_growth: T
+  do_cpool: T
+  do_SIMFIRE: F
   do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: F
-  do_ICOS_GPP: T
-  do_ICOS_NEE: T
-  do_ICOS_Reco: T
-  do_ICOS_ET: T
+  do_ICOS_GPP: F
+  do_ICOS_NEE: F
+  do_ICOS_Reco: F
+  do_ICOS_ET: F
   do_FLUXNET_GPP: F
   do_FLUXNET_NEE: F
   do_FLUXNET_Reco: F
+  
 
 AGPP1: 
   Unit: "kg/m2/y" # The unit of the Benchmark
@@ -421,6 +425,137 @@ CMASS_pft1:
     r2: T
     r2_eff: F
     
+cpool:
+  Unit: "kg/m2/y"
+  Id: "Soil carbon"
+  Name: "cpool"
+  Description: "cpool"  
+  Layer: ["SoilC", "LitterC"]
+  Data:
+    Datasets: ["european_applications"]
+    File_name: ["cpool"]
+    Format: ["GUESS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: ""
+    Dataset_longname: ""
+    Dataset_source: ""
+    Dataset_description: ""
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["european_applications"]
+    File_name: ["cpool"]
+    Format: ["GUESS"]
+    First_year: 2001
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1, 0.4]
+      Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
+    Spatial_Scatter:
+      Limits: [0, 1]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
+SIMFIRE: 
+  Unit: "Burnt area fraction" # The unit of the Benchmark
+  Id: "Burnt area fraction" # The ID used for tabular output
+  Name: "Burnt area fraction" # Used in plotting
+  Description: "Burnt area fraction" # Used in tabular output
+  Layer: "combined_rate" # Layer/column in Fields to base the comparison on
+  Data:   
+    Datasets: ["FIRE"] # Name of Dataset (name of subfolder in data source directory)
+    File_name: ["fire_benchmark_data"] # The name of the files to process, should be the same for data and sim. (If ICOS or FLUXNET use data name)
+    Format: ["GUESS"]
+    First_year: NULL # Set first and last year to limit the temporal span, set to null takes the whole timespan 
+    Last_year: NULL
+    year.aggregate.method: "mean" # The method to aggregate time dimention 
+    spatial.aggregate.method:
+    Conversion_factor: NULL # Numeric() list() the factor needed for conversion of dataset, leave empty or NULL if not used
+    Layer_to_convert: NULL # List holding the dataset names of the Fields to be converted
+    Dataset_name: ["FIRE"] # Used in plotting and tabular output
+    Dataset_longname: "FIRE benchmark"
+    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
+    Dataset_description: ""
+    ICOS_FLUXNET_Specific:
+      UT.threshold: NULL
+      partition.method: NULL
+      day.night.method: NULL
+      NEE.day.night: NULL
+      rm.leap: NULL
+      data.cleaning: NULL
+      qc.threshold: NULL # ICOS & FLUXNET specific settings.
+  Simulations:
+    Simulation: ["european_applications"]
+    File_name: ["agpp"]
+    Format: ["GUESS"]
+    First_year: 2010
+    Last_year: 2010
+    year.aggregate.method: "mean"
+    spatial.aggregate.method: 
+    Conversion_factor: 
+    Layer_to_convert: 
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
+  Plotting:
+    Spatial_Difference:
+      Difference_Limits: [-1, 1]
+      Difference_Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
+      Percentage.difference_Limits:
+      Percentage.difference_Breaks:
+      Values_Limits:
+      Values_Breaks:
+    Spatial_Scatter:
+      Limits: [0, 3] # Plotting settings limits and breaks list input []
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T 
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
   
 Profound_csv1:
   Unit: "m2^m2"
