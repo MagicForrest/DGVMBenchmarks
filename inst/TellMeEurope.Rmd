@@ -383,11 +383,46 @@ Forest_fraction_table <- bind_rows(Forest_fraction_table, DGVMBenchmarks::Forest
    kable(Forest_fraction_table) %>% kable_styling(full_width = TRUE)}
 ```
 
+# Fire 
+
 # SIMFIRE difference Plots 
 ```{r SIMFIRE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if (do_SIMFIRE){
   # Define which benchmark to do
 benchmark_name <- "SIMFIRE"
+
+# Process your dataset
+Datasets <- processDataSource(all_datasets = all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
+
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+## Make comparison objects from your fields, used for comparison only!
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+
+## Spatial plotting of your comparisons, handels multiple layers to.
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "difference")}
+
+## Table making, extracts the spatial mean from your fields.
+summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
+## Extracts statistical metrics from your fields.
+if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
+                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
+                                      all_comparisons_list = all_comparisons,
+                                      simulation_sources = all_simulation_Sources_list))}
+}
+```
+
+# BLAZE difference Plots 
+```{r BLAZE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_BLAZE){
+  # Define which benchmark to do
+benchmark_name <- "BLAZE"
 
 # Process your dataset
 Datasets <- processDataSource(all_datasets = all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
