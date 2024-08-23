@@ -18,6 +18,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
   partition.method = "REF"
   day.night.method = "NT"
   NEE.day.night = NULL
+  LE.method = "MDS"
+  LE.correction = "75"
   year.aggregate.method = NULL
   spatial.aggregate.method = NULL
   first.year = NULL
@@ -37,6 +39,8 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
   if (!is.null(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["rm.leap"]]) && length(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["rm.leap"]]) != 0){rm.leap <- as.logical(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["rm.leap"]])}
   if (!is.null(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["data.cleaning"]]) && length(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["data.cleaning"]]) != 0){data.cleaning <- as.logical(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["data.cleaning"]])}
   if (!is.null(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["qc.threshold"]]) && length(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["qc.threshold"]]) != 0){qc.threshold <- as.numeric(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["qc.threshold"]])}
+  if (!is.null(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["LE.method"]]) && length(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["LE.method"]]) != 0){LE.method <- as.character(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["LE.method"]])}
+  if (!is.null(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["LE.correction"]]) && length(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["LE.correction"]]) != 0){LE.correction <- as.character(input[[benchmark_name]][["Data"]][["ICOS_FLUXNET_Specific"]][["LE.correction"]])}
   
   
   # If no dataset present, Data.year.mean is set to empty list.
@@ -97,9 +101,11 @@ processDataSource <- function(all_datasets, input, benchmark_name, spatial.exten
             quant = input[[benchmark_name]][["Data"]][["File_name"]][[i]],
             layers = NULL,
             UT.threshold = UT.threshold,
-            partition.method = partition.method,
+            method = partition.method,
             day.night.method = day.night.method,
             NEE.day.night = NEE.day.night,
+            LE.method = LE.method,
+            LE.correction = LE.correction,
             rm.leap = rm.leap,
             data.cleaning = data.cleaning,
             qc.threshold = qc.threshold,

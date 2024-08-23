@@ -15,6 +15,8 @@ getField_ICOS(
   method = "REF",
   day.night.method = "NT",
   NEE.day.night = NULL,
+  LE.method = "MDS",
+  LE.correction = "75",
   first.year,
   last.year,
   rm.leap = TRUE,
@@ -44,6 +46,10 @@ getField_ICOS(
 \item{day.night.method}{Nighttime (NT) or daytime (DT) partition method for GPP and Reco. Default is NT}
 
 \item{NEE.day.night}{Set to DAY or NIGHT for only daytime or nighttime NEE. Default is NULL}
+
+\item{LE.method}{Set either "MDS" for gap fill or "corr" for corrected latent heat flux}
+
+\item{LE.correction}{Set percentile of corrected LE flux "25" or "75"}
 
 \item{first.year}{Optional, will exclude data before this year}
 

@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\FIRE_runs\\Lars\\run1"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\FIRE_runs"
   Sim1_id: "Run 1"
-  Data: "C:\\Users\\Admin\\Documents\\tellus\\Data_240122"
-  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\FIRE_runs\\Lars\\run2"
-  Sim2_id: "Run 2"
+  Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data"
+  Sim2: ""
+  Sim2_id: ""
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -519,7 +519,7 @@ SIMFIRE:
       data.cleaning: NULL
       qc.threshold: NULL # ICOS & FLUXNET specific settings.
   Simulations:
-    Simulation: ["SIMFIRE"]
+    Simulation: ["FireRUN"]
     File_name: ["simfireanalysis"]
     Format: ["GUESS"]
     First_year: NULL
@@ -587,7 +587,7 @@ BLAZE:
       data.cleaning: NULL
       qc.threshold: NULL # ICOS & FLUXNET specific settings.
   Simulations:
-    Simulation: ["BLAZE"]
+    Simulation: ["FireRUN"]
     File_name: ["aburntarea"]
     Format: ["GUESS"]
     First_year: NULL
@@ -976,6 +976,8 @@ ICOS_GPP1:
       partitioning.method: "REF"
       day.night.method: "NT"
       NEE.day.night: NULL
+      LE.method: "MDS"
+      LE.correction: 75
       rm.leap: "TRUE"
       data.cleaning: "TRUE"
       qc.threshold: 0.5
@@ -1041,6 +1043,8 @@ ICOS_NEE1:
       partitioning.method: "REF"
       day.night.method: "NT"
       NEE.day.night: NULL
+      LE.method: "MDS"
+      LE.correction: 75
       rm.leap: "TRUE"
       data.cleaning: "TRUE"
       qc.threshold: 0.5
@@ -1106,6 +1110,8 @@ ICOS_Reco1:
       partitioning.method: "REF"
       day.night.method: "NT"
       NEE.day.night: NULL
+      LE.method: "MDS"
+      LE.correction: 75
       rm.leap: "TRUE"
       data.cleaning: "TRUE"
       qc.threshold: 0.5
@@ -1146,14 +1152,14 @@ ICOS_Reco1:
     r2_eff: F
 
 ICOS_ET1:
-  Unit: "(GPP/2)"
+  Unit: "mm/day"
   Id: "ET"
   Name: "ET"
   Description: "Daily Evapotranspiration"  
-  Layer: "GPP"
+  Layer: "LE"
   Data:
     Datasets: ["ICOS"]
-    File_name: ["GPP"]
+    File_name: ["LE"]
     Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL
@@ -1162,7 +1168,7 @@ ICOS_ET1:
     Conversion_factor:
     Layer_to_convert:
     Dataset_name: "ICOS"
-    Dataset_longname: "ICOS Evapotranspiration (GPP/2)"
+    Dataset_longname: "ICOS Evapotranspiration"
     Dataset_source: "ICOS Carbon portal"
     Dataset_description: "Comparison of daily ET produced by LPJ-GUESS to the ICOS measurment daily GPP station data from Hyltemossa, Svartberget & Norunda"
     ICOS_FLUXNET_Specific:
@@ -1170,8 +1176,10 @@ ICOS_ET1:
       partitioning.method: "REF"
       day.night.method: "NT"
       NEE.day.night: NULL
+      LE.method: "MDS"
+      LE.correction: "75"
       rm.leap: "TRUE"
-      data.cleaning: "TRUE"
+      data.cleaning: "F"
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]

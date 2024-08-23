@@ -403,7 +403,7 @@ all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name)
 
 ## Spatial plotting of your comparisons, handels multiple layers to.
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "difference")}
@@ -436,7 +436,7 @@ all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
 ## Make comparison objects from your fields, used for comparison only!
-all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name)
 
 ## Spatial plotting of your comparisons, handels multiple layers to.
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "difference")}
@@ -1186,6 +1186,11 @@ benchmark_name <- "ICOS_ET1"
 
 # Process your dataset
 Datasets <- processDataSource(all_datasets, input, spatial.extent = spatial.extent, benchmark_name)
+
+# Convert Latent heat flux to Evapotranspiration from W/m^2 -> mm/day
+latent_heat_of_vaporization <- 2.45
+
+Datasets[["ICOS"]]@data$ET <- (Datasets[["ICOS"]]@data$LE * 86400) / (latent_heat_of_vaporization * 1e6)
 
 # Build your current benchmark from input YAML file  
 this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)

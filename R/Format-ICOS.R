@@ -19,6 +19,8 @@
 #' @param method Method, e.g. REF, USTAR50, MEAN. REF is default
 #' @param day.night.method Nighttime (NT) or daytime (DT) partition method for GPP and Reco. Default is NT
 #' @param NEE.day.night Set to DAY or NIGHT for only daytime or nighttime NEE. Default is NULL
+#' @param LE.method Set either "MDS" for gap fill or "corr" for corrected latent heat flux
+#' @param LE.correction Set percentile of corrected LE flux "25" or "75"
 #' @param first.year Optional, will exclude data before this year
 #' @param last.year Optional, will exclude data beyond this year
 #' @param rm.leap A logical, set to true to remove leap days
@@ -42,6 +44,8 @@ getField_ICOS <- function(source,
                           method = "REF",
                           day.night.method = "NT",
                           NEE.day.night = NULL,
+                          LE.method = "MDS",
+                          LE.correction = "75",
                           first.year,
                           last.year,
                           rm.leap = TRUE,
@@ -55,7 +59,7 @@ getField_ICOS <- function(source,
   }
   
   # variables that are currently supported
-  variables.cfluxes = c("GPP", "NEE", "Reco")
+  variables.cfluxes = c("GPP", "NEE", "Reco", "LE")
   
   # lists all files with daily fluxes
   daily.files <- list.files(path = source@dir) %>%
@@ -113,7 +117,20 @@ getField_ICOS <- function(source,
           select(ends_with(NEE.day.night)) %>%
           rowSums() / 1000
         
-      } else {
+      } else if (v == "LE" & LE.method != "corr"){
+        to.cbind <- select(site.data, contains(v)) %>%
+          select(contains("F")) %>%
+          select(ends_with(LE.method))
+        colnames(to.cbind) <- "to.cbind"
+        to.cbind <- as.vector(to.cbind$to.cbind)
+        
+      } else if (v == "LE" & LE.method == "corr"){
+        to.cbind <- select(site.data, contains(LE.method)) %>%
+          select(contains(v)) %>%
+          select(contains(LE.correction))
+        colnames(to.cbind) <- "to.cbind"
+      }
+      else {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(v)) %>%
           select(contains(method)) %>%
@@ -302,7 +319,14 @@ ICOS.quantities <- list(
       units = "kgC/m^2/day",
       colours = function(n) rev(viridis::viridis(n)),
       format = c("ICOS"),
-      standard_name = "ecosystem_respiration")
+      standard_name = "ecosystem_respiration"),
+  new("Quantity",
+      id = "LE",
+      name = "LE",
+      units = "W/m^2/day",
+      colours = function(n) rev(viridis::viridis(n)),
+      format = c("ICOS"),
+      standard_name = "latent_heat_flux")
 )
 
 
