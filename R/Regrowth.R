@@ -17,9 +17,9 @@ Regrowth <- function(benchmark = this_benchmark, all_sim_full, opt.gridlist = NU
 # read the regrowth data
 if (is.null(opt.gridlist)){
 # first the gridlist
-input_dir <- system.file("extdata", "Regrowth", package = "DGVMBenchmarks")
-gridlist_file <- file.path("C:\\Users\\Admin\\Documents\\tellus\\Regrowth\\data\\processed_for_LPJG", "gridlist_update29082024.txt")
-gridlist <- read.table(gridlist_file,header = F)
+input_dir <- file.path(system.file("extdata", "Regrowth_Europe", package = "DGVMBenchmarks"))
+gridlist_file <- file.path(input_dir, "gridlist_update29082024.txt")
+gridlist <- read.table(gridlist_file)
 names(gridlist) <- c("Lon","Lat","distyear","Biome")
 }else{gridlist_file <- file.path(opt.gridlist)
 gridlist <- read.table(gridlist_file,header = F)
@@ -27,7 +27,8 @@ names(gridlist) <- c("Lon","Lat","distyear","Biome")}
 
 if (is.null(opt.dataset)){
 # now the data
-regrowth_file <- file.path("C:\\Users\\Admin\\Documents\\tellus\\Regrowth\\data\\processed", "benchmark_regrowth_29082024.csv")
+input_dir <- file.path(system.file("extdata", "Regrowth_Europe", package = "DGVMBenchmarks"))
+regrowth_file <- file.path(input_dir, "benchmark_regrowth_29082024.csv")
 regrowth <- read.csv(file =regrowth_file)
 regrowth_full_dt <- data.table(regrowth)[, list(bin, Year, AGcwood_kgCm2_med, AGcwood_kgCm2_10, AGcwood_kgCm2_90, Biome)]
 regrowth_full_dt[, bin_centres := as.factor(Year)]
