@@ -318,8 +318,7 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sourc
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-all_sim_full[[1]]@data <- all_sim_full[[1]]@data[,-1]
-if(do_plots){Regrowth(all_sim_full)}
+if(do_plots){Regrowth(this_benchmark,all_sim_full)}
 }
 ```
 

@@ -496,11 +496,11 @@ REGROWTH:
   Id: "Regrowth"
   Name: "Regrowth"
   Description: "Growback"  
-  Layer: 
+  Layer: "Total"
   Data:
-    Datasets: ["european_applications"]
-    File_name: ["cpool"]
-    Format: ["GUESS"]
+    Datasets: 
+    File_name: 
+    Format: 
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "mean"
