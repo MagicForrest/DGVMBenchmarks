@@ -3,6 +3,7 @@
 export(FLUXNET)
 export(ForestFraction)
 export(ICOS)
+export(Regrowth)
 export(SITE)
 export(areaWeightedTotal)
 export(availiableICOSStations)

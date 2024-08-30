@@ -1,5 +1,5 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\FIRE_runs"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Regrowth\\sim_output"
   Sim1_id: "Run 1"
   Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data"
   Sim2: ""
@@ -20,6 +20,7 @@ Switches:
   do_qdbh: F
   do_woody_growth: F
   do_cpool: F
+  do_Regrowth: T
   do_SIMFIRE: T
   do_BLAZE: T
   do_profound: F
@@ -462,6 +463,70 @@ cpool:
     Last_year: 2010
     year.aggregate.method: "mean"
     spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1, 0.4]
+      Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
+    Spatial_Scatter:
+      Limits: [0, 1]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
+REGROWTH:
+  Unit: "kg/m2"
+  Id: "Regrowth"
+  Name: "Regrowth"
+  Description: "Growback"  
+  Layer: 
+  Data:
+    Datasets: ["european_applications"]
+    File_name: ["cpool"]
+    Format: ["GUESS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: ""
+    Dataset_longname: ""
+    Dataset_source: ""
+    Dataset_description: ""
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["regrowth"]
+    File_name: ["cmass_wood_plus10cm_sts_fake"]
+    Format: ["GUESS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "none"
+    spatial.aggregate.method: "none"
     Conversion_factor:
     Layer_to_convert:
     aDGVM_Specific:

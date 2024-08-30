@@ -51,6 +51,7 @@ do_profound <- as.logical(input[["Switches"]][["do_profound"]])
 do_cmass_pft <- as.logical(input[["Switches"]][["do_cmass_pft"]])
 do_cmass_pft1 <- as.logical(input[["Switches"]][["do_cmass_pft1"]])
 do_cpool <- as.logical(input[["Switches"]][["do_cpool"]])
+do_Regrowth <- as.logical(input[["Switches"]][["do_Regrowth"]])
 do_SIMFIRE <- as.logical(input[["Switches"]][["do_SIMFIRE"]])
 do_ICOS_GPP <- as.logical(input[["Switches"]][["do_ICOS_GPP"]])
 do_ICOS_NEE <- as.logical(input[["Switches"]][["do_ICOS_NEE"]])
@@ -303,6 +304,26 @@ all_Fields_list <- field_lists[[2]]
 if(do_plots){plotSpatialField(Benchmark = this_benchmark, all_Fields_list = all_Fields_list)}
 }
 ```
+# Regrowth
+
+```{r Regrowth, echo=FALSE, message=FALSE, warning=FALSE, results='hide',out.width = "120%",out.height="120%"}
+if (do_Regrowth){
+benchmark_name <- "REGROWTH" 
+
+Data.year.mean <- list()
+
+this_benchmark <- createBenchmark(benchmark_name, input, Data.year.mean, spatial.extent)
+
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+all_sim_full[[1]]@data <- all_sim_full[[1]]@data[,-1]
+if(do_plots){Regrowth(all_sim_full)}
+}
+```
+
+
 
 # Summary table spatial mean
 ```{r Summary table, echo=FALSE, message=FALSE, warning=FALSE}
