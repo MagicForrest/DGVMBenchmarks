@@ -3,6 +3,7 @@
 export(FLUXNET)
 export(ForestFraction)
 export(ICOS)
+export(PlotStormScatter)
 export(Regrowth)
 export(SITE)
 export(areaWeightedTotal)
