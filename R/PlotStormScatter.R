@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
-PlotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
+plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
   # Define paths
   path <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\run_240809_sim4_age_probharv_satdist07\\'
   areapath <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\GridcellFractionsEMEP\\'
