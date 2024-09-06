@@ -1,6 +1,6 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Regrowth\\sim_output"
-  Sim1_id: "Run 1"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\run_240809_sim4_age_probharv_satdist07"
+  Sim1_id: "Wind1"
   Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data"
   Sim2: ""
   Sim2_id: ""
@@ -20,9 +20,10 @@ Switches:
   do_qdbh: F
   do_woody_growth: F
   do_cpool: F
-  do_Regrowth: T
-  do_SIMFIRE: T
-  do_BLAZE: T
+  do_Regrowth: F
+  do_SIMFIRE: F
+  do_BLAZE: F
+  do_storm: T
   do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: F
@@ -525,6 +526,70 @@ REGROWTH:
     Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
+    year.aggregate.method: "none"
+    spatial.aggregate.method: "none"
+    Conversion_factor:
+    Layer_to_convert:
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
+  Plotting:
+    Spatial_Difference:
+      Limits: [-1, 0.4]
+      Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
+    Spatial_Scatter:
+      Limits: [0, 1]
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
+    
+STORM:
+  Unit: ""
+  Id: "Storm Disturbance"
+  Name: "Storm Disturbance"
+  Description: "Simulated wind damage in a severe storm averaged over the period 1986-2020 and how this combines with annual storm probability to produce an estimate of annual wind damage. The results across the simulation domain are benchmarked to observation-based damage statistics from the DFDE database"  
+  Layer: "DamWoodC"
+  Data:
+    Datasets: 
+    File_name: 
+    Format: 
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "mean"
+    spatial.aggregate.method:
+    Conversion_factor:
+    Layer_to_convert:
+    Dataset_name: ""
+    Dataset_longname: ""
+    Dataset_source: ""
+    Dataset_description: ""
+    ICOS_FLUXNET_Specific:
+      UT.threshold: 
+      partition.method: 
+      day.night.method: 
+      NEE.day.night: 
+      rm.leap: 
+      data.cleaning: 
+      qc.threshold: 
+  Simulations:
+    Simulation: ["storm"]
+    File_name: ["storm"]
+    Format: ["GUESS"]
+    First_year: 1986
+    Last_year: 2020
     year.aggregate.method: "none"
     spatial.aggregate.method: "none"
     Conversion_factor:

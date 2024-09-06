@@ -10,7 +10,6 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
 plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
   # Define paths
-  path <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\run_240809_sim4_age_probharv_satdist07\\'
   areapath <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\GridcellFractionsEMEP\\'
   
   lulist <- fread("C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")  # Assuming lumap.csv contains long, lat, and land use data
@@ -38,12 +37,6 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
   # Filter for year 2010 to create the final lumap data.table
   lulist_2010 <- lulist[year == 2010, .(Lon, Lat, NATURAL, FOREST, BARREN, FOREST_AGE)]
   
-  # View the resulting data.table
-  head(lulist_2010)
-  
-  
-  
-  
   # Reading wind damage probability data
   # Load the data
   wdplist <- fread('C:/Users/Admin/Documents/tellus/Storm_disturbance/wdp_05deg_from01deg_colinear.txt', sep = "\t", header = TRUE)
@@ -64,7 +57,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
     
     # Filter for the years 1986-2020 and calculate the mean for each Lon/Lat
     storm_means <- stormlist[Year %in% year_range, 
-                             .(DamWoodC_mean = mean(benchmark@guess_layers, na.rm = TRUE)), 
+                             .(DamWoodC_mean = mean(get(benchmark@guess_layers), na.rm = TRUE)), 
                              by = .(Lon, Lat)]
     
     
@@ -181,7 +174,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
         x = "Total modelled damage (milj m^3)",
         y = "Total reported damage (milj m^3)",
         title = paste("Scatterplot of Modelled vs Reported Damage", benchmark@first.year,"-",benchmark@last.year),
-        subtitle = this_sim@id
+        subtitle = this_sim@source@id
       ) +
       annotate(
         "text",

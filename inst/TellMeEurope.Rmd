@@ -17,12 +17,14 @@ library(TellMeEurope)
 library(knitr)
 library(dplyr)
 library(tidyr)
+library(tidyverse)
 library(kableExtra)
 library(tictoc)
 library(ggpubr)
 library(yaml)
 library(showtext) 
 library(data.table)
+library(patchwork)
 showtext_auto()
 # start timer
 tic()
@@ -35,7 +37,7 @@ tic()
 ```{r settings,  echo=F, warning=FALSE}
 source(file.path(system.file("TellMeEurope_config.R", package = "DGVMBenchmarks"))) 
 
-str(input, max.level = 4)
+#str(input, max.level = 4)
 
 # plot maps (turn off to save time)
 do_plots <- as.logical(input[["Switches"]][["do_plots"]])
@@ -52,7 +54,9 @@ do_cmass_pft <- as.logical(input[["Switches"]][["do_cmass_pft"]])
 do_cmass_pft1 <- as.logical(input[["Switches"]][["do_cmass_pft1"]])
 do_cpool <- as.logical(input[["Switches"]][["do_cpool"]])
 do_Regrowth <- as.logical(input[["Switches"]][["do_Regrowth"]])
+do_storm <- as.logical(input[["Switches"]][["do_storm"]])
 do_SIMFIRE <- as.logical(input[["Switches"]][["do_SIMFIRE"]])
+do_BLAZE <- as.logical(input[["Switches"]][["do_BLAZE"]])
 do_ICOS_GPP <- as.logical(input[["Switches"]][["do_ICOS_GPP"]])
 do_ICOS_NEE <- as.logical(input[["Switches"]][["do_ICOS_NEE"]])
 do_ICOS_Reco <- as.logical(input[["Switches"]][["do_ICOS_Reco"]])
@@ -322,7 +326,55 @@ if(do_plots){Regrowth(this_benchmark,all_sim_full)}
 }
 ```
 
+# Storm {.tabset}
 
+```{r storm desc, echo = FALSE, eval = TRUE, results = "asis"}
+cat(input[["STORM"]][["Description"]])
+```
+
+## Storm Damage 
+```{r Storm damage, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_storm){
+  # Define which benchmark to do
+benchmark_name <- "STORM"
+
+# Process your dataset
+Datasets <- list()
+
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+if (do_plots){plotStormScatter(this_benchmark, all_sim_full)}
+
+}
+```
+
+## Storm Probability
+```{r Storm prob, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_storm){
+  # Define which benchmark to do
+benchmark_name <- "STORM"
+
+# Process your dataset
+Datasets <- list()
+
+# Build your current benchmark from input YAML file  
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = Datasets, spatial.extent)
+
+# Process simulations and order together with dataset, the lists returned are needed in later functions.
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+if (do_plots){plotStormMap(this_benchmark, all_sim_full)}
+
+}
+```
 
 # Summary table spatial mean
 ```{r Summary table, echo=FALSE, message=FALSE, warning=FALSE}
@@ -428,13 +480,8 @@ all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchm
 ## Spatial plotting of your comparisons, handels multiple layers to.
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "difference")}
 
-## Table making, extracts the spatial mean from your fields.
-summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
-## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
-                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
-                                      all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_simulation_Sources_list))}
+
+
 }
 ```
 
@@ -461,13 +508,7 @@ all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchm
 ## Spatial plotting of your comparisons, handels multiple layers to.
 if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "difference")}
 
-## Table making, extracts the spatial mean from your fields.
-summary_table <- DGVMBenchmarks::buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names, input = input)
-## Extracts statistical metrics from your fields.
-if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
-                     DGVMBenchmarks::makeMetricTable(benchmark = this_benchmark,
-                                      all_comparisons_list = all_comparisons,
-                                      simulation_sources = all_simulation_Sources_list))}
+
 }
 ```
 

@@ -11,8 +11,6 @@
 plotStormMap <- function(benchmark = this_benchmark, all_sim_full){
 
 
-# Define paths
-path <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\run_240809_sim4_age_probharv_satdist07\\'
 areapath <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\GridcellFractionsEMEP\\'
 
 
@@ -41,12 +39,6 @@ lulist[, FOREST_AGE := sum(agetemp * ages), by = .(Lon, Lat)]
 # Filter for year 2010 to create the final lumap data.table
 lulist_2010 <- lulist[year == 2010, .(Lon, Lat, NATURAL, FOREST, BARREN, FOREST_AGE)]
 
-# View the resulting data.table
-head(lulist_2010)
-
-
-
-
 # Reading wind damage probability data
 # Load the data
 wdplist <- fread('C:/Users/Admin/Documents/tellus/Storm_disturbance/wdp_05deg_from01deg_colinear.txt', sep = "\t", header = TRUE)
@@ -67,7 +59,7 @@ for(this_sim in all_sim_full){
   
   # Filter for the years 1986-2020 and calculate the mean for each Lon/Lat
   storm_means <- stormlist[Year %in% year_range, 
-                           .(DamWoodC_mean = mean(benchmark@guess_layers, na.rm = TRUE)), 
+                           .(DamWoodC_mean = mean(get(benchmark@guess_layers), na.rm = TRUE)), 
                            by = .(Lon, Lat)]
   
   
@@ -168,28 +160,47 @@ for(this_sim in all_sim_full){
   
  this_sim@data <- final_merge
  
- p1 <- DGVMTools::plotSpatial(this_sim,
-                              layers = c("stormmap_call",
-                                         "expected_call"),
-                              map.overlay = "world",
-                              panel.bg.col = "gray")+
-   scale_fill_gradient2(low = "red",
-                        high = "blue",
-                        mid = "white",
-                        midpoint = 0,
-                        na.value = "black")+
-   labs(title = paste(this_field@source@name))+
-   theme(plot.title = element_text(size = 30),
-         plot.subtitle = element_text(size = 20),
-         axis.title.x = element_text(size = 25),
-         axis.title.y = element_text(size = 25),
-         legend.text = element_text(size = 17),
-         legend.title = element_text(size = 19),
-         panel.border = element_rect(color = "black",
-                                     fill = NA,
-                                     size = 1))
+ # Define custom labels
+ custom_labels <- c("stormmap_call" = "Mean Wind Damage",
+                    "expected_call" = "Expected Annual Damage")
+ units <- c("stormmap_call" = "kg C / m²", "expected_call" = "kg C / m² / yr")
  
- plot(p1)
-
+ # Create separate plots for each layer
+ plots <- lapply(names(custom_labels), function(layer) {
+   p <- DGVMTools::plotSpatial(this_sim,
+                               layers = layer,  # Plot one layer at a time
+                               map.overlay = "world",
+                               panel.bg.col = "gray") +
+     scale_fill_gradient2(
+       low = "red",
+       high = "blue",
+       mid = "white",
+       midpoint = 0,
+       na.value = "black"
+     ) +
+     labs(
+       title = custom_labels[[layer]], # Use custom labels for titles
+       fill = units[[layer]],
+       subtitle = paste0(this_sim@first.year, "-", this_sim@last.year)
+     ) +
+     theme(
+       plot.title = element_text(size = 20, hjust = 0.5),
+       axis.title.x = element_text(size = 14),
+       axis.title.y = element_text(size = 14),
+       legend.text = element_text(size = 12),
+       legend.title = element_text(size = 14),
+       panel.border = element_rect(color = "black", fill = NA, size = 1),
+       legend.position = "right"
+     )
+   
+   return(p)
+ })
+ 
+ # Combine the plots using patchwork
+ combined_plot <- plots[[1]] + plots[[2]] + 
+   plot_layout(ncol = 2)+# Adjust the layout as needed
+   plot_annotation(title = paste(this_sim@source@id),
+                   theme = theme(plot.title = element_text(size = 25, hjust = 0.5)))
+ plot(combined_plot)
 }
 }
