@@ -167,27 +167,40 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
     # SCATTERPLOT OF MODELLED AND REPORTED DAMAGE
     # Plot the modelled total damage 1986-2020 by country against DFDE reported values
     storm_scatter <- ggplot(country_table, aes(x = Modelled_Damage_Before_Calibration, y = Reported_Damage)) +
-      geom_point(size = 3) +
-      geom_text(aes(label = Country), hjust = 1.1, vjust = 0, size = 5) +
-      geom_abline(slope = slope, intercept = 0, linetype = "dotted", color = "black", size = 1) +
+      geom_point(size = 3.5, shape = 21, fill = "#56B4E9", color = "#0072B2", stroke = 0.7) +  # Sophisticated color and shape
+      geom_text_repel(aes(label = Country), size = 4, max.overlaps = 10, box.padding = 0.4, segment.color = "grey50") +  # Repel labels neatly
+      geom_abline(slope = slope, intercept = 0, linetype = "dotted", color = "darkred", size = 1.2) +  # Prominent regression line
       labs(
-        x = "Total modelled damage (milj m^3)",
-        y = "Total reported damage (milj m^3)",
-        title = paste("Scatterplot of Modelled vs Reported Damage", benchmark@first.year,"-",benchmark@last.year),
-        subtitle = this_sim@source@id
+        x = expression("Total Modelled Damage (Milj m"^3*")"),  # Scientific notation for clarity
+        y = expression("Total Reported Damage (Milj m"^3*")"),
+        title = paste("Modelled vs Reported Damage:", benchmark@first.year, "-", benchmark@last.year),
+        subtitle = this_sim@source@id  # Consider the necessity of this line
       ) +
       annotate(
         "text",
         x = max(xdata) * 0.98,
-        y = max(ydata) * 0.95,
-        label = sprintf("y = %.3fx, R^2 = %.2f", slope, R2),
+        y = max(ydata) * 1.1,
+        label = sprintf("y = %.3fx\nR² = %.2f", slope, R2),
         hjust = 1,
         vjust = 1,
-        size = 5
+        size = 5,
+        color = "black",
+        fontface = "italic"
       ) +
-      theme_minimal(base_size = 15) +
-      theme(plot.title = element_text(hjust = 0.5),
-            plot.subtitle = element_text(hjust = 0.5))
+      theme_minimal(base_size = 16, base_family = "Times") +  # Use a serif font like Times for a classic look
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 18),
+        plot.subtitle = element_text(hjust = 0.5, face = "italic", size = 14, margin = margin(t = 5, b = 15)),
+        axis.title = element_text(face = "bold", size = 14),
+        axis.text = element_text(size = 12),
+        panel.grid.major = element_line(size = 0.3, color = "grey85"),  # Very light grid lines
+        panel.grid.minor = element_blank(),
+        plot.margin = margin(10, 10, 10, 10),  # Adequate spacing around the plot
+        legend.position = "none"  # Remove legend if not needed
+      ) +
+      ggthemes::theme_hc()  # Add a subtle theme for cleaner presentation
+    
+    # Plot the enhanced scatter plot
     plot(storm_scatter)
   }
 }
