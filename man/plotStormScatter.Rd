@@ -4,12 +4,24 @@
 \alias{plotStormScatter}
 \title{Storm disturbance scatter}
 \usage{
-plotStormScatter(benchmark = this_benchmark, all_sim_full)
+plotStormScatter(
+  benchmark = this_benchmark,
+  all_sim_full,
+  do_plots = do_plots,
+  anno.hjust = 0,
+  anno.vjust = 0
+)
 }
 \arguments{
 \item{benchmark}{The current benchmark.}
 
 \item{all_sim_full}{List holding simulations.}
+
+\item{do_plots}{External argument TRUE or FALSE if plot is to be rendered or not.}
+
+\item{anno.hjust}{Horizontal adjustment of equation annotation.}
+
+\item{anno.vjust}{Vertical adjustment of equation annotation.}
 }
 \value{
 Scatterplot of modelled and observed damage

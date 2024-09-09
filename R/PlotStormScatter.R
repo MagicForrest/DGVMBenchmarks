@@ -2,13 +2,15 @@
 #'
 #' @param benchmark The current benchmark.
 #' @param all_sim_full List holding simulations.
-#'
+#' @param do_plots External argument TRUE or FALSE if plot is to be rendered or not.
+#' @param anno.hjust Horizontal adjustment of equation annotation. 
+#' @param anno.vjust Vertical adjustment of equation annotation. 
 #' @return Scatterplot of modelled and observed damage
 #' @export
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
-plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
+plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots = do_plots, anno.hjust = 0, anno.vjust = 0){
   # Define paths
   areapath <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\GridcellFractionsEMEP\\'
   
@@ -166,41 +168,51 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full){
     
     # SCATTERPLOT OF MODELLED AND REPORTED DAMAGE
     # Plot the modelled total damage 1986-2020 by country against DFDE reported values
-    storm_scatter <- ggplot(country_table, aes(x = Modelled_Damage_Before_Calibration, y = Reported_Damage)) +
+    
+    # Common range for x and y axes
+    x_range <- range(country_table$Reported_Damage, na.rm = TRUE)
+    y_range <- range(country_table$Modelled_Damage_Before_Calibration, na.rm = TRUE)
+    common_range <- c(min(c(x_range[1], y_range[1])), max(c(x_range[2], y_range[2])))
+    
+    # Define the plot
+    storm_scatter <- ggplot(country_table, aes(x = Reported_Damage, y = Modelled_Damage_After_Calibration)) +
       geom_point(size = 3.5, shape = 21, fill = "#56B4E9", color = "#0072B2", stroke = 0.7) +  # Sophisticated color and shape
-      geom_text_repel(aes(label = Country), size = 4, max.overlaps = 10, box.padding = 0.4, segment.color = "grey50") +  # Repel labels neatly
+      geom_text_repel(aes(label = Country), size = 6, max.overlaps = 10, box.padding = 0.4, segment.color = "grey50") +  # Repel labels
       geom_abline(slope = slope, intercept = 0, linetype = "dotted", color = "darkred", size = 1.2) +  # Prominent regression line
       labs(
-        x = expression("Total Modelled Damage (Milj m"^3*")"),  # Scientific notation for clarity
-        y = expression("Total Reported Damage (Milj m"^3*")"),
-        title = paste("Modelled vs Reported Damage:", benchmark@first.year, "-", benchmark@last.year),
+        x = expression("Total Reported Damage (Milj m"^3*")"),  # Scientific notation for clarity
+        y = expression("Total Modelled Damage (Milj m"^3*")"),
+        title = paste("Reported vs Modelled Damage:", benchmark@first.year, "-", benchmark@last.year),
         subtitle = this_sim@source@id  # Consider the necessity of this line
       ) +
       annotate(
         "text",
-        x = max(xdata) * 0.98,
-        y = max(ydata) * 1.1,
+        x = common_range[2] - anno.hjust,
+        y = common_range[2] - anno.vjust,
         label = sprintf("y = %.3fx\nR² = %.2f", slope, R2),
         hjust = 1,
         vjust = 1,
-        size = 5,
+        size = 7,
         color = "black",
         fontface = "italic"
       ) +
-      theme_minimal(base_size = 16, base_family = "Times") +  # Use a serif font like Times for a classic look
+      theme_bw() +
       theme(
-        plot.title = element_text(hjust = 0.5, face = "bold", size = 18),
-        plot.subtitle = element_text(hjust = 0.5, face = "italic", size = 14, margin = margin(t = 5, b = 15)),
-        axis.title = element_text(face = "bold", size = 14),
-        axis.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 20),
+        plot.subtitle = element_text(hjust = 0.5, face = "italic", size = 18, margin = margin(t = 5, b = 15)),
+        axis.title = element_text(face = "bold", size = 18),
+        axis.text = element_text(size = 15),
         panel.grid.major = element_line(size = 0.3, color = "grey85"),  # Very light grid lines
         panel.grid.minor = element_blank(),
         plot.margin = margin(10, 10, 10, 10),  # Adequate spacing around the plot
         legend.position = "none"  # Remove legend if not needed
       ) +
-      ggthemes::theme_hc()  # Add a subtle theme for cleaner presentation
+      coord_fixed(ratio = 1) +  # Ensure the plot is square
+      scale_x_continuous(limits = common_range) +  # Set x axis limits
+      scale_y_continuous(limits = common_range)  # Set y axis limits
     
-    # Plot the enhanced scatter plot
-    plot(storm_scatter)
+    # Plot scatter plot
+    if (do_plots){plot(storm_scatter)}
   }
+  return(country_table)
 }

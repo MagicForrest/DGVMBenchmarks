@@ -352,9 +352,31 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Source
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-if (do_plots){plotStormScatter(this_benchmark, all_sim_full)}
+storm_table<-plotStormScatter(this_benchmark, all_sim_full, do_plots, anno.hjust = 140)
 
 }
+```
+
+## Country Table
+```{r storm table, echo=FALSE, message=FALSE, warning=FALSE}
+if (do_storm){
+  storm_table <- storm_table %>%
+  mutate(
+    Reported_Damage = round(Reported_Damage, 2),
+    Modelled_Damage_Before_Calibration = round(Modelled_Damage_Before_Calibration, 2),
+    Modelled_Damage_After_Calibration = round(Modelled_Damage_After_Calibration, 2)
+  )
+  storm_table <- storm_table %>%
+  rename(
+    Country = `Country`,
+    `Reported Damage` = `Reported_Damage`,
+    `Modelled Damage Before Calibration` = `Modelled_Damage_Before_Calibration`,
+    `Modelled Damage After Calibration` = `Modelled_Damage_After_Calibration`
+  )
+  if(nrow(storm_table) > 0) {
+   kable(storm_table) %>% kable_styling(full_width = TRUE)}
+}
+
 ```
 
 ## Storm Probability
