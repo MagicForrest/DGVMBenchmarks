@@ -12,9 +12,13 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
 plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots = do_plots, anno.hjust = 0, anno.vjust = 0){
   # Define paths
-  areapath <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\GridcellFractionsEMEP\\'
+  areapath <- file.path(system.file("extdata", "Storm", "GridcellFractionsEMEP", package = "DGVMBenchmarks"))
   
-  lulist <- fread("C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")  # Assuming lumap.csv contains long, lat, and land use data
+  input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
+  LC_file <- file.path(input_dir, "LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")
+  
+  
+  lulist <- fread(LC_file)  # Assuming lumap.csv contains long, lat, and land use data
   lulist$Year <- lulist$year 
   # Assuming lulist is already loaded as a data.table and Lon, Lat adjusted
   lulist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
@@ -41,7 +45,9 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
   
   # Reading wind damage probability data
   # Load the data
-  wdplist <- fread('C:/Users/Admin/Documents/tellus/Storm_disturbance/wdp_05deg_from01deg_colinear.txt', sep = "\t", header = TRUE)
+  input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
+  wind_dist_file <- file.path(input_dir, "wdp_05deg_from01deg_colinear.txt")
+  wdplist <- fread(wind_dist_file, sep = "\t", header = TRUE)
   
   # Adjust coordinates (shift from center to SW corner)
   wdplist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
@@ -94,7 +100,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
       country <- countrycode[i]
       
       # Read the fraction data for each country
-      thefile <- sprintf('%s%s.csv', areapath, country)
+      thefile <- file.path(areapath,  paste0(country, ".csv"))
       aflist <- fread(thefile, sep = ";", header = TRUE)
       aflist <- aflist[, .(Lon = floor(longitude * 2) / 2, Lat = floor(latitude * 2) / 2, Fraction = fraction)]
       
@@ -175,15 +181,28 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     common_range <- c(min(c(x_range[1], y_range[1])), max(c(x_range[2], y_range[2])))
     
     # Define the plot
-    storm_scatter <- ggplot(country_table, aes(x = Reported_Damage, y = Modelled_Damage_After_Calibration)) +
-      geom_point(size = 3.5, shape = 21, fill = "#56B4E9", color = "#0072B2", stroke = 0.7) +  # Sophisticated color and shape
-      geom_text_repel(aes(label = Country), size = 6, max.overlaps = 10, box.padding = 0.4, segment.color = "grey50") +  # Repel labels
-      geom_abline(slope = slope, intercept = 0, linetype = "dotted", color = "darkred", size = 1.2) +  # Prominent regression line
+    storm_scatter <- ggplot(country_table,
+                            aes(x = Reported_Damage,
+                                y = Modelled_Damage_After_Calibration)) +
+      geom_point(size = 3.5,
+                 shape = 21,
+                 fill = "#56B4E9",
+                 color = "#0072B2",
+                 stroke = 0.7) +  
+      geom_text_repel(aes(label = Country),
+                      size = 6, max.overlaps = 10,
+                      box.padding = 0.4,
+                      segment.color = "grey50") +  # Repel labels
+      geom_abline(slope = slope,
+                  intercept = 0,
+                  linetype = "dotted",
+                  color = "darkred",
+                  size = 1.2) +  # Prominent regression line
       labs(
-        x = expression("Total Reported Damage (Milj m"^3*")"),  # Scientific notation for clarity
+        x = expression("Total Reported Damage (Milj m"^3*")"),
         y = expression("Total Modelled Damage (Milj m"^3*")"),
         title = paste("Reported vs Modelled Damage:", benchmark@first.year, "-", benchmark@last.year),
-        subtitle = this_sim@source@id  # Consider the necessity of this line
+        subtitle = this_sim@source@id  
       ) +
       annotate(
         "text",

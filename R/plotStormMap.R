@@ -11,10 +11,12 @@
 plotStormMap <- function(benchmark = this_benchmark, all_sim_full){
 
 
-areapath <- 'C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\GridcellFractionsEMEP\\'
+areapath <- file.path(system.file("extdata", "Storm", "GridcellFractionsEMEP", package = "DGVMBenchmarks"))
 
+input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
+LC_file <- file.path(input_dir, "LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")
 
-lulist <- fread("C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")  # Assuming lumap.csv contains long, lat, and land use data
+lulist <- fread(LC_file)  # Assuming lumap.csv contains long, lat, and land use data
 lulist$Year <- lulist$year 
 # Assuming lulist is already loaded as a data.table and Lon, Lat adjusted
 lulist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
@@ -41,8 +43,9 @@ lulist_2010 <- lulist[year == 2010, .(Lon, Lat, NATURAL, FOREST, BARREN, FOREST_
 
 # Reading wind damage probability data
 # Load the data
-wdplist <- fread('C:/Users/Admin/Documents/tellus/Storm_disturbance/wdp_05deg_from01deg_colinear.txt', sep = "\t", header = TRUE)
-
+input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
+wind_dist_file <- file.path(input_dir, "wdp_05deg_from01deg_colinear.txt")
+wdplist <- fread(wind_dist_file, sep = "\t", header = TRUE)
 # Adjust coordinates (shift from center to SW corner)
 wdplist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
 
@@ -94,7 +97,7 @@ for(this_sim in all_sim_full){
     country <- countrycode[i]
     
     # Read the fraction data for each country
-    thefile <- sprintf('%s%s.csv', areapath, country)
+    thefile <- file.path(areapath,  paste0(country, ".csv"))
     aflist <- fread(thefile, sep = ";", header = TRUE)
     aflist <- aflist[, .(Lon = floor(longitude * 2) / 2, Lat = floor(latitude * 2) / 2, Fraction = fraction)]
     
