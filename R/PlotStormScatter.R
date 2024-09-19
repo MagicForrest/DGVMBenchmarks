@@ -183,7 +183,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     # Define the plot
     storm_scatter <- ggplot(country_table,
                             aes(x = Reported_Damage,
-                                y = Modelled_Damage_After_Calibration)) +
+                                y = Modelled_Damage_Before_Calibration)) +
       geom_point(size = 3.5,
                  shape = 21,
                  fill = "#56B4E9",

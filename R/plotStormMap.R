@@ -10,20 +10,20 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
 plotStormMap <- function(benchmark = this_benchmark, all_sim_full){
 
-
+# Path to forest fraction per country
 areapath <- file.path(system.file("extdata", "Storm", "GridcellFractionsEMEP", package = "DGVMBenchmarks"))
 
+# Land cover Pucher.
 input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
 LC_file <- file.path(input_dir, "LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")
 
-lulist <- fread(LC_file)  # Assuming lumap.csv contains long, lat, and land use data
+lulist <- fread(LC_file)  # contains long, lat, and land use data
 lulist$Year <- lulist$year 
-# Assuming lulist is already loaded as a data.table and Lon, Lat adjusted
+# loaded as a data.table and Lon, Lat adjusted
 lulist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
 
 # Define constants
 years <- 210
-gridcells <- nrow(lulist) / years
 ages <- seq(210, 1, by = -1)
 
 # Calculate grid indices

@@ -28,6 +28,10 @@ library(patchwork)
 library(extrafont) 
 library(ggthemes)
 library(ggrepel)
+library(sf)
+library(units)
+library(RColorBrewer)
+library(flextable)
 showtext_auto()
 # start timer
 tic()
@@ -478,6 +482,44 @@ Forest_fraction_table <- bind_rows(Forest_fraction_table, DGVMBenchmarks::Forest
 ```{r forest fraction table, echo=FALSE, message=FALSE, warning=FALSE}
  if(nrow(Forest_fraction_table) > 0) {
    kable(Forest_fraction_table) %>% kable_styling(full_width = TRUE)}
+```
+
+
+```{r Harvest,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
+benchmark_name <- "NAI" 
+
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = list(), spatial.extent)
+
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+tbl <- HarvestTable("NAI",this_benchmark,all_sim_full)
+```
+
+
+```{r Harvest1,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
+benchmark_name <- "Harvest" 
+
+this_benchmark <- createBenchmark(benchmark_name, input, Datasets = list(), spatial.extent)
+
+field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sources_list)
+all_sim_full <- field_lists[[1]]
+all_Fields_list <- field_lists[[2]]
+
+tbl <- HarvestTable("Total Harvest",this_benchmark,all_sim_full)
+
+ft <- flextable(tbl)
+
+
+
+
+  ft <- merge_v(ft, j = "Parameter")
+
+
+
+# Print or export the flextable
+print(ft)
 ```
 
 # Fire 

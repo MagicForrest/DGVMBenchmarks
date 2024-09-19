@@ -2,6 +2,7 @@
 
 export(FLUXNET)
 export(ForestFraction)
+export(HarvestTable)
 export(ICOS)
 export(Regrowth)
 export(SITE)

@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Storm_disturbance\\run_240809_sim4_age_probharv_satdist07"
-  Sim1_id: "Wind1"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\run_4"
+  Sim1_id: "Probabilistic harvest"
   Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data"
-  Sim2: ""
-  Sim2_id: ""
+  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\run_2"
+  Sim2_id: "No Thinning"
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -14,6 +14,7 @@ Directory:
 Switches:
   do_plots: T
   do_forest_fraction: F
+  do_harvest: T
   do_agpp: F
   do_cmass: F
   do_stem_density: F
@@ -23,7 +24,7 @@ Switches:
   do_Regrowth: F
   do_SIMFIRE: F
   do_BLAZE: F
-  do_storm: T
+  do_storm: F
   do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: F
@@ -35,6 +36,7 @@ Switches:
   do_FLUXNET_NEE: F
   do_FLUXNET_Reco: F
   
+## Spatial difference mapping
 
 AGPP1: 
   Unit: "kg/m2/y" # The unit of the Benchmark
@@ -362,7 +364,8 @@ QDBH1:
     r: F
     r2: T
     r2_eff: F
-    
+
+## PFT Benchmarks    
 
 CMASS_pft1:
   Unit: "kg/m2"
@@ -427,6 +430,8 @@ CMASS_pft1:
     r: F
     r2: T
     r2_eff: F
+
+## Forest fraction benchmarks
     
 cpool:
   Unit: "kg/m2/y"
@@ -491,6 +496,9 @@ cpool:
     r: F
     r2: T
     r2_eff: F
+
+## Regrowth benchmark
+
     
 REGROWTH:
   Unit: "kg/m2"
@@ -555,6 +563,44 @@ REGROWTH:
     r: F
     r2: T
     r2_eff: F
+
+## Harvest benchmarks
+
+NAI:
+  Unit: "kg/m2/y"
+  Id: "Net annual increment"
+  Name: "NAI"
+  Description: "Net Annual Increment"  
+  Layer: ["tot_NAI"]
+  Simulations:
+    Simulation: ["european_applications"]
+    File_name: ["forest_cflux_veg"]
+    Format: ["GUESS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "none"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+  
+Harvest:
+  Unit: "kg/m2/y"
+  Id: "Net annual increment"
+  Name: "Harvest"
+  Description: "Harvest"  
+  Layer: ["Total"]
+  Simulations:
+    Simulation: ["european_applications"]
+    File_name: ["cmass_harv_killed_sts"]
+    Format: ["GUESS"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "none"
+    spatial.aggregate.method: 
+    Conversion_factor:
+    Layer_to_convert:
+
+## Storm disturbance benchmark
     
 STORM:
   Unit: ""
@@ -619,6 +665,8 @@ STORM:
     r: F
     r2: T
     r2_eff: F
+
+## Fire benchmarks
     
 SIMFIRE: 
   Unit: "Burnt area fraction" # The unit of the Benchmark
@@ -755,6 +803,8 @@ BLAZE:
     r: F
     r2: T
     r2_eff: F
+
+## Profound benchmarks
   
 Profound_csv1:
   Unit: "m2^m2"
