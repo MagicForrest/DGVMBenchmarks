@@ -484,7 +484,9 @@ Forest_fraction_table <- bind_rows(Forest_fraction_table, DGVMBenchmarks::Forest
    kable(Forest_fraction_table) %>% kable_styling(full_width = TRUE)}
 ```
 
+# Harvest Table {.tabset}
 
+## Net annual increment
 ```{r Harvest,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
 benchmark_name <- "NAI" 
 
@@ -494,10 +496,10 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sourc
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-tbl <- HarvestTable("NAI",this_benchmark,all_sim_full)
+Harvest_table <- bind_rows(Harvest_table, HarvestTable("NAI",this_benchmark,all_sim_full))
 ```
 
-
+## Harvest
 ```{r Harvest1,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
 benchmark_name <- "Harvest" 
 
@@ -507,18 +509,15 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sourc
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-tbl <- HarvestTable("Total Harvest",this_benchmark,all_sim_full)
+Harvest_table <- bind_rows(Harvest_table, HarvestTable("Total Harvest",this_benchmark,all_sim_full))
+```
 
-ft <- flextable(tbl)
-
-
-
-
-  ft <- merge_v(ft, j = "Parameter")
+## Harvest Table
+```{r Harvest2,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
 
 
-
-# Print or export the flextable
+ft <- flextable(Harvest_table)
+ft <- merge_v(ft, j = "Parameter")
 print(ft)
 ```
 
