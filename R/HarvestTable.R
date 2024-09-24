@@ -12,16 +12,6 @@
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Susanne Suvanto (susanne.suvanto@@luke.fi)
 HarvestTable <- function(param, benchmark = this_benchmark, all_sim_full = all_sim_full){
 
-
-load("C:\\Users\\Admin\\Documents\\tellus\\Data_240809\\harvest\\basemaps_europe.RData", verbose = TRUE)
-
-basemap <- basemap +
-  coord_sf(ylim = c(37, 70),
-           xlim = c(-11, 34))
-
-proj_lambert_conic <- "+proj=lcc +lat_1=43 +lat_2=62 +lat_0=30 +lon_0=10 +x_0=0 +y_0=0 +ellps=intl +units=m no_defs"
-
-
 # Read and process --------------------------------------------------------
 
 ### LPJG outputs ----
@@ -51,27 +41,19 @@ create_grid <- function(data, coords, cellsize = 0.5, crs = "EPSG:4326") {
 
 
 ### Original input files ----
-
-LC2010 <- read.table("C:\\Users\\Admin\\Documents\\tellus\\LC_europe_nat_for_1801_2010_Pucher_noNatural_twin_2010-2010.tab", header = T)
-
-#gridlist <- read.table("C:\\Users\\Admin\\Documents\\tellus\\European countries\\European_gridlist.txt", header = T)
-
-#LC2010 <- LC_input %>% filter(year == 2010)
-
+LC2010 <- read.table(file.path(system.file("extdata/Harvest/LC_europe_nat_for_1801_2010_Pucher_noNatural_twin_2010-2010.tab", package = "DGVMBenchmarks")), header = T)
 
 
 ### Expansion factors ----
 
-cmass_to_m3 <- read.table("C:\\Users\\Admin\\Documents\\tellus\\Data_240809\\harvest\\cmass_to_m3_expansionFactors.txt",
-                          header = 1)
+cmass_to_m3 <- read.table(file.path(system.file("extdata/Harvest/cmass_to_m3_expansionFactors.txt", package = "DGVMBenchmarks")),header = 1)
 cmass_to_m3$Country <- ifelse(cmass_to_m3$Country == "Czech", "Czechia", cmass_to_m3$Country)
 
 #cmass_to_agb <- read.csv2("./data/from_Mats/AGFractions_ForestEurope_checked.csv") # file from Mats, not clear what the 2 last cols are!
 
 
 ### Grid (country + cell area) + process ----
-grid_table <- read.csv("C:\\Users\\Admin\\Documents\\tellus\\Data_240809\\harvest\\gridcell_country_cluster.csv",
-                       row.names = 1)
+grid_table <- read.csv(file.path(system.file("extdata/Harvest/gridcell_country_cluster.csv", package = "DGVMBenchmarks")), row.names = 1)
 grid_countries <- create_grid(grid_table, coords = c("lon05", "lat05"), cellsize = 0.5)
 
 grid_countries <- grid_countries %>%
@@ -83,7 +65,7 @@ grid_countries$area_m2 <- as.numeric(st_area(grid_countries))
 ### Forest Europe + Avitable processed file ----
 ### (file processing in "00_process_FEdata.R")
 
-harvests_SoEF <- read_csv("C:\\Users\\Admin\\Documents\\tellus\\Data_240809\\harvest\\Harvest_statistics_processed\\Harvest_statistics_SoEF2020_Avitabile.csv")
+harvests_SoEF <- read_csv(file.path(system.file("extdata/Harvest/Harvest_statistics_SoEF2020_Avitabile.csv", package = "DGVMBenchmarks")))
 
 
 results <- list()
@@ -226,7 +208,12 @@ gg_bar_total <- ggplot(Harv_stats_country_average ,
   ggtitle("Total harvested volume") + #,  subtitle = "Forest Europe 2015 (mean 2013-2017) and simulated (mean 2013-2017)") +
   ylab("M m3") + xlab("Country") +
   theme_bw()  +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        text = element_text(size = 16),                # Increase all text
+        axis.title = element_text(size = 18),          # Axis titles
+        axis.text = element_text(size = 14),           # Axis text (x and y)
+        plot.title = element_text(size = 20, face = "bold"),  # Plot title
+        legend.text = element_text(size = 14))
 
 gg_bar_perHA <- ggplot(Harv_stats_country_average , 
                        aes(country, Vol_m3perha, fill = harvest_type)) +
@@ -236,7 +223,12 @@ gg_bar_perHA <- ggplot(Harv_stats_country_average ,
   ggtitle("Harvests per ha") + #, subtitle = "Forest Europe 2015 (mean 2013-2017) and simulated (mean 2013-2017)") +
   ylab("m3 ha-1") + xlab("Country") +
   theme_bw()  +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        text = element_text(size = 16),                # Increase all text
+        axis.title = element_text(size = 18),          # Axis titles
+        axis.text = element_text(size = 14),           # Axis text (x and y)
+        plot.title = element_text(size = 20, face = "bold"),  # Plot title
+        legend.text = element_text(size = 14))
 
 
 # gg_bar_NAIharv <- ggplot(Harv_stats_country_average, 
@@ -257,7 +249,12 @@ gg_bar_area <- ggplot(Harv_stats_country_average,
   ggtitle("Forest area" ) + #,  subtitle = "Forest Europe and simulated") +
   ylab("M ha") + xlab("Country") +
   theme_bw()  +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        text = element_text(size = 16),                # Increase all text
+        axis.title = element_text(size = 18),          # Axis titles
+        axis.text = element_text(size = 14),           # Axis text (x and y)
+        plot.title = element_text(size = 20, face = "bold"),  # Plot title
+        legend.text = element_text(size = 14))
 
 plot(gg_bar_total +
     gg_bar_perHA + 
@@ -266,7 +263,8 @@ plot(gg_bar_total +
   #gg_bar_NAItotal+
   #gg_bar_NAIperHa +
   plot_layout(ncol = 1, guides = "collect") &
-  theme(axis.title.x = element_blank()))
+  theme(axis.title.x = element_blank(),
+        text = element_text(size = 16)))
 }
 
 if (param == "NAI"){
@@ -278,7 +276,12 @@ gg_bar_NAIperHa <- ggplot(Harv_stats_country_average,
   ggtitle(" NAI (m3/ha)" ) + #,  subtitle = "Forest Europe and simulated") +
   ylab("m3 ha-1") + xlab("Country") +
   theme_bw()  +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        text = element_text(size = 16),                # Increase all text
+        axis.title = element_text(size = 18),          # Axis titles
+        axis.text = element_text(size = 14),           # Axis text (x and y)
+        plot.title = element_text(size = 20, face = "bold"),  # Plot title
+        legend.text = element_text(size = 14))         # Legend text
 
 gg_bar_NAItotal <- ggplot(Harv_stats_country_average, 
                           aes(country, NAI_tot_Mm3, fill = harvest_type)) + 
@@ -288,7 +291,12 @@ gg_bar_NAItotal <- ggplot(Harv_stats_country_average,
   ggtitle(" NAI per ha" ) + #,  subtitle = "Forest Europe and simulated") +
   ylab("M m3") + xlab("Country") +
   theme_bw()  +
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        text = element_text(size = 16),                # Increase all text
+        axis.title = element_text(size = 18),          # Axis titles
+        axis.text = element_text(size = 14),           # Axis text (x and y)
+        plot.title = element_text(size = 20, face = "bold"),  # Plot title
+        legend.text = element_text(size = 14))
 
 # gg_bar_total +
 #   gg_bar_perHA + 
@@ -297,7 +305,8 @@ gg_bar_NAItotal <- ggplot(Harv_stats_country_average,
   plot(gg_bar_NAItotal+
   gg_bar_NAIperHa +
   plot_layout(ncol = 1, guides = "collect") &
-  theme(axis.title.x = element_blank()))
+  theme(axis.title.x = element_blank()),
+  text = element_text(size = 16))
 
 }
 
