@@ -51,7 +51,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
   
   # Adjust coordinates (shift from center to SW corner)
   wdplist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
-  
+  iteration_tables <- list()
   for(this_sim in all_sim_full){
     
     # Load the data
@@ -116,7 +116,6 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
       # Summarize results
       mod_totdam <- sum(country_data$totdam, na.rm = TRUE)
       forest_area <- sum(country_data$Area * country_data$FOREST, na.rm = TRUE)
-      
       # Store results in the results data.table
       results[i, `:=`(mod_totdam_uncall = mod_totdam, forestarea = forest_area)]
     }
@@ -172,6 +171,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
       Modelled_Damage_After_Calibration = xdata * slope
     )
     
+    iteration_tables[[this_sim@source@name]] <- country_table
     # SCATTERPLOT OF MODELLED AND REPORTED DAMAGE
     # Plot the modelled total damage 1986-2020 by country against DFDE reported values
     
@@ -233,5 +233,27 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     # Plot scatter plot
     if (do_plots){plot(storm_scatter)}
   }
+  
+  renamed_tables <- list()
+  
+  # Iterate over each table in iteration_tables and rename the columns
+  for (iteration_name in names(iteration_tables)) {
+    
+    # Extract the table for the current iteration
+    current_table <- iteration_tables[[iteration_name]]
+    
+    # Rename the columns for this iteration
+    setnames(current_table,
+             old = c("Modelled_Damage_Before_Calibration", "Modelled_Damage_After_Calibration"),
+             new = c(paste0(iteration_name, " Before Calibration"), paste0(iteration_name, " After Calibration")))
+    
+    # Store the renamed table in the list
+    renamed_tables[[iteration_name]] <- current_table
+  }
+  
+  # Now combine all renamed tables by merging on 'Country' and 'Reported_Damage'
+  if(length(renamed_tables) > 1){
+  final_table <- merge(renamed_tables[[1]], renamed_tables[[2]], by = c("Country", "Reported_Damage"))}
+  
   return(country_table)
 }
