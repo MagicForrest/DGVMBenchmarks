@@ -254,6 +254,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
   # Now combine all renamed tables by merging on 'Country' and 'Reported_Damage'
   if(length(renamed_tables) > 1){
   final_table <- merge(renamed_tables[[1]], renamed_tables[[2]], by = c("Country", "Reported_Damage"))}
+  else{final_table <- renamed_tables[[1]]}
   
-  return(country_table)
+  return(final_table)
 }
