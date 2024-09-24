@@ -24,9 +24,9 @@ results_table <- data.frame(
 
 for (field in all_Fields_list){
 
-forest_LC <- read.table("C:\\Users\\Admin\\Documents\\tellus\\LC_europe_nat_for_1801_2010_Pucher_noNatural_twin_2010-2010.tab", header = T)
+forest_LC <- read.table(file.path(system.file("extdata/Forest_Fraction/LC_europe_nat_for_1801_2010_Pucher_noNatural_twin_2010-2010.tab", package = "DGVMBenchmarks")), header = T)
   
-Country_grid <- read.table("C:\\Users\\Admin\\Documents\\tellus\\European countries\\European_gridlist.txt", header = T)
+Country_grid <- read.table(file.path(system.file("extdata/Forest_Fraction/European_gridlist.txt", package = "DGVMBenchmarks")), header = T)
   
 Forest_per_country <- merge(forest_LC, 
                               Country_grid, 
