@@ -1,0 +1,33 @@
+
+Description of Regrowth data:
+
+The observational dataset of temperate regrowth curves  of aboveground woody carbon are derived from chronosequence data in Teobaldelli et al 2009,
+omitting foliage and root biomass pools. For boreal biome-level data, we used biomass chronosequence data calculated for Repo et al., (2021)
+based on Finnish national forest inventory plots (Tomppo et al., 2011). We also selected a subset of NFI plots,
+which were either conserved or had low-intensity management (last management > 30 years ago) across southern and central Finland.
+To arrive at aboveground woody carbon, we removed the foliage biomass fraction based on stand-age-based biomass expansion factors (BEFs)
+using age-dependent foliage-total biomass relationships calculated from Lehntonen et al 2004.
+Boreal forest data for forest regrowth was prepared by collaborators from the ForestPaths project (Mikko Peltoniemi).
+Regrowth data is organised in 20 year age bins and we report the median, lower 10th percentile and upper 90th percentile boundary.
+At least 20 observations are in each bin, following Pugh et al. 2019
+Boreal regrowth data originates from the National Forests Inventory of Finland (Korhonen et al. 2021)
+and permanent sample plots from NFI9 (1996-2003),
+NFI10 (2004-2008), NFI11 (2009-2013) and NFI12 (2014-2018) have been used.
+The data has been derived similarly as in the Repo et al (2021) paper,
+but that this one has only unmanaged stands, while Repo et al. (2021) has analyzed managed stands.
+
+References: 
+
+Korhonen, K.T., Ahola, A., Heikkinen, J., Henttonen, H.M., Hotanen, J.P., Ihalainen, A., Melin, M., Pitkänen, J.,
+Räty, M., Sirviö, M. and Strandström, M., 2021. Forests of Finland 2014–2018 and their development 1921–2018. Silva Fennica, 55(5).
+
+Repo, A., Rajala, T., Henttonen, H.M., Lehtonen, A., Peltoniemi, M. and Heikkinen, J.,
+2021. Age-dependence of stand biomass in managed boreal forests based on the Finnish National Forest Inventory data. Forest Ecology and Management, 498, p.119507.
+
+Teobaldelli, M., Somogyi, Z., Migliavacca, M., & Usoltsev, V. A. (2009).
+Generalized functions of biomass expansion factors for conifers and broadleaved by stand age, growing stock and site index. Forest Ecology and Management, 257(3), 1004-1013.
+
+Acknowledgements:
+
+We would like to thank Dr. Tuomas Rajala and Dr. Helena Hentonen with helping
+to derive age-class specific biomass data for unmanaged stands in the National Forests Inventory of Finland.

@@ -18,7 +18,7 @@ Regrowth <- function(benchmark = this_benchmark, all_sim_full, opt.gridlist = NU
 if (is.null(opt.gridlist)){
 # first the gridlist
 input_dir <- file.path(system.file("extdata", "Regrowth_Europe", package = "DGVMBenchmarks"))
-gridlist_file <- file.path(input_dir, "gridlist_update29082024.txt")
+gridlist_file <- file.path(input_dir, "gridlist_update19092024.txt")
 gridlist <- read.table(gridlist_file)
 names(gridlist) <- c("Lon","Lat","distyear","Biome")
 }else{gridlist_file <- file.path(opt.gridlist)
@@ -28,7 +28,7 @@ names(gridlist) <- c("Lon","Lat","distyear","Biome")}
 if (is.null(opt.dataset)){
 # now the data
 input_dir <- file.path(system.file("extdata", "Regrowth_Europe", package = "DGVMBenchmarks"))
-regrowth_file <- file.path(input_dir, "benchmark_regrowth_29082024.csv")
+regrowth_file <- file.path(input_dir, "benchmark_regrowth_19092024.csv")
 regrowth <- read.csv(file =regrowth_file)
 regrowth_full_dt <- data.table(regrowth)[, list(bin, Year, AGcwood_kgCm2_med, AGcwood_kgCm2_10, AGcwood_kgCm2_90, Biome)]
 regrowth_full_dt[, bin_centres := as.factor(Year)]
