@@ -3,13 +3,14 @@
 #' @param Benchmark Benchmark holds the settings for the benchmark currently being performed used to set range parameters to the plotting.
 #' @param all_comparisons List holding all comparison objects
 #' @param type A character specifying what type of plot to make. Can be "difference" (default, for a difference plot), "percentage.difference", "values" (actual values, side-by-side).
+#' @param percentile_limit Set percentile threshold to exclude outliers in percentage.difference
 #' 
 #' @return Returns difference for every possible comparison in your comparison list.
 #' @export
 #'
 #' @examples plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons)
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se)
-plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "difference") {
+plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "difference", percentile_limit = NULL) {
 
   if (type == "difference"){
   if (length(Benchmark@guess_layers) < 2){
@@ -39,7 +40,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
     p1 <- DGVMTools::plotSpatialComparison(this_comparison,
                                            type = type,
                                            map.overlay = "world",
-                                           panel.bg.col = "gray")+
+                                           panel.bg.col = "gray", legend.title = Benchmark@unit)+
       scale_fill_gradient2(low = "red",
                            high = "blue",
                            mid = "white",
@@ -84,7 +85,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
       p1 <- DGVMTools::plotSpatialComparison(this_comparison,
                                              type = type,
                                              map.overlay = "world",
-                                             panel.bg.col = "gray")+
+                                             panel.bg.col = "gray", legend.title = Benchmark@unit)+
         scale_fill_gradient2(low = "red",
                              high = "blue",
                              mid = "white",
@@ -113,7 +114,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
   if(length(Benchmark@guess_layers) > 1){
     p1 <- DGVMTools::plotSpatialComparison(all_comparisons[["Values"]],
                                            type = type,
-                                           text.multiplier = 1.1)+ #, map.overlay = "world", panel.bg.col = "gray")+
+                                           text.multiplier = 1.1,legend.title = Benchmark@unit)+ #, map.overlay = "world", panel.bg.col = "gray")+
        scale_fill_gradient2(low = "red",
                             high = "blue",
                             mid = "white",
@@ -145,6 +146,13 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
           reference_value <- this_comparison@data[[4]]
           raw_difference <- this_comparison@data[[3]] - this_comparison@data[[4]]
           percentage_difference <- (raw_difference / reference_value) * 100
+          percentage_difference <- na.omit(percentage_difference)
+          
+          if (!is.null(percentile_limit)) {
+            perc_limit <- quantile(percentage_difference, percentile_limit / 100, na.rm = TRUE)
+            percentage_difference[percentage_difference > perc_limit] <- NA  # Remove values above the percentile
+            percentage_difference <- na.omit(percentage_difference)
+          }
           
           # Plotting difference maps
           limits = range(percentage_difference) 
@@ -175,9 +183,9 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                  limits = limits,
                                  breaks = breaks)+
             labs(title = paste(this_comparison@name),
-            subtitle = paste("Max:", round(max(this_comparison@data[[5]]),2),
-                             "Mean:", round(mean(this_comparison@data[[5]]),2),
-                             "Min:", round(min(this_comparison@data[[5]]),2)))+
+            subtitle = paste("Max:", round(max(percentage_difference),2),
+                             "Mean:", round(mean(percentage_difference),2),
+                             "Min:", round(min(percentage_difference),2)))+
             theme(plot.title = element_text(size = 30),
                   plot.subtitle = element_text(size = 20),
                   axis.title.x = element_text(size = 25),
@@ -191,9 +199,18 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
         }
         else{
           
+          this_comparison@data[this_comparison@data == 0] <- NA
           reference_value <- this_comparison@data[[4]]
           raw_difference <- this_comparison@data[[3]] - this_comparison@data[[4]]
           percentage_difference <- (raw_difference / reference_value) * 100
+          
+          # Apply percentile filtering (e.g., 90th percentile)
+          if (!is.null(percentile_limit)) {
+            perc_limit <- quantile(percentage_difference, percentile_limit / 100, na.rm = TRUE)
+            percentage_difference[percentage_difference > perc_limit] <- NA  # Remove values above the percentile
+            percentage_difference <- na.omit(percentage_difference)
+            
+          }
           
           # Plotting difference maps
           limits = range(percentage_difference, na.rm = T) 
@@ -224,9 +241,9 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                  limits = limits,
                                  breaks = breaks)+
             labs(title = paste(this_comparison@name),
-             subtitle = paste("Max:", round(max(this_comparison@data[[5]]),2),
-                              "Mean:", round(mean(this_comparison@data[[5]]),2),
-                              "Min:", round(min(this_comparison@data[[5]]),2)))+
+             subtitle = paste("Max:", round(max(percentage_difference),2),
+                              "Mean:", round(mean(percentage_difference),2),
+                              "Min:", round(min(percentage_difference),2)))+
             theme(plot.title = element_text(size = 30),
                   plot.subtitle = element_text(size = 20),
                   axis.title.x = element_text(size = 25),
@@ -244,7 +261,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
     if(length(Benchmark@guess_layers) > 1){
       p1 <- DGVMTools::plotSpatialComparison(all_comparisons[["Values"]],
                                              type = type,
-                                             text.multiplier = 1.1)+ #, map.overlay = "world", panel.bg.col = "gray")+
+                                             text.multiplier = 1.1, legend.title = Benchmark@unit)+ #, map.overlay = "world", panel.bg.col = "gray")+
         scale_fill_gradient2(low = "red", 
                              high = "blue", 
                              mid = "white",
@@ -354,7 +371,7 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
     if(length(Benchmark@guess_layers) > 1){
       p1 <- DGVMTools::plotSpatialComparison(all_comparisons[["Values"]],
                                              type = type,
-                                             text.multiplier = 1.1)+ #, map.overlay = "world", panel.bg.col = "gray")+
+                                             text.multiplier = 1.1,legend.title = Benchmark@unit)+ #, map.overlay = "world", panel.bg.col = "gray")+
         scale_fill_gradient2(low = "red", 
                              high = "blue", 
                              mid = "white",
