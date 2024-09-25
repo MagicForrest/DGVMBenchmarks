@@ -4,7 +4,12 @@
 \alias{plotAllSpatialComparisons}
 \title{Plots all comparison objects from fullSpatialComparison as refined difference plots}
 \usage{
-plotAllSpatialComparisons(Benchmark, all_comparisons, type = "difference")
+plotAllSpatialComparisons(
+  Benchmark,
+  all_comparisons,
+  type = "difference",
+  percentile_limit = NULL
+)
 }
 \arguments{
 \item{Benchmark}{Benchmark holds the settings for the benchmark currently being performed used to set range parameters to the plotting.}
@@ -12,6 +17,8 @@ plotAllSpatialComparisons(Benchmark, all_comparisons, type = "difference")
 \item{all_comparisons}{List holding all comparison objects}
 
 \item{type}{A character specifying what type of plot to make. Can be "difference" (default, for a difference plot), "percentage.difference", "values" (actual values, side-by-side).}
+
+\item{percentile_limit}{Set percentile threshold to exclude outliers in percentage.difference}
 }
 \value{
 Returns difference for every possible comparison in your comparison list.
