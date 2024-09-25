@@ -82,7 +82,17 @@ regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y
                                                                                col = Source)) +
   geom_errorbar(aes(ymin=AGcwood_kgCm2_10, ymax=AGcwood_kgCm2_90, col = Source)) +
   facet_wrap(~Biome, ncol = 2, scales = "fixed" ) +
-  labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) 
+  labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) +
+  theme_bw() + # Set white background theme
+  theme(
+    axis.title.x = element_text(size = 18),  # Increase x-axis title size
+    axis.title.y = element_text(size = 18),  # Increase y-axis title size
+    axis.text.x = element_text(size = 14),    # Increase x-axis text size
+    axis.text.y = element_text(size = 14),    # Increase y-axis text size
+    legend.title = element_text(size = 16),    # Increase legend title size
+    legend.text = element_text(size = 14),      # Increase legend text size
+    strip.text = element_text(size = 16)        # Increase facet label size
+  )
 
 plot(regrowth_plot)
 }
