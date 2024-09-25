@@ -4,7 +4,12 @@
 \alias{buildSummaryTable}
 \title{Build summary table from benchmark. Provides the spatial mean value of your data sources.}
 \usage{
-buildSummaryTable(benchmark = this_benchmark, all_sim_full, summary_col_names)
+buildSummaryTable(
+  benchmark = this_benchmark,
+  all_sim_full,
+  summary_col_names,
+  input
+)
 }
 \arguments{
 \item{benchmark}{Holds current benchmark instructions}

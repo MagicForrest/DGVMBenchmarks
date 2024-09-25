@@ -69,7 +69,14 @@ for(this_simulation_regrowth in all_sim_full) {
 
 # set bin centres
 regrowth_full_dt[, bin_centres := as.numeric(as.character(bin_centres))]
-
+# For Temperate Biome with Source = "Data"
+regrowth_full_dt <- regrowth_full_dt[!(
+  Source == paste(this_simulation_regrowth@source@name) & 
+    ( 
+      (Biome == "Temperate" & 
+         bin_centres > regrowth_full_dt[Biome == "Temperate" & Source == "Data", max(bin_centres)]) |
+        (Biome == "Boreal" & 
+           bin_centres > regrowth_full_dt[Biome == "Boreal" & Source == "Data", max(bin_centres)])))]
 # and finally plot
 regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGcwood_kgCm2_med,
                                                                                col = Source)) +
