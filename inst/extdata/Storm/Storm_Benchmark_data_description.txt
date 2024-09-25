@@ -1,0 +1,21 @@
+Storm Disturbance Benchmark Description:
+
+Simulated wind damage in a severe storm averaged over the period 1986-2020 and how this combines with annual storm probability
+to produce an estimate of annual wind damage.
+The results across the simulation domain are benchmarked to observation-based damage statistics from the DFDE database
+Storm disturbance compared to expert gapfilled total damage by wind (m3 per ha forest) by country 1986-2019 from the DFDE database
+as analazed by Patacca et al. (2022)
+Wind damage per country in 2020 directly taken from the DFDE database (milj m3)
+https://dfde.efi.int/db/dfde_app.php (accessed 7 Aug 2024, search terms: Period start 2020; Period end 2020; cause wind)
+
+
+References:
+
+Palahí, M., Valbuena, R., Senf, C., Acil, N.,
+Pugh, T. A., Sadler, J., ... & Nabuurs, G. J. (2021).
+Concerns about reported harvests in European forests. Nature, 592(7856), E15-E17.
+
+
+M.J. Schelhaas, M. Patacca, M. Lindner, S. Zudin (2020)
+Database on Forest Disturbances in Europe (DFDE),
+European Forest Institute, Joensuu, Finland, https://dfde.efi.int/db/dfde_app.php.
