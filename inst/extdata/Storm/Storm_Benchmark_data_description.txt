@@ -1,7 +1,7 @@
 Storm Disturbance Benchmark Description:
 
-Simulated wind damage in a severe storm averaged over the period 1986-2020 and how this combines with annual storm probability
-to produce an estimate of annual wind damage.
+Simulated wind damage in a severe storm averaged over the period 1986-2020 and how this combines annual probability of wind levels exceeding levels that cause major damage to produce an estimate of annual wind damage. 
+This probability map was based on data 1986-2020 from Copernicus
 The results across the simulation domain are benchmarked to observation-based damage statistics from the DFDE database
 Storm disturbance compared to expert gapfilled total damage by wind (m3 per ha forest) by country 1986-2019 from the DFDE database
 as analazed by Patacca et al. (2022)
