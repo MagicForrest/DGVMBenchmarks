@@ -114,11 +114,16 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
                                                quick.read = quick_read,
                                                quick.read.file = paste(benchmark@id, version_label, sep = "_")
         )
-        
+        if (this_simulation@quant@id == "dgpp"){
         if ("Forest_sum" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
           rename(GPP = Forest_sum)}
         if ("Total" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
-          rename(GPP = Total)}
+          rename(GPP = Total)}}
+        if (this_simulation@quant@id == "daet"){
+          if ("Forest_sum" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
+            rename(ET = Forest_sum)}
+          if ("Total" %in% names(this_simulation@data)){this_simulation@data <- this_simulation@data %>%
+            rename(ET = Total)}}
         
         
         all_sim_full[[this_sim_source@name]] <- this_simulation

@@ -50,6 +50,8 @@ source(file.path(system.file("TellMeEurope_config.R", package = "DGVMBenchmarks"
 do_plots <- as.logical(input[["Switches"]][["do_plots"]])
 # Make table for forest fraction
 do_forest_fraction <- as.logical(input[["Switches"]][["do_forest_fraction"]])
+# Make table for harvest
+do_harvest <- as.logical(input[["Switches"]][["do_harvest"]])
 # switches for which benchmarks to do
 do_agpp <- as.logical(input[["Switches"]][["do_agpp"]])
 do_cmass <- as.logical(input[["Switches"]][["do_cmass"]])
@@ -117,6 +119,14 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 if (do_plots && do_agpp){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
+## AGPP Relative difference 
+```{r AGPP_Relative, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_agpp){ 
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name)
+ if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "percentage.difference")}}
+
+```
+
 # Cmass {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
@@ -154,6 +164,16 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 ```{r cmass scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if(do_plots && do_cmass){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
+
+
+## Cmass Relative difference 
+```{r Cmass_Relative, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_cmass){
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name) 
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "percentage.difference", percentile_limit = 90)}}
+
+```
+
 
 # Stem Density {.tabset}
 
@@ -195,6 +215,14 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 if(do_plots && do_stem_density){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
 ```
 
+## Density Relative difference 
+```{r dens_Relative, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_cmass){
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name) 
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "percentage.difference", percentile_limit = 90)}}
+
+```
+
 # QDBH {.tabset}
 
 ```{r, echo = FALSE, eval = TRUE, results = "asis"}
@@ -229,6 +257,14 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 ## QDBH Scatterplots
 ```{r QDBH Scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if(do_plots && do_qdbh){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+```
+
+## QDBH Relative difference 
+```{r QDBH_Relative, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_qdbh){
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name) 
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "percentage.difference", percentile_limit = 90)}}
+
 ```
 
 # Woody Growth {.tabset}
@@ -268,6 +304,14 @@ if(length(this_benchmark@datasets) != 0){metric_table <- rbind(metric_table,
 ## Woody Growth Scatter
 ```{r Woody growth scatter, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 if(do_plots && do_woody_growth){DGVMBenchmarks::plotFullScatter(Benchmark = this_benchmark, all_sim_full = all_sim_full)}
+```
+
+## Woody Growth Relative difference 
+```{r wg_Relative, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+if (do_woody_growth){
+all_comparisons <- DGVMBenchmarks::fullSpatialComparison(benchmark = this_benchmark, all_maps = all_Fields_list,       new_model = all_sim_full[[1]]@source@name, old_model = all_sim_full[[2]]@source@name) 
+if(do_plots){DGVMBenchmarks::plotAllSpatialComparisons(Benchmark = this_benchmark, all_comparisons = all_comparisons, type = "percentage.difference", percentile_limit = 90)}}
+
 ```
 
 # PFT CMASS {.tabset}
@@ -341,6 +385,7 @@ cat(input[["STORM"]][["Description"]])
 
 ## Storm Damage 
 ```{r Storm damage, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+
 if (do_storm){
   # Define which benchmark to do
 benchmark_name <- "STORM"
@@ -356,7 +401,7 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark,all_simulation_Source
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-storm_table<-plotStormScatter(this_benchmark, all_sim_full, do_plots, anno.hjust = 140)
+storm_table<-plotStormScatter(this_benchmark, all_sim_full, do_plots, anno.hjust = 110)
 
 }
 ```
@@ -367,18 +412,20 @@ if (do_storm){
   storm_table <- storm_table %>%
   mutate(
     Reported_Damage = round(Reported_Damage, 2),
-    Modelled_Damage_Before_Calibration = round(Modelled_Damage_Before_Calibration, 2),
-    Modelled_Damage_After_Calibration = round(Modelled_Damage_After_Calibration, 2)
-  )
-  storm_table <- storm_table %>%
+    `Reineke Before Calibration` = round(`Reineke Before Calibration`, 2),
+    `Reineke After Calibration` = round(`Reineke After Calibration`, 2),
+    `No Thinning Before Calibration` = round(`No Thinning Before Calibration`, 2),
+    `No Thinning After Calibration` = round(`No Thinning After Calibration`, 2)
+  ) %>%
   rename(
     Country = `Country`,
-    `Reported Damage` = `Reported_Damage`,
-    `Modelled Damage Before Calibration` = `Modelled_Damage_Before_Calibration`,
-    `Modelled Damage After Calibration` = `Modelled_Damage_After_Calibration`
+    `Reported Damage` = `Reported_Damage`
   )
-  if(nrow(storm_table) > 0) {
-   kable(storm_table) %>% kable_styling(full_width = TRUE)}
+
+# If there are rows, display the table
+if(nrow(storm_table) > 0) {
+  kable(storm_table) %>% kable_styling(full_width = TRUE)
+}
 }
 
 ```
@@ -488,6 +535,7 @@ Forest_fraction_table <- bind_rows(Forest_fraction_table, DGVMBenchmarks::Forest
 
 ## Net annual increment
 ```{r Harvest,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
+if (do_harvest){
 benchmark_name <- "NAI" 
 
 this_benchmark <- createBenchmark(benchmark_name, input, Datasets = list(), spatial.extent)
@@ -496,11 +544,12 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sourc
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-Harvest_table <- bind_rows(Harvest_table, HarvestTable("NAI",this_benchmark,all_sim_full))
+Harvest_table <- bind_rows(Harvest_table, HarvestTable("NAI",this_benchmark,all_sim_full))}
 ```
 
 ## Harvest
 ```{r Harvest1,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
+if (do_harvest){
 benchmark_name <- "Harvest" 
 
 this_benchmark <- createBenchmark(benchmark_name, input, Datasets = list(), spatial.extent)
@@ -509,16 +558,20 @@ field_lists <- DGVMBenchmarks::getAllFields(this_benchmark, all_simulation_Sourc
 all_sim_full <- field_lists[[1]]
 all_Fields_list <- field_lists[[2]]
 
-Harvest_table <- bind_rows(Harvest_table, HarvestTable("Total Harvest",this_benchmark,all_sim_full))
+Harvest_table <- bind_rows(Harvest_table, HarvestTable("Total Harvest",this_benchmark,all_sim_full))}
 ```
 
 ## Harvest Table
-```{r Harvest2,echo=FALSE, message=FALSE, results='hide', warning=FALSE}
+```{r Harvest2,echo=FALSE}
+if (do_harvest){
+Harvest_table <- Harvest_table %>%
+  mutate(across(where(is.numeric), ~ round(., 2)))  # Round to 2 decimals
 
 
 ft <- flextable(Harvest_table)
 ft <- merge_v(ft, j = "Parameter")
-print(ft)
+ft <- colformat_num(ft, j = c("Czechia","Finland","France","Germany","Netherlands","Poland","Spain","Sweden","Switzerland" ), digits = 2, big.mark = "")
+ft}
 ```
 
 # Fire 
@@ -1414,8 +1467,8 @@ all_Fields_list[[2]]@data <- all_Fields_list[[2]]@data %>%
   )
 
 
-  all_Fields_list[[1]]@data$GPP <- all_Fields_list[[1]]@data$GPP/2
-  all_Fields_list[[2]]@data$GPP <- all_Fields_list[[2]]@data$GPP/2
+ # all_Fields_list[[1]]@data$GPP <- all_Fields_list[[1]]@data$GPP/2
+  #all_Fields_list[[2]]@data$GPP <- all_Fields_list[[2]]@data$GPP/2
   
 ## Make comparison objects from your fields, used for comparison only!
 all_comparisons <- DGVMBenchmarks::fullTemporalComparison(benchmark = this_benchmark, all_ts = all_Fields_list,       new_model = all_sim_full[[1]]@source@name)

@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\run_4"
-  Sim1_id: "Probabilistic harvest"
-  Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data"
-  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\run_2"
-  Sim2_id: "No Thinning"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\ICOS_240927\\"
+  Sim1_id: "Regrowth PNV"
+  Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data\\"
+  Sim2: ""
+  Sim2_id: ""
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -14,7 +14,7 @@ Directory:
 Switches:
   do_plots: T
   do_forest_fraction: F
-  do_harvest: T
+  do_harvest: F
   do_agpp: F
   do_cmass: F
   do_stem_density: F
@@ -28,10 +28,10 @@ Switches:
   do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: F
-  do_ICOS_GPP: F
-  do_ICOS_NEE: F
-  do_ICOS_Reco: F
-  do_ICOS_ET: F
+  do_ICOS_GPP: T
+  do_ICOS_NEE: T
+  do_ICOS_Reco: T
+  do_ICOS_ET: T
   do_FLUXNET_GPP: F
   do_FLUXNET_NEE: F
   do_FLUXNET_Reco: F
@@ -153,8 +153,12 @@ CMASS1:
       adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
-      Limits: [-15, 18]
-      Breaks: [-15, -10, -5, 0, 5, 10, 15]
+      Difference_Limits: [-15, 18]
+      Difference_Breaks: [-15, -10, -5, 0, 5, 10, 15]
+      Percentage.difference_Limits:
+      Percentage.difference_Breaks:
+      Values_Limits:
+      Values_Breaks:
     Spatial_Scatter:
       Limits: [0, 30]
   Statistics:
@@ -218,8 +222,12 @@ W_GROWTH1:
       adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
-      Limits: [-1, 0.4]
-      Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
+      Difference_Limits: [-1, 0.4]
+      Difference_Breaks: [-1, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4]
+      Percentage.difference_Limits:
+      Percentage.difference_Breaks:
+      Values_Limits:
+      Values_Breaks:
     Spatial_Scatter:
       Limits: [0, 1]
   Statistics:
@@ -283,8 +291,12 @@ STEM_DENSITY1:
       adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
-      Limits: [-1000, 1000]
-      Breaks: [-1000, -750, -500, -250, 0, 250, 500, 750, 1000]
+      Difference_Limits: [-1000, 1000]
+      Difference_Breaks: [-1000, -750, -500, -250, 0, 250, 500, 750, 1000]
+      Percentage.difference_Limits:
+      Percentage.difference_Breaks:
+      Values_Limits:
+      Values_Breaks:
     Spatial_Scatter:
       Limits: [0, 1500]
   Statistics:
@@ -348,8 +360,12 @@ QDBH1:
       adgvm2.daily: TRUE
   Plotting:
     Spatial_Difference:
-      Limits: [-30, 30]
-      Breaks: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      Difference_Limits: [-30, 30]
+      Difference_Breaks: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
+      Percentage.difference_Limits:
+      Percentage.difference_Breaks:
+      Values_Limits:
+      Values_Breaks:
     Spatial_Scatter:
       Limits: [0, 60]
   Statistics:
@@ -372,7 +388,7 @@ CMASS_pft1:
   Id: "Cmass PFT"
   Name: "Cmass PFT"
   Description: "Cmass PFT"  
-  Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "Ulm_gla", "C3_gr"]
+  Layer: ["Abi_alb", "BES", "Bet_pen", "Bet_pub", "Car_bet", "Cor_ave", "Fag_syl", "Fra_exc", "Jun_oxy", "Lar_dec", "MRS", "Pic_abi", "Pin_syl", "Pin_hal", "Pop_tre", "Que_coc", "Que_ile", "Que_pub", "Que_rob", "Til_cor", "C3_gr"]
   Data:
     Datasets: 
     File_name: 
@@ -530,7 +546,7 @@ REGROWTH:
       qc.threshold: 
   Simulations:
     Simulation: ["regrowth"]
-    File_name: ["cmass_wood_plus10cm_sts_fake"]
+    File_name: ["cmass_wood_plus10cm_sts"]
     Format: ["GUESS"]
     First_year: NULL
     Last_year: NULL
@@ -631,7 +647,7 @@ STORM:
       data.cleaning: 
       qc.threshold: 
   Simulations:
-    Simulation: ["storm"]
+    Simulation: ["european_applications"]
     File_name: ["storm"]
     Format: ["GUESS"]
     First_year: 1986
@@ -1363,7 +1379,7 @@ ICOS_ET1:
       qc.threshold: 0.5
   Simulations:
     Simulation: ["ICOS"]
-    File_name: ["dgpp"]
+    File_name: ["daet"]
     Format: ["GUESS"]
     First_year: 2013
     Last_year: 2021
