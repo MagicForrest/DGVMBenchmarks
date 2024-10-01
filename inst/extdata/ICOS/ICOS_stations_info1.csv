@@ -1,100 +1,97 @@
 Id;Name;Country;Position;PI names;Site type;Elevation above sea;Station class;Labeling date;Climate zone
-http://meta.icos-cp.eu/resources/stations/ES_SE-Sto;Abisko-Stordalen Palsa Bog;Sweden (SE);19.045208 68.35594;Lundin;permanent wetlands;351.893;2;2022-05-18;
-http://meta.icos-cp.eu/resources/stations/ES_IT-Noe;Arca di Noe - Le Prigionette;Italy (IT);8.151694 40.606174;Spano;closed shrublands;25;Associated;2023-05-23;
-http://meta.icos-cp.eu/resources/stations/ES_UK-AMo;Auchencorth Moss;United Kingdom of Great Britain and Northern Ireland (GB);-3.2436917 55.792545;Nemitz;permanent wetlands;270;1;2021-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Aur;Aurade;France (FR);1.106103 43.54965;Tallec;croplands;250;Associated;2020-05-27;
-http://meta.icos-cp.eu/resources/stations/ES_DE-BeR;Berlin-Rothenburgstrasse;Germany (DE);13.315827 52.457233;Meier;urban and built-up lands;;Associated;2022-11-23;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Bil;Bilos;France (FR);-0.956092 44.493652;Domec;evergreen needleleaf forests;39.18;2;2019-11-21;
-http://meta.icos-cp.eu/resources/stations/ES_CZ-BK1;Bily Kriz forest;Czech Republic (CZ);18.536882 49.502075;Šigut;evergreen needleleaf forests;875;2;2022-05-18;
-http://meta.icos-cp.eu/resources/stations/ES_IT-BCi;Borgo Cioffi;Italy (IT);14.957444 40.52375;Magliulo;croplands;10;1;2023-05-23;
+http://meta.icos-cp.eu/resources/stations/ES_SE-Sto;Abisko-Stordalen Palsa Bog;Sweden (SE);19.045208 68.35594;Lundin;permanent wetlands;351.893;2;2022-05-18;Subacrtic (Dfc)
+http://meta.icos-cp.eu/resources/stations/ES_IT-Noe;Arca di Noe - Le Prigionette;Italy (IT);8.151694 40.606174;Spano;closed shrublands;25;Associated;2023-05-23;Hot-summer mediterranean (Csa)
+http://meta.icos-cp.eu/resources/stations/ES_UK-AMo;Auchencorth Moss;United Kingdom of Great Britain and Northern Ireland (GB);-3.2436917 55.792545;Nemitz;permanent wetlands;270;1;2021-11-17;Subpolar oceanic (Cfc)
+http://meta.icos-cp.eu/resources/stations/ES_FR-Aur;Aurade;France (FR);1.106103 43.54965;Tallec;croplands;250;Associated;2020-05-27;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_DE-BeR;Berlin-Rothenburgstrasse;Germany (DE);13.315827 52.457233;Meier;urban and built-up lands;;Associated;2022-11-23;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_FR-Bil;Bilos;France (FR);-0.956092 44.493652;Domec;evergreen needleleaf forests;39.18;2;2019-11-21;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_CZ-BK1;Bily Kriz forest;Czech Republic (CZ);18.536882 49.502075;Šigut;evergreen needleleaf forests;875;2;2022-05-18;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_IT-BCi;Borgo Cioffi;Italy (IT);14.957444 40.52375;Magliulo;croplands;10;1;2023-05-23;Humid subtropical (Cfa)
 http://meta.icos-cp.eu/resources/stations/ES_IT-BFt;Bosco Fontana;Italy (IT);10.741966 45.197754;Gerosa;deciduous broadleaf forests;23;Associated;2021-05-25;
-http://meta.icos-cp.eu/resources/stations/ES_BE-Bra;Brasschaat;Belgium (BE);4.51984 51.30761;Janssens;evergreen needleleaf forests;16;1;2020-11-17;
-DE-Brs;Braunschweig;Germany (DE);10.44871 52.29663;Böske Herbst;cropland;79;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_IT-Cp2;Castelporziano2;Italy (IT);12.357293 41.704266;Fares;mixed forests;19;1;2021-05-25;
+http://meta.icos-cp.eu/resources/stations/ES_BE-Bra;Brasschaat;Belgium (BE);4.51984 51.30761;Janssens;evergreen needleleaf forests;16;1;2020-11-17;Marine west coast (Cfb)
+DE-Brs;Braunschweig;Germany (DE);10.44871 52.29663;Böske Herbst;cropland;79;Associated;;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_IT-Cp2;Castelporziano2;Italy (IT);12.357293 41.704266;Fares;mixed forests;19;1;2021-05-25;Hot-summer mediterranean (Csa)
 http://meta.icos-cp.eu/resources/stations/ES_IE-Cra;Clara Raised Bog;Ireland (IE);-7.641774 53.32309;Saunders;permanent wetlands;;2;;
-http://meta.icos-cp.eu/resources/stations/ES_FR-CLt;Col du Lautaret;France (FR);6.41053 45.0414;Voisin;grasslands;2050.6;Associated;2023-05-23;
-http://meta.icos-cp.eu/resources/stations/ES_CH-Dav;Davos;Switzerland (CH);9.85591 46.81533;Feigenwinter;evergreen needleleaf forests;1689;1;2019-11-21;
+http://meta.icos-cp.eu/resources/stations/ES_FR-CLt;Col du Lautaret;France (FR);6.41053 45.0414;Voisin;grasslands;2050.6;Associated;2023-05-23;Subacrtic (Dfc)
+http://meta.icos-cp.eu/resources/stations/ES_CH-Dav;Davos;Switzerland (CH);9.85591 46.81533;Feigenwinter;evergreen needleleaf forests;1689;1;2019-11-21;Subacrtic (Dfc)
 http://meta.icos-cp.eu/resources/stations/ES_SE-Deg;Degero;Sweden (SE);19.55654 64.18203;Peichl;permanent wetlands;270;2;2019-11-21;Sub-arctic (Dfc)
-http://meta.icos-cp.eu/resources/stations/ES_GL-Dsk;Disko;Greenland (GL);-53.51413 69.25349;Friborg;open shrublands;8;Associated;2021-05-25;
+http://meta.icos-cp.eu/resources/stations/ES_GL-Dsk;Disko;Greenland (GL);-53.51413 69.25349;Friborg;open shrublands;8;Associated;2021-05-25;Tundra (ET)
 http://meta.icos-cp.eu/resources/stations/ES_IE-Doa;Dooary;Ireland (IE);-7.253945 52.94873;Tobin;deciduous broadleaf forests;;2;;
-http://meta.icos-cp.eu/resources/stations/ES_BE-Dor;Dorinne;Belgium (BE);4.968113 50.311874;Heinesch;grasslands;247;2;2022-11-23;
-http://meta.icos-cp.eu/resources/stations/ES_FR-EM2;Estrees-Mons A28;France (FR);3.02065 49.87211;Leonard Leonard;croplands;85;Associated;2018-11-30;
+http://meta.icos-cp.eu/resources/stations/ES_BE-Dor;Dorinne;Belgium (BE);4.968113 50.311874;Heinesch;grasslands;247;2;2022-11-23;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_FR-EM2;Estrees-Mons A28;France (FR);3.02065 49.87211;Leonard Leonard;croplands;85;Associated;2018-11-30;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_DE-Fen;Fendt;Germany (DE);11.06056 47.83292;Schmid;grassland;595;1;;
-FI-TVA;FI-FOS-Tvärminne;Finland (FI);23.249 59.8418;Mammarella;fos;;2;;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Fon;Fontainebleau-Barbeau;France (FR);2.780096 48.476357;Berveiller;deciduous broadleaf forests;103;1;2019-11-21;
-http://meta.icos-cp.eu/resources/stations/ES_FR-FBn;Font-Blanche;France (FR);5.67865 43.24079;SIMIONI;evergreen needleleaf forests;436;2;2022-11-23;
-http://meta.icos-cp.eu/resources/stations/ES_DE-Geb;Gebesee;Germany (DE);10.91463 51.09973;Brümmer;croplands;161.5;1;2020-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_DK-Gds;Gludsted Plantage;Denmark (DK);9.3341 56.0737;Friborg;evergreen needleleaf forests;86;Associated;2021-05-25;
+http://meta.icos-cp.eu/resources/stations/ES_FR-Fon;Fontainebleau-Barbeau;France (FR);2.780096 48.476357;Berveiller;deciduous broadleaf forests;103;1;2019-11-21;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_FR-FBn;Font-Blanche;France (FR);5.67865 43.24079;SIMIONI;evergreen needleleaf forests;436;2;2022-11-23;Humid subtropical (Cfa)
+http://meta.icos-cp.eu/resources/stations/ES_DE-Geb;Gebesee;Germany (DE);10.91463 51.09973;Brümmer;croplands;161.5;1;2020-11-17;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_DE-Gwg;Graswang;Germany (DE);11.03261 47.57083;Schmid;grassland;864;Associated;;
 http://meta.icos-cp.eu/resources/stations/ES_FR-Gri;Grignon;France (FR);1.95191 48.84422;Buysse;croplands;125;2;2021-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_DE-Gri;Grillenburg;Germany (DE);13.51259 50.95004;Mauder;grasslands;385;Associated;2018-11-30;
+http://meta.icos-cp.eu/resources/stations/ES_DE-Gri;Grillenburg;Germany (DE);13.51259 50.95004;Mauder;grasslands;385;Associated;2018-11-30;Humid continental, warm summer (Dfb)
 http://meta.icos-cp.eu/resources/stations/ES_DE-GsB;Grosses Bruch;Germany (DE);11.10478 52.029648;Rebmann;grassland;81;Associated;;
 http://meta.icos-cp.eu/resources/stations/ES_IE-GtF;Gurteen Farm;Ireland (IE);-8.001742 53.040253;Lanigan;grasslands;;2;;
-http://meta.icos-cp.eu/resources/stations/ES_GF-Guy;Guyaflux;French Guiana (GF);-52.9248 5.2787;Bonal;evergreen broadleaf forests;40;Associated;2019-11-21;
-http://meta.icos-cp.eu/resources/stations/ES_DE-Hai;Hainich;Germany (DE);10.452089 51.079407;Knohl;deciduous broadleaf forests;438.7;Associated;2020-05-27;
-http://meta.icos-cp.eu/resources/stations/ES_DE-Har;Hartheim;Germany (DE);7.5981 47.933;Christen;mixed forests;201;Associated;2022-05-18;
-http://meta.icos-cp.eu/resources/stations/ES_GR-HeK;Heraklion Kornarou;Greece (GR);25.1328 35.33613;Chrysoulakis;urban and built-up lands;30;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_GR-HeM;Heraklion Mastabas;Greece (GR);25.13017 35.32343;Chrysoulakis;urban and built-up lands;69;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Hes;Hesse;France (FR);7.06465 48.6741;Cuntz;deciduous broadleaf forests;310;1;2022-05-18;
-http://meta.icos-cp.eu/resources/stations/ES_DE-Hzd;Hetzdorf;Germany (DE);13.48978 50.96381;Mauder;deciduous broadleaf forests;395;Associated;2023-05-23;
-http://meta.icos-cp.eu/resources/stations/ES_DE-HoH;Hohes Holz;Germany (DE);11.22235 52.08656;Rebmann;deciduous broadleaf forests;193;1;2019-05-22;
+http://meta.icos-cp.eu/resources/stations/ES_GF-Guy;Guyaflux;French Guiana (GF);-52.9248 5.2787;Bonal;evergreen broadleaf forests;40;Associated;2019-11-21;Tropical rainforest (Af)
+http://meta.icos-cp.eu/resources/stations/ES_DE-Hai;Hainich;Germany (DE);10.452089 51.079407;Knohl;deciduous broadleaf forests;438.7;Associated;2020-05-27;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_DE-Har;Hartheim;Germany (DE);7.5981 47.933;Christen;mixed forests;201;Associated;2022-05-18;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_GR-HeK;Heraklion Kornarou;Greece (GR);25.1328 35.33613;Chrysoulakis;urban and built-up lands;30;Associated;;Hot-summer mediterranean (Csa)
+http://meta.icos-cp.eu/resources/stations/ES_GR-HeM;Heraklion Mastabas;Greece (GR);25.13017 35.32343;Chrysoulakis;urban and built-up lands;69;Associated;;Hot-summer mediterranean (Csa)
+http://meta.icos-cp.eu/resources/stations/ES_FR-Hes;Hesse;France (FR);7.06465 48.6741;Cuntz;deciduous broadleaf forests;310;1;2022-05-18;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_DE-Hzd;Hetzdorf;Germany (DE);13.48978 50.96381;Mauder;deciduous broadleaf forests;395;Associated;2023-05-23;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_DE-HoH;Hohes Holz;Germany (DE);11.22235 52.08656;Rebmann;deciduous broadleaf forests;193;1;2019-05-22;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_NO-Hur;Hurdal;Norway (NO);11.07949 60.37163;Lange;norway spruce forest;275.1308;2;;
 http://meta.icos-cp.eu/resources/stations/ES_SE-Htm;Hyltemossa;Sweden (SE);13.41897 56.09763;Heliasz;evergreen needleleaf forests;115;2;2018-05-31;Humid continental warm summer (Dfb)
-http://meta.icos-cp.eu/resources/stations/ES_FI-Hyy;Hyytiala;Finland (FI);24.29477 61.84741;Mammarella;evergreen needleleaf forests;181;1;2018-11-30;
+http://meta.icos-cp.eu/resources/stations/ES_FI-Hyy;Hyytiala;Finland (FI);24.29477 61.84741;Mammarella;evergreen needleleaf forests;181;1;2018-11-30;Subacrtic (Dfc)
 http://meta.icos-cp.eu/resources/stations/ES_IE-JtC;Johnstown Castle;Ireland (IE);-6.499806 52.298187;Lanigan;grasslands;;2;;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Ken;Kenttarova;Finland (FI);24.24301 67.98721;Aurela;evergreen needleleaf forests;347;Associated;2021-05-25;
+http://meta.icos-cp.eu/resources/stations/ES_FI-Ken;Kenttarova;Finland (FI);24.24301 67.98721;Aurela;evergreen needleleaf forests;347;Associated;2021-05-25;Subacrtic (Dfc)
 http://meta.icos-cp.eu/resources/stations/ES_DE-Kie;Kienhorst;Germany (DE);13.64393 52.97343;Russ;forest;63;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_DE-Kli;Klingenberg;Germany (DE);13.52238 50.89306;Mauder;croplands;478;Associated;2019-05-22;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Kvr;Kuivajarvi;Finland (FI);24.2804 61.84662;Vesala;water bodies;141;Associated;2020-05-27;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Kmp;Kumpula;Finland (FI);24.9611 60.20289;Järvi;urban and built-up lands;26;Associated;2019-11-21;
-http://meta.icos-cp.eu/resources/stations/ES_FR-LGt;La Guette;France (FR);2.284102 47.322918;Gogo;permanent wetlands;153;Associated;2019-11-21;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Lam;Lamasquere;France (FR);1.237878 43.496437;Brut;croplands;181;1;2020-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_DE-Kli;Klingenberg;Germany (DE);13.52238 50.89306;Mauder;croplands;478;Associated;2019-05-22;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_FI-Kvr;Kuivajarvi;Finland (FI);24.2804 61.84662;Vesala;water bodies;141;Associated;2020-05-27;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_FI-Kmp;Kumpula;Finland (FI);24.9611 60.20289;Järvi;urban and built-up lands;26;Associated;2019-11-21;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_FR-LGt;La Guette;France (FR);2.284102 47.322918;Gogo;permanent wetlands;153;Associated;2019-11-21;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_FR-Lam;Lamasquere;France (FR);1.237878 43.496437;Brut;croplands;181;1;2020-11-17;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_CZ-Lnz;Lanzhot;Czech Republic (CZ);16.946331 48.68155;Kowalska;deciduous broadleaf forests;150;1;2022-05-18;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Lqu;Laqueuille;France (FR);2.7349 45.6444;Klumpp;grasslands;1040;2;2022-11-23;
+http://meta.icos-cp.eu/resources/stations/ES_FR-Lqu;Laqueuille;France (FR);2.7349 45.6444;Klumpp;grasslands;1040;2;2022-11-23;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_ES-LMa;Las Majadas de Tiétar;Spain (ES);-5.77465 39.94033;Carrara;wooded pasture;;Associated;;
 http://meta.icos-cp.eu/resources/stations/ES_IE-DyL;Leam West;Ireland (IE);-9.89284 53.45647;Regan;permanent wetlands;;2;;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Let;Lettosuo;Finland (FI);23.95952 60.64183;Korkiakoski;evergreen needleleaf forests;125;Associated;2018-11-30;
-http://meta.icos-cp.eu/resources/stations/ES_IT-Lsn;Lison;Italy (IT);12.750297 45.740482;Pitacco;open shrublands;1;Associated;2020-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_FI-Let;Lettosuo;Finland (FI);23.95952 60.64183;Korkiakoski;evergreen needleleaf forests;125;Associated;2018-11-30;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_IT-Lsn;Lison;Italy (IT);12.750297 45.740482;Pitacco;open shrublands;1;Associated;2020-11-17;Humid subtropical (Cfa)
 http://meta.icos-cp.eu/resources/stations/ES_BE-Lcr;Lochristi;Belgium (BE);3.85043 51.11218;De Meulder;deciduous broadleaf forests;6.25;Associated;2020-05-27;
 http://meta.icos-cp.eu/resources/stations/ES_FI-Lom;Lompolojankka;Finland (FI);24.209179 67.99724;Lohila;fen;247;2;;
-http://meta.icos-cp.eu/resources/stations/ES_BE-Lon;Lonzee;Belgium (BE);4.746234 50.55162;Dumont;croplands;170;2;2017-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_NL-Loo;Loobos;Netherlands (NL);5.74355 52.166447;van der Molen;evergreen needleleaf forests;25;2;2023-05-23;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Lus;Lusignan;France (FR);0.1206518 46.414246;Chabbi;grasslands;152;2;2022-11-23;
-http://meta.icos-cp.eu/resources/stations/ES_BE-Maa;Maasmechelen;Belgium (BE);5.631851 50.97987;Roland;closed shrublands;87;2;2020-05-27;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Mej;Mejusseaume;France (FR);-1.79635 48.1184;Flechard;grasslands;40;Associated;2020-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_BE-Lon;Lonzee;Belgium (BE);4.746234 50.55162;Dumont;croplands;170;2;2017-11-17;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_NL-Loo;Loobos;Netherlands (NL);5.74355 52.166447;van der Molen;evergreen needleleaf forests;25;2;2023-05-23;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_FR-Lus;Lusignan;France (FR);0.1206518 46.414246;Chabbi;grasslands;152;2;2022-11-23;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_BE-Maa;Maasmechelen;Belgium (BE);5.631851 50.97987;Roland;closed shrublands;87;2;2020-05-27;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_FR-Mej;Mejusseaume;France (FR);-1.79635 48.1184;Flechard;grasslands;40;Associated;2020-11-17;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_IT-MBo;Monte Bondone;Italy (IT);11.045831 46.01468;Gianelle;grasslands;1550;2;2022-11-23;
 http://meta.icos-cp.eu/resources/stations/ES_FR-MsS;Montiers sur Saulx;France (FR);5.31187 48.53816;Galy;forest;383;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_DE-Msr;Mooseurach;Germany (DE);11.456168 47.80918;Drösler;evergreen needleleaf forests;602.07;Associated;2022-05-18;
-http://meta.icos-cp.eu/resources/stations/ES_SE-Myc;Mycklemossen;Sweden (SE);12.1694 58.36503;Weslien;wetland;93;2;;
-http://meta.icos-cp.eu/resources/stations/ES_IT-Niv;Nivolet;Italy (IT);7.13943 45.49091;Provenzale;grasslands;2750;Associated;2022-05-18;
+http://meta.icos-cp.eu/resources/stations/ES_DE-Msr;Mooseurach;Germany (DE);11.456168 47.80918;Drösler;evergreen needleleaf forests;602.07;Associated;2022-05-18;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_SE-Myc;Mycklemossen;Sweden (SE);12.1694 58.36503;Weslien;wetland;93;2;;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_IT-Niv;Nivolet;Italy (IT);7.13943 45.49091;Provenzale;grasslands;2750;Associated;2022-05-18;Tundra (ET)
 http://meta.icos-cp.eu/resources/stations/ES_SE-Nor;Norunda;Sweden (SE);17.479504 60.0865;Mölder;evergreen needleleaf forests;45;2;2018-11-30;Humid continental warm summer (Dfb)
-http://meta.icos-cp.eu/resources/stations/ES_GL-NuF;Nuuk Fen;Greenland (GL);-51.386066 64.130936;Friborg;permanent wetlands;40;Associated;2021-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_GL-NuF;Nuuk Fen;Greenland (GL);-51.386066 64.130936;Friborg;permanent wetlands;40;Associated;2021-11-17;Tundra (ET)
 http://meta.icos-cp.eu/resources/stations/ES_DE-Okd;Oberklenkendorf;Germany (DE);9.092467 53.412598;Brümmer;grasslands;;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_IT-Oxm;Osservatorio Ximeniano Firenze;Italy (IT);11.255111 43.774464;Gioli;urban;;Associated;;
+http://meta.icos-cp.eu/resources/stations/ES_IT-Oxm;Osservatorio Ximeniano Firenze;Italy (IT);11.255111 43.774464;Gioli;urban;;Associated;;Hot-summer mediterranean (Csa)
 http://meta.icos-cp.eu/resources/stations/ES_FI-Ouk;Oulanka;Finland (FI);29.30768 66.37752;Paavola;wetland;;Associated;;
 http://meta.icos-cp.eu/resources/stations/ES_IT-PCm;Parco Urbano di Capodimonte;Italy (IT);14.2504 40.8741;Calfapietra;forest;148;Associated;;
 http://meta.icos-cp.eu/resources/stations/ES_GR-Prt;Pertouli;Greece (GR);21.4989 39.5434;Gitas;evergreen needleleaf forests;1350;2;;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Pue;Puechabon;France (FR);3.5957 43.7413;Limousin;evergreen broadleaf forests;271;2;2021-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_IT-Ren;Renon;Italy (IT);11.43369 46.58686;Montagnani;evergreen needleleaf forests;1735.6;2;2021-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_FR-Pue;Puechabon;France (FR);3.5957 43.7413;Limousin;evergreen broadleaf forests;271;2;2021-11-17;Hot-summer mediterranean (Csa)
+http://meta.icos-cp.eu/resources/stations/ES_IT-Ren;Renon;Italy (IT);11.43369 46.58686;Montagnani;evergreen needleleaf forests;1735.6;2;2021-11-17;Subacrtic (Dfc)
 http://meta.icos-cp.eu/resources/stations/ES_DK-RCW;Risoe;Denmark (DK);12.101398 55.680683;Ibrom;forest;;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_DE-RuR;Rollesbroich;Germany (DE);6.304126 50.621914;Schmidt;grasslands;514.7;Associated;2021-05-25;
-http://meta.icos-cp.eu/resources/stations/ES_IT-SR2;San Rossore 2;Italy (IT);10.29091 43.73202;Arriga;evergreen needleleaf forests;4;2;2019-11-21;
+http://meta.icos-cp.eu/resources/stations/ES_DE-RuR;Rollesbroich;Germany (DE);6.304126 50.621914;Schmidt;grasslands;514.7;Associated;2021-05-25;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_IT-SR2;San Rossore 2;Italy (IT);10.29091 43.73202;Arriga;evergreen needleleaf forests;4;2;2019-11-21;Hot-summer mediterranean (Csa)
 http://meta.icos-cp.eu/resources/stations/ES_DE-SfN;Schechenfilz Nord;Germany (DE);11.3275 47.80639;Schmid;wetland;590;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_DE-RuS;Selhausen Juelich;Germany (DE);6.4471445 50.865906;Schmidt;croplands;103.2;1;2019-05-22;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Sii;Siikaneva;Finland (FI);24.19285 61.83265;Tuittila;permanent wetlands;160;2;2017-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_DE-RuS;Selhausen Juelich;Germany (DE);6.4471445 50.865906;Schmidt;croplands;103.2;1;2019-05-22;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_FI-Sii;Siikaneva;Finland (FI);24.19285 61.83265;Tuittila;permanent wetlands;160;2;2017-11-17;Subacrtic (Dfc)
 http://meta.icos-cp.eu/resources/stations/ES_DK-Skj;Skjern;Denmark (DK);8.40481 55.91273;Friborg;permanent wetlands;2;Associated;2021-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Sod;Sodankyla;Finland (FI);26.63859 67.36239;Aurela;evergreen needleleaf forests;180;1;2023-05-23;
-http://meta.icos-cp.eu/resources/stations/ES_DK-Sor;Soroe;Denmark (DK);11.644645 55.48587;Ibrom;deciduous broadleaf forests;40;1;2021-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_FI-Sod;Sodankyla;Finland (FI);26.63859 67.36239;Aurela;evergreen needleleaf forests;180;1;2023-05-23;Subacrtic (Dfc)
+http://meta.icos-cp.eu/resources/stations/ES_DK-Sor;Soroe;Denmark (DK);11.644645 55.48587;Ibrom;deciduous broadleaf forests;40;1;2021-11-17;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_SE-Svb;Svartberget;Sweden (SE);19.7745 64.25611;Peichl;evergreen needleleaf forests;267;2;2019-05-22;Sub-arctic (Dfc)
-http://meta.icos-cp.eu/resources/stations/ES_DE-Tha;Tharandt;Germany (DE);13.56515 50.96256;Mauder;evergreen needleleaf forests;380;1;2020-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_IT-Tor;Torgnon;Italy (IT);7.578055 45.84444;Galvagno;grasslands;2168;Associated;2017-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_FR-Tou;Toulouse;France (FR);1.37474 43.572857;Calvet;grasslands;158;Associated;2021-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_CZ-wet;Trebon;Czech Republic (CZ);14.77035 49.02465;Dusek;permanent wetlands;426;Associated;2021-05-25;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Tvm;Tvärminne;Finland (FI);23.25027 59.8418;Mammarella;mft;;Associated;;
-http://meta.icos-cp.eu/resources/stations/ES_FI-Var;Varrio;Finland (FI);29.61 67.7549;Kolari;evergreen needleleaf forests;395;Associated;2018-11-30;
-http://meta.icos-cp.eu/resources/stations/ES_BE-Vie;Vielsalm;Belgium (BE);5.998099 50.304962;Vincke;mixed forests;490;2;2020-11-17;
+http://meta.icos-cp.eu/resources/stations/ES_DE-Tha;Tharandt;Germany (DE);13.56515 50.96256;Mauder;evergreen needleleaf forests;380;1;2020-11-17;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_IT-Tor;Torgnon;Italy (IT);7.578055 45.84444;Galvagno;grasslands;2168;Associated;2017-11-17;Subacrtic (Dfc)
+http://meta.icos-cp.eu/resources/stations/ES_FR-Tou;Toulouse;France (FR);1.37474 43.572857;Calvet;grasslands;158;Associated;2021-11-17;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_CZ-wet;Trebon;Czech Republic (CZ);14.77035 49.02465;Dusek;permanent wetlands;426;Associated;2021-05-25;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_FI-Tvm;Tvärminne;Finland (FI);23.25027 59.8418;Mammarella;mft;;Associated;;Humid continental, warm summer (Dfb)
+http://meta.icos-cp.eu/resources/stations/ES_FI-Var;Varrio;Finland (FI);29.61 67.7549;Kolari;evergreen needleleaf forests;395;Associated;2018-11-30;Subacrtic (Dfc)
+http://meta.icos-cp.eu/resources/stations/ES_BE-Vie;Vielsalm;Belgium (BE);5.998099 50.304962;Vincke;mixed forests;490;2;2020-11-17;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_DK-Vng;Voulundgaard;Denmark (DK);9.160709 56.037476;Friborg;croplands;67.7;1;2020-11-17;
-http://meta.icos-cp.eu/resources/stations/ES_DE-RuW;Wustebach;Germany (DE);6.3309627 50.50493;Schmidt;evergreen needleleaf forests;610;Associated;2022-05-18;
-http://meta.icos-cp.eu/resources/stations/ES_CD-Ygb;Yangambi;Congo  the Democratic Republic of the (CD);24.502472 0.814444;Boeckx;mixed forests;466;Associated;2022-11-23;
-http://meta.icos-cp.eu/resources/stations/ES_GL-ZaF;Zackenberg Fen;Greenland (GL);-20.555773 74.48152;Jackowicz-Korczynski;permanent wetlands;38;2;2022-11-23;
-http://meta.icos-cp.eu/resources/stations/ES_GL-ZaH;Zackenberg Gras;Greenland (GL);-20.550869 74.4733;Jackowicz-Korczynski;grasslands;48;Associated;2022-11-23;
+http://meta.icos-cp.eu/resources/stations/ES_DE-RuW;Wustebach;Germany (DE);6.3309627 50.50493;Schmidt;evergreen needleleaf forests;610;Associated;2022-05-18;Marine west coast (Cfb)
+http://meta.icos-cp.eu/resources/stations/ES_GL-ZaF;Zackenberg Fen;Greenland (GL);-20.555773 74.48152;Jackowicz-Korczynski;permanent wetlands;38;2;2022-11-23;Tundra (ET)
+http://meta.icos-cp.eu/resources/stations/ES_GL-ZaH;Zackenberg Gras;Greenland (GL);-20.550869 74.4733;Jackowicz-Korczynski;grasslands;48;Associated;2022-11-23;Tundra (ET)
