@@ -1,7 +1,7 @@
 Id;Name;Country;Position;PI names;Site type;Elevation above sea;Station class;Labeling date;Climate zone
 http://meta.icos-cp.eu/resources/stations/ES_SE-Sto;Abisko-Stordalen Palsa Bog;Sweden (SE);19.045208 68.35594;Lundin;permanent wetlands;351.893;2;2022-05-18;Subacrtic (Dfc)
 http://meta.icos-cp.eu/resources/stations/ES_IT-Noe;Arca di Noe - Le Prigionette;Italy (IT);8.151694 40.606174;Spano;closed shrublands;25;Associated;2023-05-23;Hot-summer mediterranean (Csa)
-http://meta.icos-cp.eu/resources/stations/ES_UK-AMo;Auchencorth Moss;United Kingdom of Great Britain and Northern Ireland (GB);-3.2436917 55.792545;Nemitz;permanent wetlands;270;1;2021-11-17;Subpolar oceanic (Cfc)
+http://meta.icos-cp.eu/resources/stations/ES_UK-AMo;Auchencorth Moss;United Kingdom (GB);-3.2436917 55.792545;Nemitz;permanent wetlands;270;1;2021-11-17;Subpolar oceanic (Cfc)
 http://meta.icos-cp.eu/resources/stations/ES_FR-Aur;Aurade;France (FR);1.106103 43.54965;Tallec;croplands;250;Associated;2020-05-27;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_DE-BeR;Berlin-Rothenburgstrasse;Germany (DE);13.315827 52.457233;Meier;urban and built-up lands;;Associated;2022-11-23;Marine west coast (Cfb)
 http://meta.icos-cp.eu/resources/stations/ES_FR-Bil;Bilos;France (FR);-0.956092 44.493652;Domec;evergreen needleleaf forests;39.18;2;2019-11-21;Marine west coast (Cfb)
