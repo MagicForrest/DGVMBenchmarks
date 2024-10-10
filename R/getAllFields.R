@@ -219,6 +219,7 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
         this_Source <- this_sim_Source
         this_Source@dir <- this_benchmark_run_dir
         
+        if (current_format == "GUESS"){
         # read the data
         this_simulation <- DGVMTools::getField(source = this_Source,
                                                quant = benchmark@file_name[[format_index]],
@@ -233,7 +234,22 @@ getAllFields <- function(benchmark = this_benchmark, all_simulation_Sources_list
                                                quick.read.file = paste(benchmark@id, version_label, sep = "_"),
                                                year.aggregate.method = year.aggregate.method,
                                                spatial.aggregate.method = spatial.aggregate.method
-        )
+        )}
+        if (current_format == "NetCDF"){
+          # read the data
+          this_simulation <- DGVMTools::getField(source = this_Source,
+                                                 quant = benchmark@file_name[[format_index]],
+                                                 first.year = first.year,
+                                                 last.year = last.year,
+                                                 spatial.extent.id = benchmark@spatial_extent_id,
+                                                 spatial.extent = benchmark@spatial.extent,
+                                                 layers = benchmark@guess_layers,
+                                                 verbose = verbose_read,
+                                                 quick.read = quick_read,
+                                                 quick.read.file = paste(benchmark@id, version_label, sep = "_"),
+                                                 year.aggregate.method = year.aggregate.method,
+                                                 spatial.aggregate.method = spatial.aggregate.method
+          )}
         
         all_sim_full[[this_sim_Source@name]] <- this_simulation
         all_Fields_list[[this_sim_Source@name]] <- this_simulation

@@ -61,6 +61,7 @@ getField_ICOS <- function(source,
   # variables that are currently supported
   variables.cfluxes = c("GPP", "NEE", "Reco", "LE")
   
+  
   # lists all files with daily fluxes
   daily.files <- list.files(path = source@dir) %>%
     stringr::str_subset("DD") %>% stringr::str_subset("VARINFO", negate = T)
@@ -227,6 +228,10 @@ getField_ICOS <- function(source,
   # select the required columns for the current quantity
   if (quant@id %in% variables.cfluxes) {
     ICOS.cfluxes %>% select(Year, Day, Lon, Lat, Code, Name, quant@id) -> quant.data
+  }
+  if (quant@id == "ET"){
+    ICOS.cfluxes %>% select(Year, Day, Lon, Lat, Code, Name, LE) -> quant.data
+    colnames(quant.data)[7] <- quant@id
   }
   
   

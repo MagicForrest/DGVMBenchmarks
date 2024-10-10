@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\ICOS_240927\\"
-  Sim1_id: "Regrowth PNV"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_paper_240924\\Ageinit\\run_240809_sim4_age_probharv_satdist07\\"
+  Sim1_id: "Probabilistic Harvest"
   Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data\\"
-  Sim2: ""
-  Sim2_id: ""
+  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_paper_240924\\Ageinit\\run_240809_sim2_age_satdist07\\"
+  Sim2_id: "No Thinning"
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -20,7 +20,7 @@ Switches:
   do_stem_density: F
   do_qdbh: F
   do_woody_growth: F
-  do_cpool: F
+  do_cpool: T
   do_Regrowth: F
   do_SIMFIRE: F
   do_BLAZE: F
@@ -35,6 +35,74 @@ Switches:
   do_FLUXNET_GPP: F
   do_FLUXNET_NEE: F
   do_FLUXNET_Reco: F
+  
+GROWSTOCK: 
+  Unit: "" 
+  Id: "test" # The ID used for tabular output
+  Name: "test" # Used in plotting
+  Description: "Growing stock" # Used in tabular output
+  Layer: "variable" # Layer/column in Fields to base the comparison on
+  Data:   
+    Datasets: ["WUR"] # Name of Dataset (name of subfolder in data source directory)
+    File_name: ["WUR_test"] # The name of the files to process, should be the same for data and sim. (If ICOS or FLUXNET use data name)
+    Format: ["NetCDF"]
+    First_year: NULL # Set first and last year to limit the temporal span, set to null takes the whole timespan 
+    Last_year: NULL
+    year.aggregate.method: "none" # The method to aggregate time dimention 
+    spatial.aggregate.method:
+    Conversion_factor: NULL # Numeric() list() the factor needed for conversion of dataset, leave empty or NULL if not used
+    Layer_to_convert: NULL # List holding the dataset names of the Fields to be converted
+    Dataset_name: ["LRF-GPP"] # Used in plotting and tabular output
+    Dataset_longname: "Light Response Function GPP (LRF-GPP)"
+    Dataset_source: "Tagesson, T, et al.(2021). https://doi.org/10.1111/gcb.15424"
+    Dataset_description: "Comparison of annual GPP for 2010 as produced by LPJ-GUESS to the light response function generated GPP based on satellite PAR data (Tagesson et al., 2020). The Light Response Function (LRF) GPP dataset at 0.05° × 0.05° resolution is modelled with an ecosystem-level physiological approach taking the asymptotic relationship between GPP and incoming photosynthetically active radiation (PAR) into account (Tagesson et al., 2020). The data was processed at 0.05° and aggregated to 0.5° taking the grid-cell mean value. 0.05° forest pixels were isolated before aggregation using the Corine Land Cover dataset (CLC) (100m) from Copernicus Land Monitoring Service 2018, European Environment Agency (EEA). Using CLC, a threshold was set to each GPP grid cell, removing all cells with less than 80% forest cover."
+    ICOS_FLUXNET_Specific:
+      UT.threshold: NULL
+      partition.method: NULL
+      day.night.method: NULL
+      NEE.day.night: NULL
+      rm.leap: NULL
+      data.cleaning: NULL
+      qc.threshold: NULL # ICOS & FLUXNET specific settings.
+  Simulations:
+    Simulation: ["WUR"]
+    File_name: ["WUR_test_modified"]
+    Format: ["NetCDF"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "none"
+    spatial.aggregate.method: 
+    Conversion_factor: 
+    Layer_to_convert: 
+    aDGVM_Specific:
+      adgvm.file.type: "Yearly"
+      adgvm.fire: 1
+      adgvm.climate: 0
+    aDGVM2_Specific:
+      adgvm2.scheme: 1
+      adgvm2.daily: TRUE
+  Plotting:
+    Spatial_Difference:
+      Difference_Limits: [-1, 1]
+      Difference_Breaks: [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
+      Percentage.difference_Limits:
+      Percentage.difference_Breaks:
+      Values_Limits:
+      Values_Breaks:
+    Spatial_Scatter:
+      Limits: [0, 3] # Plotting settings limits and breaks list input []
+  Statistics:
+    ME: F
+    NME: F
+    NMSE: T
+    RMSE: T 
+    NME_2: F
+    NMSE_2: F
+    NME_3: F
+    NMSE_3: F
+    r: F
+    r2: T
+    r2_eff: F
   
 ## Spatial difference mapping
 
@@ -454,7 +522,7 @@ cpool:
   Id: "Soil carbon"
   Name: "cpool"
   Description: "cpool"  
-  Layer: ["SoilC", "LitterC"]
+  Layer: ["VegC","SoilC", "LitterC"]
   Data:
     Datasets: ["european_applications"]
     File_name: ["cpool"]
@@ -481,9 +549,9 @@ cpool:
     Simulation: ["european_applications"]
     File_name: ["cpool"]
     Format: ["GUESS"]
-    First_year: 2001
-    Last_year: 2010
-    year.aggregate.method: "mean"
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "none"
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
@@ -1182,7 +1250,7 @@ ICOS_GPP1:
     File_name: ["dgpp"]
     Format: ["GUESS"]
     First_year: 2013
-    Last_year: 2021
+    Last_year: 2022
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
@@ -1352,10 +1420,10 @@ ICOS_ET1:
   Id: "ET"
   Name: "ET"
   Description: "Daily Evapotranspiration"  
-  Layer: "LE"
+  Layer: "ET"
   Data:
     Datasets: ["ICOS"]
-    File_name: ["LE"]
+    File_name: ["ET"]
     Format: ["ICOS"]
     First_year: NULL
     Last_year: NULL

@@ -23,23 +23,40 @@ for (i in seq_along(all_comparisons[[1]])) {
   #     return(NA)
   #   }
   # })
-  stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+  stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info1.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+  
   stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
   stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-  decimals <- 4  # Specify the number of decimal places you want to round to
+  #decimals <- 4  # Specify the number of decimal places you want to round to
   
+  ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))  
+  stations <- merge(stations, ICOS_grid, 
+                                     by = c("Name"), 
+                                     all = TRUE)
   # Round Lon and Lat columns in stations
-  stations$Lon <- round(as.numeric(stations$Lon), decimals)
-  stations$Lat <- round(as.numeric(stations$Lat), decimals)
+  stations$Lon <- as.numeric(stations$GUESS_Lon)
+  stations$Lat <- as.numeric(stations$GUESS_Lat)
+  merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"))
   
+  #stations <- stations[, -which(names(stations) == "Position")]
+  #stations$Site.type <- stations[stations$Site.type != "tall tower"]
+  
+  #setDT(stations)
   # Round Lon and Lat columns in this_Field@data
-  this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
-  this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
+  # this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
+  # this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
   # Remove Position column
-  stations <- stations[, -which(names(stations) == "Position")]
+  #stations <- stations[, -which(names(stations) == "Position")]
+  #stations <- stations[stations$Site.type != "tall tower"]
   #stations$Station_ID <- sapply(strsplit(stations$Id, "/"), function(x) tail(x, 1))
   # Merge based on matching latitude and longitude coordinates
-  merged_data <- merge(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"), all.x = TRUE)
+  #setDT(stations)
+  
+  # Merge this_comparison@data with stations to get the corresponding station information
+  #merged_data <- merge(this_comparison@data, 
+                      # stations[, .(Lon, Lat, Site.type, Name, Climate.zone)], 
+                      # by = c("Lon", "Lat"), 
+                       #all.x = T)
   
   # Add the Site.type column to this_comparison@data
   this_comparison@data$Climate.zone <- merged_data$Climate.zone
@@ -108,16 +125,18 @@ for (i in seq_along(all_comparisons[[1]])) {
          color = "Climate Zone") +
     guides(fill = FALSE) +  # This removes the fill legend
     theme_bw() +
-    theme(legend.position = "bottom",
-          legend.direction = "vertical",
-          legend.title = element_text(size = 12, face = "bold"),
-          legend.text = element_text(size = 12),
+    theme(legend.position = "right",  # Change to "bottom" to try fitting the legend horizontally
+          legend.direction = "vertical",  # Arrange legend items horizontally
+          legend.title = element_text(size = 9, face = "bold"),
+          legend.text = element_text(size = 10),  # Reduce legend text size
+          legend.key.size = unit(0.5, "cm"),
           plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
           axis.title.x = element_text(size = 25),
           axis.title.y = element_text(size = 25),
           axis.text = element_text(size = 15),
           legend.key = element_blank(),
-          legend.box.background = element_rect(color = "transparent", fill = "transparent"))
+          legend.box.background = element_rect(color = "transparent", fill = "transparent"))+
+    coord_fixed(ratio = 1)
   
   print(plot1)
   
@@ -148,22 +167,29 @@ for (i in seq_along(all_comparisons[[1]])) {
 }else if (fill == "landcover"){
   for (i in seq_along(all_comparisons[[1]])) {
     this_comparison <- all_comparisons[[1]][[i]]
-    stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+    stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info1.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+    
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
     stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-    decimals <- 4  # Specify the number of decimal places you want to round to
+    #decimals <- 4  # Specify the number of decimal places you want to round to
     
+    ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))    
+    stations <- merge(stations, ICOS_grid, 
+                      by = c("Name"), 
+                      all = TRUE)
     # Round Lon and Lat columns in stations
-    stations$Lon <- round(as.numeric(stations$Lon), decimals)
-    stations$Lat <- round(as.numeric(stations$Lat), decimals)
+    stations$Lon <- as.numeric(stations$GUESS_Lon)
+    stations$Lat <- as.numeric(stations$GUESS_Lat)
+    merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"))
+    
     
     # Round Lon and Lat columns in this_Field@data
-    this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
-    this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
+    #this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
+    #this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
     # Remove Position column
-    stations <- stations[, -which(names(stations) == "Position")]
+    #stations <- stations[, -which(names(stations) == "Position")]
     # Merge based on matching latitude and longitude coordinates
-    merged_data <- merge(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"), all.x = TRUE)
+   # merged_data <- merge(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"), all.x = TRUE)
     
     # Add the Site.type column to this_comparison@data
     this_comparison@data$Site.type <- merged_data$Site.type
@@ -233,16 +259,18 @@ for (i in seq_along(all_comparisons[[1]])) {
            color = "Land Cover") +
       guides(fill = FALSE) +  # This removes the fill legend
       theme_bw() +
-      theme(legend.position = "bottom",
-            legend.direction = "vertical",
-            legend.title = element_text(size = 12, face = "bold"),
-            legend.text = element_text(size = 12),
+      theme(legend.position = "right",  # Change to "bottom" to try fitting the legend horizontally
+            legend.direction = "vertical",  # Arrange legend items horizontally
+            legend.title = element_text(size = 9, face = "bold"),
+            legend.text = element_text(size = 10),  # Reduce legend text size
+            legend.key.size = unit(0.5, "cm"),
             plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
             axis.title.x = element_text(size = 25),
             axis.title.y = element_text(size = 25),
             axis.text = element_text(size = 15),
             legend.key = element_blank(),
-            legend.box.background = element_rect(color = "transparent", fill = "transparent"))
+            legend.box.background = element_rect(color = "transparent", fill = "transparent"))+
+      coord_fixed(ratio = 1)
     
     print(plot1)
     
@@ -272,22 +300,23 @@ for (i in seq_along(all_comparisons[[1]])) {
 } else if (fill == "country"){
   for (i in seq_along(all_comparisons[[1]])) {
     this_comparison <- all_comparisons[[1]][[i]]
-    stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+    stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info1.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+    
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
     stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-    decimals <- 4  # Specify the number of decimal places you want to round to
+    #decimals <- 4  # Specify the number of decimal places you want to round to
     
+    ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))    
+    stations <- merge(stations, ICOS_grid, 
+                      by = c("Name"), 
+                      all = TRUE)
     # Round Lon and Lat columns in stations
-    stations$Lon <- round(as.numeric(stations$Lon), decimals)
-    stations$Lat <- round(as.numeric(stations$Lat), decimals)
+    stations$Lon <- as.numeric(stations$GUESS_Lon)
+    stations$Lat <- as.numeric(stations$GUESS_Lat)
+    merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone", "Country")], by = c("Lon", "Lat"))
     
-    # Round Lon and Lat columns in this_Field@data
-    this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
-    this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
-    # Remove Position column
-    stations <- stations[, -which(names(stations) == "Position")]
     # Merge based on matching latitude and longitude coordinates
-    merged_data <- merge(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone", "Country")], by = c("Lon", "Lat"), all.x = TRUE)
+    #merged_data <- merge(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone", "Country")], by = c("Lon", "Lat"), all.x = TRUE)
     
     # Add the Site.type column to this_comparison@data
     this_comparison@data$Site.type <- merged_data$Country
@@ -357,16 +386,18 @@ for (i in seq_along(all_comparisons[[1]])) {
            color = "Country") +
       guides(fill = FALSE) +  # This removes the fill legend
       theme_bw() +
-      theme(legend.position = "bottom",
-            legend.direction = "vertical",
-            legend.title = element_text(size = 12, face = "bold"),
-            legend.text = element_text(size = 12),
+      theme(legend.position = "right",  # Change to "bottom" to try fitting the legend horizontally
+            legend.direction = "vertical",  # Arrange legend items horizontally
+            legend.title = element_text(size = 9, face = "bold"),
+            legend.text = element_text(size = 10),  # Reduce legend text size
+            legend.key.size = unit(0.5, "cm"),
             plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
             axis.title.x = element_text(size = 25),
             axis.title.y = element_text(size = 25),
             axis.text = element_text(size = 15),
             legend.key = element_blank(),
-            legend.box.background = element_rect(color = "transparent", fill = "transparent"))
+            legend.box.background = element_rect(color = "transparent", fill = "transparent"))+
+      coord_fixed(ratio = 1)
     
     print(plot1)
     
@@ -396,22 +427,20 @@ for (i in seq_along(all_comparisons[[1]])) {
 }else if (fill == "station"){
   for (i in seq_along(all_comparisons[[1]])) {
     this_comparison <- all_comparisons[[1]][[i]]
-    stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+    stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info1.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+    
     stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
     stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-    decimals <- 4  # Specify the number of decimal places you want to round to
+    #decimals <- 4  # Specify the number of decimal places you want to round to
     
+     ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))   
+     stations <- merge(stations, ICOS_grid, 
+                      by = c("Name"), 
+                      all = TRUE)
     # Round Lon and Lat columns in stations
-    stations$Lon <- round(as.numeric(stations$Lon), decimals)
-    stations$Lat <- round(as.numeric(stations$Lat), decimals)
-    
-    # Round Lon and Lat columns in this_Field@data
-    this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
-    this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
-    # Remove Position column
-    stations <- stations[, -which(names(stations) == "Position")]
-    # Merge based on matching latitude and longitude coordinates
-    merged_data <- merge(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"), all.x = TRUE)
+    stations$Lon <- as.numeric(stations$GUESS_Lon)
+    stations$Lat <- as.numeric(stations$GUESS_Lat)
+    merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"))
     
     # Add the Site.type column to this_comparison@data
     this_comparison@data$Site.type <- merged_data$Site.type
@@ -433,7 +462,7 @@ for (i in seq_along(all_comparisons[[1]])) {
     
     unique_seasons <- unique(this_comparison@data$Season)
     unique_sites <- unique(this_comparison@data$Name)
-    
+    unique_sites <- na.omit(unique_sites)
     meanSeasonal <- data.frame(Name = character(), 
                                Season = character(), 
                                Mean1 = numeric(),
@@ -482,20 +511,27 @@ for (i in seq_along(all_comparisons[[1]])) {
       guides(fill = FALSE) +  # This removes the fill legend
       theme_bw() +
       theme(
-        legend.position = "bottom",  # Change to "bottom" to try fitting the legend horizontally
-        legend.direction = "horizontal",  # Arrange legend items horizontally
-        legend.title = element_text(size = 9, face = "bold"),
-        legend.text = element_text(size = 10),  # Reduce legend text size
-        legend.key.size = unit(0.5, "cm"),  # Reduce the size of the legend keys
-        legend.margin = margin(0, 0, 0, 0),  # Remove legend margins
-        plot.title = element_text(size = 30, hjust = 0.5, vjust = 0.5),
-        axis.title.x = element_text(size = 25),
-        axis.title.y = element_text(size = 25),
-        axis.text = element_text(size = 15),
-        plot.margin = margin(10, 10, 10, 10)  # Adjust plot margins
-      )
+        legend.position = "right",  # Legend on the right
+        legend.direction = "vertical",  # Arrange legend items vertically
+        legend.title = element_text(size = 10),  # Slightly larger legend title
+        legend.text = element_text(size = 9),  # Adjust legend text size
+        legend.key.size = unit(0.4, "cm"),  # Reduce legend key size to free up space
+        legend.spacing.y = unit(0.1, "cm"),  # Tighten the vertical spacing between items
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = 1),  # Adjust title size
+        axis.title.x = element_text(size = 18),  # X-axis title size
+        axis.title.y = element_text(size = 18),  # Y-axis title size
+        axis.text = element_text(size = 12),  # Axis text size
+        plot.margin = margin(15, 15, 15, 15)  # Increase plot margins to expand the plot area
+      ) +
+      guides(
+        color = guide_legend(order = 2, ncol = 2, title = "Stations"),  # Stations legend below
+        shape = guide_legend(order = 1, ncol = 4, title = "Season", title.position = "top",title.hjust = 0.5,label.position = "right")) +
+      coord_fixed(ratio = 1)
+    
     
     print(plot1)
+    
+    
 }
   }else {
   for (i in seq_along(all_comparisons[[1]])) {

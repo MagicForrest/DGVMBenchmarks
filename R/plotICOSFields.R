@@ -15,29 +15,28 @@ plotICOSFields <- function(Benchmark = this_benchmark, all_Fields_list = all_Fie
   if (plot.option == "per_source") {
     for (i in seq_along(all_Fields_list)) {
       this_Field <- all_Fields_list[[i]]
-      stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")      
-      stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
-      stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-      decimals <- 5  # Specify the number of decimal places you want to round to
-      
-      # Round Lon and Lat columns in stations
-      stations$Lon <- round(as.numeric(stations$Lon), decimals)
-      stations$Lat <- round(as.numeric(stations$Lat), decimals)
-      
-      # Round Lon and Lat columns in this_Field@data
-      this_Field@data$Lon <- round(this_Field@data$Lon, decimals)
-      this_Field@data$Lat <- round(this_Field@data$Lat, decimals)
-      # Remove Position column
-      stations <- stations[, -which(names(stations) == "Position")]
+      ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))  
+      ICOS_grid$Lon <- ICOS_grid$GUESS_Lon
+      ICOS_grid$Lat <- ICOS_grid$GUESS_Lat
+      # stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")      
+      # stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
+      # stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
+      # decimals <- 5  # Specify the number of decimal places you want to round to
+      # 
+      # # Round Lon and Lat columns in stations
+      # stations$Lon <- round(as.numeric(stations$Lon), decimals)
+      # stations$Lat <- round(as.numeric(stations$Lat), decimals)
+      # 
+      # # Round Lon and Lat columns in this_Field@data
+      # this_Field@data$Lon <- round(this_Field@data$Lon, decimals)
+      # this_Field@data$Lat <- round(this_Field@data$Lat, decimals)
+      # # Remove Position column
+      # stations <- stations[, -which(names(stations) == "Position")]
       # Merge based on matching latitude and longitude coordinates
-      merged_data <- merge(this_Field@data, stations[, c("Lon", "Lat", "Site.type", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+      if (this_Field@source@id != "Obs"){
+      merged_data <- merge(this_Field@data, ICOS_grid[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+      this_Field@data$Name <- merged_data$Name}
       
-      # Rename "Name.y" to "Name" if it exists in merged_data
-      if ("Name.y" %in% names(merged_data)) {
-        names(merged_data)[names(merged_data) == "Name.y"] <- "Name"
-      }
-      # Add the Site Names column to this_comparison@data
-      this_Field@data$Name <- merged_data$Name
       this_Field@data$Date <- as.Date(paste0(this_Field@data$Year, "-", this_Field@data$Day), format = "%Y-%j")
       
       # Group data by Lon, Lat, and Year
@@ -64,22 +63,25 @@ plotICOSFields <- function(Benchmark = this_benchmark, all_Fields_list = all_Fie
   } else if (plot.option == "joined") {
     for (i in seq_along(all_comparisons[[1]])) {
       this_comparison <- all_comparisons[[1]][[i]]
-      stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")      
-      stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
-      stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
-      decimals <- 5  # Specify the number of decimal places you want to round to
-      
-      # Round Lon and Lat columns in stations
-      stations$Lon <- round(as.numeric(stations$Lon), decimals)
-      stations$Lat <- round(as.numeric(stations$Lat), decimals)
-      
-      # Round Lon and Lat columns in this_Field@data
-      this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
-      this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
-      # Remove Position column
-      stations <- stations[, -which(names(stations) == "Position")]
+      ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))  
+      ICOS_grid$Lon <- ICOS_grid$GUESS_Lon
+      ICOS_grid$Lat <- ICOS_grid$GUESS_Lat
+      # stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")      
+      # stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
+      # stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
+      # decimals <- 5  # Specify the number of decimal places you want to round to
+      # 
+      # # Round Lon and Lat columns in stations
+      # stations$Lon <- round(as.numeric(stations$Lon), decimals)
+      # stations$Lat <- round(as.numeric(stations$Lat), decimals)
+      # 
+      # # Round Lon and Lat columns in this_Field@data
+      # this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
+      # this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
+      # # Remove Position column
+      # stations <- stations[, -which(names(stations) == "Position")]
       # Merge based on matching latitude and longitude coordinates
-      merged_data <- merge(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+      merged_data <- merge(this_comparison@data, ICOS_grid[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
       
       # Add the Site.type column to this_comparison@data
       this_comparison@data$Site.type <- merged_data$Site.type
