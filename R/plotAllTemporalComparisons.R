@@ -16,8 +16,10 @@ plotAllTemporalComparisons <- function(Benchmark = this_benchmark, all_compariso
   
   grid.names <- NULL
   if (Benchmark@datasets[[1]]@source@format@id == "ICOS"){
-  grid.names <- unique(Benchmark@datasets[[1]]@spatial.extent$Name)
-  names(grid.names) <- paste0("(", unique(Benchmark@datasets[[1]]@spatial.extent$Lon), ",", unique(Benchmark@datasets[[1]]@spatial.extent$Lat), ")")}
+    ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))  
+    grid.names <- ICOS_grid$Name
+  names(grid.names) <- paste0("(", ICOS_grid$GUESS_Lon, ",", ICOS_grid$GUESS_Lat, ")")
+  }
   
   if (Benchmark@datasets[[1]]@source@format@id == "FLUXNET"){
     grid.names <- unique(Benchmark@datasets[[1]]@spatial.extent$Name)
