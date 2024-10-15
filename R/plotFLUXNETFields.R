@@ -15,27 +15,37 @@ plotFLUXNETFields <- function(Benchmark = this_benchmark, all_Fields_list = all_
   if (plot.option == "per_source") {
     for (i in seq_along(all_Fields_list)) {
       this_Field <- all_Fields_list[[i]]
-      FLUXNET_SITES <- read.csv(file.path(system.file("extdata/FLUXNET/FLUXNET_SITES.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
-      setDT(FLUXNET_SITES)
+      #FLUXNET_SITES <- read.csv(file.path(system.file("extdata/FLUXNET/FLUXNET_SITES.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+      #setDT(FLUXNET_SITES)
       
-      decimals <- 5  # Specify the number of decimal places you want to round to
+      #this_Field <- all_Fields_list[[i]]
+      FLUXNET_grid <- read.table(file.path(system.file("extdata/FLUXNET/FLUXNET_grid_China.txt", package = "DGVMBenchmarks")))
+      FLUXNET_grid$Lon <- FLUXNET_grid$GUESS_Lon
+      FLUXNET_grid$Lat <- FLUXNET_grid$GUESS_Lat
+      
+     # decimals <- 5  # Specify the number of decimal places you want to round to
       
       # Round Lon and Lat columns in stations
-      FLUXNET_SITES$Lon <- round(as.numeric(FLUXNET_SITES$Lon), decimals)
-      FLUXNET_SITES$Lat <- round(as.numeric(FLUXNET_SITES$Lat), decimals)
+     # FLUXNET_SITES$Lon <- round(as.numeric(FLUXNET_SITES$Lon), decimals)
+      #FLUXNET_SITES$Lat <- round(as.numeric(FLUXNET_SITES$Lat), decimals)
       
       # Round Lon and Lat columns in this_Field@data
-      this_Field@data$Lon <- round(this_Field@data$Lon, decimals)
-      this_Field@data$Lat <- round(this_Field@data$Lat, decimals)
-      # Merge based on matching latitude and longitude coordinates
-      merged_data <- merge(this_Field@data, FLUXNET_SITES[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+      #this_Field@data$Lon <- round(this_Field@data$Lon, decimals)
+      #this_Field@data$Lat <- round(this_Field@data$Lat, decimals)
       
-      # Rename "Name.y" to "Name" if it exists in merged_data
-      if ("Name.y" %in% names(merged_data)) {
-        names(merged_data)[names(merged_data) == "Name.y"] <- "Name"
-      }
+      if (this_Field@source@id != "Obs"){
+        merged_data <- merge(this_Field@data, FLUXNET_grid[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+        this_Field@data$Name <- merged_data$Name}
+      
+      # Merge based on matching latitude and longitude coordinates
+      # merged_data <- merge(this_Field@data, FLUXNET_grid[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+      # 
+      # # Rename "Name.y" to "Name" if it exists in merged_data
+      # if ("Name.y" %in% names(merged_data)) {
+      #   names(merged_data)[names(merged_data) == "Name.y"] <- "Name"
+      # }
       # Add the Site Names column to this_comparison@data
-      this_Field@data$Name <- merged_data$Name
+     # this_Field@data$Name <- merged_data$Name
       this_Field@data$Date <- as.Date(paste0(this_Field@data$Year, "-", this_Field@data$Day), format = "%Y-%j")
       
       # Group data by Lon, Lat, and Year
@@ -62,25 +72,31 @@ plotFLUXNETFields <- function(Benchmark = this_benchmark, all_Fields_list = all_
   } else if (plot.option == "joined") {
     for (i in seq_along(all_comparisons)) {
       this_comparison <- all_comparisons[[1]][[i]]
+      FLUXNET_grid <- read.table(file.path(system.file("extdata/FLUXNET/FLUXNET_grid_China.txt", package = "DGVMBenchmarks")))
+      FLUXNET_grid$Lon <- FLUXNET_grid$GUESS_Lon
+      FLUXNET_grid$Lat <- FLUXNET_grid$GUESS_Lat
+      #FLUXNET_SITES <- read.csv(file.path(system.file("extdata/FLUXNET/FLUXNET_SITES.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
+      #setDT(FLUXNET_SITES)
       
-      FLUXNET_SITES <- read.csv(file.path(system.file("extdata/FLUXNET/FLUXNET_SITES.csv", package = "DGVMBenchmarks")), header = T,sep = ";")
-      setDT(FLUXNET_SITES)
-      
-      decimals <- 5  # Specify the number of decimal places you want to round to
+      #decimals <- 5  # Specify the number of decimal places you want to round to
       
       # Round Lon and Lat columns in stations
-      FLUXNET_SITES$Lon <- round(as.numeric(FLUXNET_SITES$Lon), decimals)
-      FLUXNET_SITES$Lat <- round(as.numeric(FLUXNET_SITES$Lat), decimals)
+      #FLUXNET_SITES$Lon <- round(as.numeric(FLUXNET_SITES$Lon), decimals)
+      #FLUXNET_SITES$Lat <- round(as.numeric(FLUXNET_SITES$Lat), decimals)
       
       # Round Lon and Lat columns in this_Field@data
-      this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
-      this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
+      #this_comparison@data$Lon <- round(this_comparison@data$Lon, decimals)
+      #this_comparison@data$Lat <- round(this_comparison@data$Lat, decimals)
       
       # Merge based on matching latitude and longitude coordinates
-      merged_data <- merge(this_comparison@data, FLUXNET_SITES[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+      #merged_data <- merge(this_comparison@data, FLUXNET_SITES[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
       
       # Add the Site.type column to this_comparison@data
       
+      merged_data <- merge(this_comparison@data, FLUXNET_grid[, c("Lon", "Lat", "Name")], by = c("Lon", "Lat"), all.x = TRUE)
+      
+      # Add the Site.type column to this_comparison@data
+      #this_comparison@data$Site.type <- merged_data$Site.type
       this_comparison@data$Name <- merged_data$Name
       this_comparison@data$Date <- as.Date(paste0(this_comparison@data$Year, "-", this_comparison@data$Day), format = "%Y-%j")
       
