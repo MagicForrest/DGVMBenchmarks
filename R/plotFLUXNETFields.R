@@ -70,7 +70,7 @@ plotFLUXNETFields <- function(Benchmark = this_benchmark, all_Fields_list = all_
       plot(densplot)
     }
   } else if (plot.option == "joined") {
-    for (i in seq_along(all_comparisons)) {
+    for (i in seq_along(all_comparisons[[1]])) {
       this_comparison <- all_comparisons[[1]][[i]]
       FLUXNET_grid <- read.table(file.path(system.file("extdata/FLUXNET/FLUXNET_grid_China.txt", package = "DGVMBenchmarks")))
       FLUXNET_grid$Lon <- FLUXNET_grid$GUESS_Lon
