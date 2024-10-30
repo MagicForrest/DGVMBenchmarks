@@ -172,7 +172,7 @@ AGB_country_average <- final_results_AGB %>%
 
 cols_bar <- c("black",  brewer.pal(n = 4, name = "Paired"))
 
-if (param == "Total Harvest"){
+
   gg_bar_Litter <- ggplot(Cpool_country_average , 
                          aes(country, Litter_million_tonnes, fill = Source )) +
     geom_bar(stat = "identity", position = "dodge") +
@@ -233,7 +233,7 @@ if (param == "Total Harvest"){
          plot_layout(ncol = 1, guides = "collect") &
          theme(axis.title.x = element_blank(),
                text = element_text(size = 16)))
-}
+
 
 merged_tbl <- merge(Cpool_country_average, AGB_country_average, by = c("country", "Source"))
 
