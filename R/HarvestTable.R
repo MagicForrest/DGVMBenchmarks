@@ -77,7 +77,37 @@ if (param == "Total Harvest"){
 # (1) multiplying the harvested cmass with the expansion factors, 
 # (2) multiplying with the area of the grid cell, and 
 # (3) summing up the grid cells in a country
-
+  if(this_sim@source@id == "EFISCEN"){
+    wood_harv_processed_2013_2017 <- this_sim@data %>%
+      left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
+      left_join(cmass_to_m3 %>% select(Country, Mean_volume_expansion_factor),
+                by = c(country = "Country")) %>%
+      left_join(LC2010) %>%
+      mutate(area_m2_FOREST = area_m2 * FOREST,
+             wood_harv_vol_perHa_FOREST = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * 1e4,
+             wood_harv_vol_tot = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * area_m2_FOREST,
+             harvest_type = this_sim@source@id)
+    
+    Harv_stats_country_2013_2017 <- wood_harv_processed_2013_2017 %>%
+      group_by(country, harvest_type) %>%
+      summarise(wood_harv_vol_tot = sum(wood_harv_vol_tot, na.rm=TRUE)/1e3,
+                sim_forest_area_1000ha = sum(area_m2_FOREST, na.rm = TRUE)* 1e-07,
+                wood_harv_vol_ha_FOREST = sum(wood_harv_vol_tot,na.rm = TRUE)/sim_forest_area_1000ha) %>%
+      ungroup() %>%
+      mutate(Vol_m3perha = wood_harv_vol_ha_FOREST,
+             Vol_1000m3 = wood_harv_vol_tot,
+             Forest_area_1000ha = sim_forest_area_1000ha) %>%
+      filter(!country %in% c("Norway"))
+    
+    Harv_stats_country_average <- Harv_stats_country_2013_2017 %>%
+      group_by(country, harvest_type) %>%
+      summarise(Vol_1000m3 = mean(Vol_1000m3),
+                Vol_m3perha = mean(Vol_m3perha),
+                Forest_area_1000ha = unique(Forest_area_1000ha))
+    
+    results[[this_sim@source@id]] <- Harv_stats_country_average
+  }
+  else{
 ### for 2013-2017 (range represented by 2015 in SoEF) -----
 
 wood_harv_processed_2013_2017 <- this_sim@data %>%
@@ -100,7 +130,7 @@ Harv_stats_country_2013_2017 <- wood_harv_processed_2013_2017 %>%
   mutate(Vol_m3perha = wood_harv_vol_ha_FOREST,
          Vol_1000m3 = wood_harv_vol_tot,
          Forest_area_1000ha = sim_forest_area_1000ha) %>%
-  filter(!country %in% c("Norway", "Belgium"))
+  filter(!country %in% c("Norway"))
 
 Harv_stats_country_average <- Harv_stats_country_2013_2017 %>%
   group_by(country, harvest_type) %>%
@@ -109,6 +139,7 @@ Harv_stats_country_average <- Harv_stats_country_2013_2017 %>%
             Forest_area_1000ha = unique(Forest_area_1000ha))
 
 results[[this_sim@source@id]] <- Harv_stats_country_average
+}
 
 }
 
@@ -116,21 +147,46 @@ if (param == "NAI"){
 # %NAI harvested ----------------------------------------------------------
 # NAI for full forest area from Avitable et al., total harvest amount per country from Forest Europe
 
-forest_cflux_veg_processed <- this_sim@data %>%
-  left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>% # join to get country info for cells
-  left_join(cmass_to_m3 %>% select(Country, Mean_volume_expansion_factor), # join to get expansion factors
-            by = c(country = "Country")) %>%
-  left_join(LC2010 %>% select(!year)) %>%
-  mutate(for_NAI_m3 = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor,
-         for_NAI_forestArea = for_NAI_m3/FOREST, # FOREST = share of forests from the total grid cell area
-         for_NAI_forestArea_ha = for_NAI_forestArea * 1e4,# as 1 ha = 10 000 m2 
-         NAI_tot_cell = for_NAI_forestArea * FOREST * area_m2,
-         harvest_type = this_sim@source@id) 
 
 
+if(this_sim@source@id == "EFISCEN"){
+  forest_cflux_veg_processed <- this_sim@data %>%
+    left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>% # join to get country info for cells
+    left_join(LC2010 %>% select(!year)) %>%
+    mutate(for_NAI_forestArea_ha = .[[benchmark@guess_var]], # new input directly in m³/ha
+           NAI_tot_cell = for_NAI_forestArea_ha * FOREST * area_m2 / 1e4, # converting ha to m²
+           harvest_type = this_sim@source@id) 
+  
+  NAI_country_2013_2017 <- forest_cflux_veg_processed %>%
+    filter(!country %in% c("Norway")) %>%
+    group_by(country, harvest_type) %>%
+    summarise(NAI_perHA = sum(for_NAI_forestArea_ha * FOREST, na.rm = T) / sum(FOREST,na.rm = T), # no scaling by 1e4, already in m³/ha
+              NAI_tot = sum(for_NAI_forestArea_ha * FOREST * area_m2 / 1e4,na.rm = T), # NAI in m³ across forest areas
+              NAI_tot_Mm3 = NAI_tot / 1e6,
+              ForestArea_HA = sum(FOREST * area_m2) / 1e4, na.rm = T) %>%
+    summarise(NAI_perHA = mean(NAI_perHA,na.rm = T), # average over years
+              NAI_tot = mean(NAI_tot,na.rm = T),
+              NAI_tot_Mm3 = mean(NAI_tot_Mm3,na.rm = T),
+              ForestArea_HA = mean(ForestArea_HA,na.rm = T),
+              harvest_type = this_sim@source@id)
+  results[[this_sim@source@id]] <- NAI_country_2013_2017
+  
+}
+else{
+  forest_cflux_veg_processed <- this_sim@data %>%
+    left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>% # join to get country info for cells
+    left_join(cmass_to_m3 %>% select(Country, Mean_volume_expansion_factor), # join to get expansion factors
+              by = c(country = "Country")) %>%
+    left_join(LC2010 %>% select(!year)) %>%
+    mutate(for_NAI_m3 = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor,
+           for_NAI_forestArea = for_NAI_m3/FOREST, # FOREST = share of forests from the total grid cell area
+           for_NAI_forestArea_ha = for_NAI_forestArea * 1e4,# as 1 ha = 10 000 m2 
+           NAI_tot_cell = for_NAI_forestArea * FOREST * area_m2,
+           harvest_type = this_sim@source@id) 
+  
 NAI_country_2013_2017 <- forest_cflux_veg_processed %>%
   filter(Year %in% 2013:2017) %>%
-  filter(!country %in% c("Belgium", "Norway")) %>%
+  filter(!country %in% c( "Norway")) %>%
   group_by(country, harvest_type, Year) %>%
   summarise(NAI_perHA = sum(for_NAI_forestArea * FOREST)/ sum(FOREST)*1e4, # average over grid cells in country, weighting by forest area in cell
             NAI_tot = sum(for_NAI_forestArea * FOREST * area_m2),
@@ -139,7 +195,7 @@ NAI_country_2013_2017 <- forest_cflux_veg_processed %>%
   summarise(NAI_perHA = mean(NAI_perHA), # average over years
             NAI_tot = mean(NAI_tot),
             NAI_tot_Mm3 = mean(NAI_tot_Mm3),
-            ForestArea_HA = mean(ForestArea_HA)  )
+            ForestArea_HA = mean(ForestArea_HA)  )}
 
 results[[this_sim@source@id]] <- NAI_country_2013_2017
 }
@@ -173,6 +229,8 @@ Harv_stats_country_average <- Harv_stats_country_average %>%
               select(country, Forest_area_1000ha) %>%
               rename(Forest_area_1000ha_FE = Forest_area_1000ha)) %>%
   mutate(Vol_Mm3_FEarea = (Vol_m3perha  * Forest_area_1000ha_FE)/1000) 
+Harv_stats_country_average <- Harv_stats_country_average %>%
+  filter(!is.na(country))
 }
 if (param == "NAI"){
 # Harv_stats_country_average <- Harv_stats_country_average %>%
@@ -192,6 +250,8 @@ if (param == "NAI"){
   Harv_stats_country_average <- final_results %>%
   select(country, harvest_type, NAI_perHA, NAI_tot_Mm3) %>%
   rbind(harvests_SoEF_2)
+  Harv_stats_country_average <- Harv_stats_country_average %>%
+    filter(!is.na(country))
 }
 ## Bar plots -----
 
@@ -212,8 +272,9 @@ gg_bar_total <- ggplot(Harv_stats_country_average ,
         text = element_text(size = 16),                # Increase all text
         axis.title = element_text(size = 18),          # Axis titles
         axis.text = element_text(size = 14),           # Axis text (x and y)
+        axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis text
         plot.title = element_text(size = 20, face = "bold"),  # Plot title
-        legend.text = element_text(size = 14))
+        legend.text = element_text(size = 14))  
 
 gg_bar_perHA <- ggplot(Harv_stats_country_average , 
                        aes(country, Vol_m3perha, fill = harvest_type)) +
@@ -227,8 +288,9 @@ gg_bar_perHA <- ggplot(Harv_stats_country_average ,
         text = element_text(size = 16),                # Increase all text
         axis.title = element_text(size = 18),          # Axis titles
         axis.text = element_text(size = 14),           # Axis text (x and y)
+        axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis text
         plot.title = element_text(size = 20, face = "bold"),  # Plot title
-        legend.text = element_text(size = 14))
+        legend.text = element_text(size = 14))  
 
 
 # gg_bar_NAIharv <- ggplot(Harv_stats_country_average, 
@@ -253,8 +315,9 @@ gg_bar_area <- ggplot(Harv_stats_country_average,
         text = element_text(size = 16),                # Increase all text
         axis.title = element_text(size = 18),          # Axis titles
         axis.text = element_text(size = 14),           # Axis text (x and y)
+        axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis text
         plot.title = element_text(size = 20, face = "bold"),  # Plot title
-        legend.text = element_text(size = 14))
+        legend.text = element_text(size = 14))  
 
 plot(gg_bar_total +
     gg_bar_perHA + 
@@ -280,8 +343,9 @@ gg_bar_NAIperHa <- ggplot(Harv_stats_country_average,
         text = element_text(size = 16),                # Increase all text
         axis.title = element_text(size = 18),          # Axis titles
         axis.text = element_text(size = 14),           # Axis text (x and y)
+        axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis text
         plot.title = element_text(size = 20, face = "bold"),  # Plot title
-        legend.text = element_text(size = 14))         # Legend text
+        legend.text = element_text(size = 14))       # Legend text
 
 gg_bar_NAItotal <- ggplot(Harv_stats_country_average, 
                           aes(country, NAI_tot_Mm3, fill = harvest_type)) + 
@@ -295,6 +359,7 @@ gg_bar_NAItotal <- ggplot(Harv_stats_country_average,
         text = element_text(size = 16),                # Increase all text
         axis.title = element_text(size = 18),          # Axis titles
         axis.text = element_text(size = 14),           # Axis text (x and y)
+        axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis text
         plot.title = element_text(size = 20, face = "bold"),  # Plot title
         legend.text = element_text(size = 14))
 
@@ -343,9 +408,6 @@ Harv_stats_wide <- Harv_stats_long %>%
     values_from = Value
   ) %>%
   arrange(Parameter)}
-
-
-  
 
 return(Harv_stats_wide)
 
