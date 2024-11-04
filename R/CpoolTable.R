@@ -128,7 +128,6 @@ for (this_sim in all_sim_full){
     
   if(this_sim@source@id == "EFISCEN"){
     AGB_2018_2022 <- this_sim@data %>%
-      filter(!country %in% c("Norway")) %>%
       left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
       left_join(LC2010) %>%
       group_by(country) %>%
@@ -140,6 +139,7 @@ for (this_sim in all_sim_full){
       ) 
     
     AGB_2018_2022 <- AGB_2018_2022 %>%
+      filter(!country %in% c("Norway")) %>%
       group_by(country, Source) %>%
       summarise(
         tot_AGB_million_tonnes = sum(tot_cell_AGB_kg, na.rm = TRUE) / 1e9,  # Convert kg to million tonnes
@@ -158,7 +158,6 @@ for (this_sim in all_sim_full){
     else{
   AGB_2018_2022 <- this_sim@data %>%
     filter(Year %in% 2018:2022) %>%
-    filter(!country %in% c("Norway")) %>%
     left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
     left_join(LC2010) %>%
     group_by(country, Year) %>%
@@ -170,6 +169,7 @@ for (this_sim in all_sim_full){
     ) 
   
   AGB_2018_2022 <- AGB_2018_2022 %>%
+    filter(!country %in% c("Norway")) %>%
     group_by(country, Source, Year) %>%
     summarise(
       tot_AGB_million_tonnes = sum(tot_cell_AGB_kg, na.rm = TRUE) / 1e9,  # Convert kg to million tonnes
