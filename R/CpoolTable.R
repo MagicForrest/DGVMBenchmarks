@@ -128,6 +128,7 @@ for (this_sim in all_sim_full){
     
   if(this_sim@source@id == "EFISCEN"){
     AGB_2018_2022 <- this_sim@data %>%
+      filter(!country %in% c("Norway")) %>%
       left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
       left_join(LC2010) %>%
       group_by(country) %>%
@@ -157,6 +158,7 @@ for (this_sim in all_sim_full){
     else{
   AGB_2018_2022 <- this_sim@data %>%
     filter(Year %in% 2018:2022) %>%
+    filter(!country %in% c("Norway")) %>%
     left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
     left_join(LC2010) %>%
     group_by(country, Year) %>%
