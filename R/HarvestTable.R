@@ -160,7 +160,7 @@ if(this_sim@source@id == "EFISCEN"){
   NAI_country_2013_2017 <- forest_cflux_veg_processed %>%
     filter(!country %in% c("Norway")) %>%
     group_by(country, harvest_type) %>%
-    summarise(NAI_perHA = NAI_perHA = sum(for_NAI_forestArea_ha * FOREST, na.rm = T) / sum(FOREST,na.rm = T), # / sum(FOREST,na.rm = T), # no scaling by 1e4, already in m³/ha
+    summarise(NAI_perHA = sum(for_NAI_forestArea_ha * FOREST, na.rm = T) / sum(FOREST,na.rm = T), # / sum(FOREST,na.rm = T), # no scaling by 1e4, already in m³/ha
               NAI_tot = sum(for_NAI_forestArea_ha * FOREST * area_m2 / 1e4,na.rm = T), # NAI in m³ across forest areas
               NAI_tot_Mm3 = NAI_tot / 1e6,
               ForestArea_HA = sum(FOREST * area_m2) / 1e4, na.rm = T) %>%
