@@ -85,7 +85,7 @@ if (param == "Total Harvest"){
       left_join(LC2010) %>%
       mutate(area_m2_FOREST = area_m2 * FOREST,
              wood_harv_vol_perHa_FOREST = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * 1e4,
-             wood_harv_vol_tot = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * area_m2,
+             wood_harv_vol_tot = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * area_m2_FOREST,
              harvest_type = this_sim@source@id)
     
     Harv_stats_country_2013_2017 <- wood_harv_processed_2013_2017 %>%
@@ -154,14 +154,14 @@ if(this_sim@source@id == "EFISCEN"){
     left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>% # join to get country info for cells
     left_join(LC2010 %>% select(!year)) %>%
     mutate(for_NAI_forestArea_ha = .[[benchmark@guess_var]], # new input directly in m³/ha
-           NAI_tot_cell = for_NAI_forestArea_ha * (area_m2 / 1e4), # converting ha to m²
+           NAI_tot_cell = for_NAI_forestArea_ha * FOREST * area_m2 / 1e4, # converting ha to m²
            harvest_type = this_sim@source@id) 
   
   NAI_country_2013_2017 <- forest_cflux_veg_processed %>%
     filter(!country %in% c("Norway")) %>%
     group_by(country, harvest_type) %>%
-    summarise(NAI_perHA = sum(for_NAI_forestArea_ha * (area_m2 * 1e4), na.rm = T) / sum((area_m2 * 1e4), na.rm = T), # / sum(FOREST,na.rm = T), # no scaling by 1e4, already in m³/ha
-              NAI_tot = sum(NAI_tot_cell,na.rm = T), # NAI in m³ across forest areas
+    summarise(NAI_perHA = NAI_perHA = sum(for_NAI_forestArea_ha * FOREST, na.rm = T) / sum(FOREST,na.rm = T), # / sum(FOREST,na.rm = T), # no scaling by 1e4, already in m³/ha
+              NAI_tot = sum(for_NAI_forestArea_ha * FOREST * area_m2 / 1e4,na.rm = T), # NAI in m³ across forest areas
               NAI_tot_Mm3 = NAI_tot / 1e6,
               ForestArea_HA = sum(FOREST * area_m2) / 1e4, na.rm = T) %>%
     summarise(NAI_perHA = mean(NAI_perHA,na.rm = T), # average over years
