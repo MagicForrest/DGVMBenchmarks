@@ -80,7 +80,6 @@ AGB <- AGB %>%
 
 results_cpool <- list()
 results_AGB <- list()
-
 for (this_sim in all_sim_full){
     # Total harvest per country -----------------------------------------------
     # (1) multiplying the harvested cmass with the expansion factors, 
@@ -89,6 +88,7 @@ for (this_sim in all_sim_full){
     
     ### for 2013-2017 (range represented by 2015 in SoEF) -----
     # SoilC and LitterC
+  if (param == "Cpool"){
   cstock_2013_2017 <- this_sim@data %>%
     filter(Year %in% 2013:2017) %>%
     left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
@@ -121,9 +121,40 @@ for (this_sim in all_sim_full){
     )
   
   results_cpool[[this_sim@source@id]] <- cstock_mean
+  }
   
   ## Above-ground biomass
-  
+  if (param == "AGB"){
+    
+  if(this_sim@source@id == "EFISCEN"){
+    AGB_2018_2022 <- this_sim@data %>%
+      left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
+      left_join(LC2010) %>%
+      group_by(country) %>%
+      mutate(
+        area_m2_FOREST = area_m2 * FOREST,
+        AGB = !!sym(benchmark@guess_var) * 0.75, # Vegetation biomass to Above-ground biomass 
+        tot_cell_AGB_kg = AGB * area_m2  ,    #(AGB / FOREST) * area_m2_FOREST,   # Total AGB carbon in kg per Forested grid cell area
+        Source = this_sim@source@id # Simulation source
+      ) 
+    
+    AGB_2018_2022 <- AGB_2018_2022 %>%
+      group_by(country, Source) %>%
+      summarise(
+        tot_AGB_million_tonnes = sum(tot_cell_AGB_kg, na.rm = TRUE) / 1e9,  # Convert kg to million tonnes
+      )
+    
+    AGB_mean <- AGB_2018_2022 %>%
+      group_by(country) %>%
+      summarise(
+        AGB_million_tonnes = mean(tot_AGB_million_tonnes),
+        Source = this_sim@source@id
+      )
+    results_AGB[[this_sim@source@id]] <- AGB_mean
+    
+    
+  }
+    else{
   AGB_2018_2022 <- this_sim@data %>%
     filter(Year %in% 2018:2022) %>%
     left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
@@ -131,8 +162,8 @@ for (this_sim in all_sim_full){
     group_by(country, Year) %>%
     mutate(
       area_m2_FOREST = area_m2 * FOREST,
-      AGB = VegC * 0.75, # Vegetation biomass to Above-ground biomass 
-      tot_cell_AGB_kg = (AGB * FOREST) * area_m2_FOREST,   # Total AGB carbon in kg per Forested grid cell area
+      AGB = !!sym(benchmark@guess_var) * 0.75, # Vegetation biomass to Above-ground biomass 
+      tot_cell_AGB_kg =  AGB * area_m2 ,         #    (AGB / FOREST) * area_m2_FOREST,   # Total AGB carbon in kg per Forested grid cell area
       Source = this_sim@source@id # Simulation source
     ) 
   
@@ -151,13 +182,14 @@ for (this_sim in all_sim_full){
   
   
   results_AGB[[this_sim@source@id]] <- AGB_mean
+    }
+  }
 }
-
+if (param == "cpool"){
 final_results_cpool <- bind_rows(results_cpool)
-final_results_AGB <- bind_rows(results_AGB)
 
-AGB <- AGB %>%
-  filter(country %in% final_results_AGB$country)
+
+
 
 Forest_europe_cpool <- Forest_europe %>%
   filter(country %in% final_results_cpool$country)
@@ -166,13 +198,22 @@ Forest_europe_cpool <- Forest_europe %>%
 Cpool_country_average <- final_results_cpool %>%
   select(country, Source, Litter_million_tonnes, Soil_million_tonnes) %>%
   rbind(Forest_europe_cpool)
+}
+if (param == "AGB"){
+
+  final_results_AGB <- bind_rows(results_AGB)
+  
+AGB <- AGB %>%
+  filter(country %in% final_results_AGB$country)
 AGB_country_average <- final_results_AGB %>%
   select(country, Source, AGB_million_tonnes) %>%
   rbind(AGB)
+AGB_country_average <- AGB_country_average %>%
+  filter(!is.na(country))}
 
 cols_bar <- c("black",  brewer.pal(n = 4, name = "Paired"))
 
-
+if (param == "cpool"){
   gg_bar_Litter <- ggplot(Cpool_country_average , 
                          aes(country, Litter_million_tonnes, fill = Source )) +
     geom_bar(stat = "identity", position = "dodge") +
@@ -206,49 +247,70 @@ cols_bar <- c("black",  brewer.pal(n = 4, name = "Paired"))
           legend.text = element_text(size = 14))
   
   
-  gg_bar_AGB <- ggplot(AGB_country_average , 
-                        aes(country, AGB_million_tonnes, fill = Source)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    # scale_fill_discrete(name = "") +
-    scale_fill_manual(values=cols_bar, name = "") +
-    ggtitle("Total AGB") + #, subtitle = "Forest Europe 2015 (mean 2013-2017) and simulated (mean 2013-2017)") +
-    ylab("M Tonnes") + xlab("Country") +
-    theme_bw()  +
-    theme(legend.position = "right",
-          text = element_text(size = 16),                # Increase all text
-          axis.title = element_text(size = 18),          # Axis titles
-          axis.text = element_text(size = 14),           # Axis text (x and y)
-          axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis text
-          plot.title = element_text(size = 20, face = "bold"),  # Plot title
-          legend.text = element_text(size = 14))
-  
-  
   
   plot(gg_bar_Litter +
          gg_bar_Soil + 
-         gg_bar_AGB +
-         #gg_bar_area +
-         #gg_bar_NAItotal+
-         #gg_bar_NAIperHa +
          plot_layout(ncol = 1, guides = "collect") &
          theme(axis.title.x = element_blank(),
                text = element_text(size = 16)))
+  }
+  if (param == "AGB"){
+    
+    gg_bar_AGB <- ggplot(AGB_country_average , 
+                         aes(country, AGB_million_tonnes, fill = Source)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      # scale_fill_discrete(name = "") +
+      scale_fill_manual(values=cols_bar, name = "") +
+      ggtitle("Total AGB") + #, subtitle = "Forest Europe 2015 (mean 2013-2017) and simulated (mean 2013-2017)") +
+      ylab("AGB (Mt)") + xlab("Country") +
+      theme_bw()  +
+      theme(legend.position = "right",
+            text = element_text(size = 16),                # Increase all text
+            axis.title = element_text(size = 18),          # Axis titles
+            axis.text = element_text(size = 14),           # Axis text (x and y)
+            axis.text.x = element_text(angle = 45, hjust = 1), # Rotate x-axis text
+            plot.title = element_text(size = 20, face = "bold"),  # Plot title
+            legend.text = element_text(size = 14))
+    
+  plot(gg_bar_AGB+
+         plot_layout(ncol = 1, guides = "collect") &
+         theme(axis.title.x = element_blank(),
+               text = element_text(size = 16)))
+  }
+
+if (param == "cpool"){
+  Harv_stats_country_average <- Harv_stats_country_average %>%
+    select(harvest_type, Forest_area_1000ha, Vol_Mm3, Vol_m3perha)
+  
+  Harv_stats_long <- Harv_stats_country_average %>%
+    pivot_longer(
+      cols = c(Forest_area_1000ha, Vol_Mm3, Vol_m3perha),
+      names_to = "Parameter", 
+      values_to = "Value"
+    )
+  Harv_stats_wide <- Harv_stats_long %>%
+    pivot_wider(
+      names_from = country,
+      values_from = Value
+    ) %>%
+    arrange(Parameter)}
+
+if (param == "AGB"){
+  
+  Harv_stats_long <- AGB_country_average %>%
+    pivot_longer(
+      cols = c(AGB_million_tonnes),
+      names_to = "Parameter", 
+      values_to = "Value"
+    )
+  Harv_stats_wide <- Harv_stats_long %>%
+    pivot_wider(
+      names_from = country,
+      values_from = Value
+    ) %>%
+    arrange(Parameter)
+  }
 
 
-merged_tbl <- merge(Cpool_country_average, AGB_country_average, by = c("country", "Source"))
-
-merged_tbl_long <- merged_tbl %>%
-  pivot_longer(
-    cols = c(Litter_million_tonnes, Soil_million_tonnes, AGB_million_tonnes),
-    names_to = "Parameter", 
-    values_to = "Value"
-  )
-merged_tbl_wide <- merged_tbl_long %>%
-  pivot_wider(
-    names_from = country,
-    values_from = Value
-  ) %>%
-  arrange(Parameter)
-
-return(merged_tbl_wide)
+return(Harv_stats_wide)
 }
