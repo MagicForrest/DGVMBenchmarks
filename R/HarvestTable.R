@@ -118,7 +118,7 @@ wood_harv_processed_2013_2017 <- this_sim@data %>%
   left_join(LC2010) %>%
   mutate(area_m2_FOREST = area_m2 * FOREST,
          wood_harv_vol_perHa_FOREST = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * 1e4,
-         wood_harv_vol_tot = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * area_m2_FOREST,
+         wood_harv_vol_tot = .[[benchmark@guess_var]]/1000 * Mean_volume_expansion_factor * area_m2,
          harvest_type = this_sim@source@id)
 
 Harv_stats_country_2013_2017 <- wood_harv_processed_2013_2017 %>%
