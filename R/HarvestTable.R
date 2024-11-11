@@ -206,7 +206,7 @@ final_results <- bind_rows(results)
 
 # modify country-stats df to be combined with sim results (with rbind -> need to have same columns)
 harvests_SoEF_2 <- harvests_SoEF %>%
-  mutate(harvest_type = "ForestEurope",
+  mutate(harvest_type = "Forest Europe",
          harvest_subset = "all") %>%
   mutate(country = Country,
          Vol_1000m3 = HarvVol_2015_1000m3,
