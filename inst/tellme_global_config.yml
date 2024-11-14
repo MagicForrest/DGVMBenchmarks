@@ -23,7 +23,7 @@ Settings:
   # spatial extent (can be a raster:: extent or a two column data.frame of gridcells), set to NULL for no subsetting
   spatial_extent:  NULL
   # spatial_extent <- subset_1600_gridcells 
-  # spatial_extent <- extent(c(xmin = -10, ymin = 35, xmax = 35, ymax  = 72)) 
+  # spatial_extent <- extent(c(xmin: -10, ymin: 35, xmax: 35, ymax : 72)) 
     
   # set to a string to describe the spatial subset and use "Global" if not cropping area
   spatial_extent_id: "Global" 
@@ -51,3 +51,28 @@ Models:
     name: "Old run"
     dir: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
     format: "GUESS"
+
+# Here specify the details of each benchmark
+Benchmarks:
+  
+  # Indents at this level define the ID of a benchmark
+
+  # FLUXNET benchmark
+  FLUXNET:
+    # Standard required benchmark settings
+    name: "FLUXNET"
+    description: "FLUXNET"
+    simulation: "fluxnet"
+    guess_var: [ "dgpp", "dnee", "dreco" ]
+    guess_layers: [ "Total", "NEE", "Reco"]
+    unit: "kgC/m^2"
+    agg.unit: "Not Used"
+    datasets: 
+      FLUXNET:
+        name: "FLUXNET"
+        format: "FLUXNET"
+        dir: "FLUXNET_sites"
+    metrics: ""
+    # FLUXNET specific settings
+    do_fluxes: ["GPP", "Reco", "NEE"]     # possibilities are GPP, Reco and NEE
+    measurement_days_reqrd: 3             # out of 5 days, recommend 3 
