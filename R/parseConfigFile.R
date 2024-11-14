@@ -21,9 +21,9 @@ parseSourceDefinition <- function(src_id, src_def, base_dir){
   
   # use base_dir if necessary
   if(!missing(base_dir)) src_args[["dir"]] <- file.path(base_dir, src_args[["dir"]])
-
-  # make Source and return it
-  this_src <- do.call(what = "new", args = src_args)
+  
+   # make Source and return it
+  this_src <- do.call(what = "defineSource", args = src_args)
   return(this_src)
   
 }
