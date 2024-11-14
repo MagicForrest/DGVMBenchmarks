@@ -32,7 +32,7 @@ benchmark_GCP <- function(simulation_sources,
   all_NBP_Fields_list[[GCP_full_Field@source@name]] <- GCP_full_Field
   
   # and the vector of labels to eventual put on the plot
-  all_NBP_labels_vector <- c(paste0("GCB residual: ", signif(GCP_full_Field_ymean@data[["NBP"]], 3), " PgC/year"))
+  all_NBP_labels_vector <- c(paste0("GCB: ", signif(GCP_full_Field_ymean@data[["NBP"]], 3), " PgC/year"))
   
   
   # make the line for the global summary table
@@ -71,6 +71,9 @@ benchmark_GCP <- function(simulation_sources,
       # aggregate with weighted sum and adjust units
       this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
       this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "mulc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -KG_TO_PG)
+      all_NBP_labels_vector <- append(all_NBP_labels_vector, c(paste0(this_sim_Source@name, ": ", signif(aggregateYears(this_simulation_NBP_agg@data, "mean")[["NBP"]], 3), " PgC/year")))
+
+      
       
       # store the Field in the list of all Fields for plotting later
       all_NBP_Fields_list[[this_sim_Source@name]] <- this_simulation_NBP_agg
@@ -90,10 +93,11 @@ benchmark_GCP <- function(simulation_sources,
                            sizes = 1)
   
   # # make a simple data.frame to put numbers on the plot, and then add it to the plot
-  # global.numbers.df <- data.frame(x= rep(as.Date(paste(this_benchmark@first.year), "%Y")), 
-  #                                 y = c(6, 5, 4), 
-  #                                 label = all_NBP_labels_vector)
-  # NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 8, hjust = 0, col = "black")
+  global.numbers.df <- data.frame(x= rep(as.Date(paste(this_benchmark@first.year), "%Y")),
+                                  y = c(7, 6.5, 6),
+                                  label = all_NBP_labels_vector)
+
+  NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 8, hjust = 0, col = "black")
   print(NBP_plot)
   
   # calculate R^2 on this data
@@ -102,10 +106,13 @@ benchmark_GCP <- function(simulation_sources,
                                                          new_model = params$new_name,
                                                          old_model = params$old_name) 
   
-  metric_table <- rbind(metric_table, 
-                        makeMetricTable(benchmark = this_benchmark, 
+  tables_list[["metrics"]] <- rbind(tables_list[["metrics"]], 
+                             makeMetricTable(benchmark = this_benchmark, 
                                         all_comparisons_list = all_NBP_temporal_comparisons, 
                                         simulation_sources = simulation_sources))
+  
+  ## tables_list[["metrics"]] <-  metric_table
+  
   
   
   #### CALCULATE SUMMARY TABLE LINE ###
