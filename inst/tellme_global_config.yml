@@ -42,9 +42,9 @@ Settings:
   map_text_multiplier: 2.5
   map_annotation_text_size: 7
 
-#### Models ####
-# Here specify the models to benchmark  
-Models:
+#### Simulations ####
+# Here specify the simulations to benchmark  
+Simulations:
   # Indents at this level define a unique ID for this model
   New_run: 
     # Each of these three things *must* be defined for each model
@@ -61,10 +61,46 @@ Models:
 Benchmarks:
   
   # Indents at this level define the ID of a benchmark
+  # Global Carbon Project benchmark
+  GCP_NBP:
+    # Standard required benchmark settings
+    run_benchmark: TRUE
+    name: "GCP NBP"
+    description: "Global Carbon Project Net Biome Productivity"
+    simulation: "tellus"
+    guess_var: "cflux"
+    guess_layers: "NBP"
+    unit: "kg m^-2^ y^-1^"
+    agg.unit: "PgC y^-1^"
+    metrics: "r2"
+    # NOTE: Special case here, no dataset provide as DGVMTools::Source object because the benchmark reads raw GCP Excel file 
+    # Custom: For reading from the GCP Clobal Carbon Budget spreadsheet, these can/will change with a newer version
+    sheet: "Global Carbon Budget"
+    skip_rows: 21
+    nyears_GCP: 65
+    
+  # # PNV Biomes
+  # PNV_Biomes:
+  #   # Standard required benchmark settings
+  #   run_benchmark: TRUE
+  #   name: "Global biomes"
+  #   description: "Smith et al 2014 biomes vs PNV from Haxeltine and Prentince 1992"
+  #   simulation: "tellus"
+  #   guess_var: "cflux"
+  #   guess_layers: "NBP"
+  #   unit: "kg m^-2^ y^-1^"
+  #   agg.unit: "PgC y^-1^"
+  #   metrics: "r2"
+  #   # NOTE: Special case here, no dataset provide as DGVMTools::Source object because the benchmark reads raw GCP Excel file 
+  #   # Custom: For reading from the GCP Clobal Carbon Budget spreadsheet, these can/will change with a newer version
+  #   sheet: "Global Carbon Budget"
+  #   skip_rows: 21
+  #   nyears_GCP: 65
 
   # FLUXNET benchmark
   FLUXNET:
     # Standard required benchmark settings
+    run_benchmark: FALSE
     name: "FLUXNET"
     description: "FLUXNET"
     simulation: "fluxnet"
@@ -80,4 +116,4 @@ Benchmarks:
     metrics: ""
     # FLUXNET specific settings
     do_fluxes: ["GPP", "Reco", "NEE"]     # possibilities are GPP, Reco and NEE
-    measurement_days_reqrd: 3             # out of 5 days, recommend 3 
+    measurement_days_reqrd: 3             # out of 5 days, recommend 3

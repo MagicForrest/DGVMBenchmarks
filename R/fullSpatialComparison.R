@@ -20,7 +20,13 @@ fullSpatialComparison <- function(benchmark, all_maps, all_trends = NULL, all_se
   # determine the dataset names
   all_datasets <- c()
   for(this_dataset in benchmark@datasets) {
-    all_datasets <- append(all_datasets, this_dataset@source@name)
+    
+    # get the dataset name from either a Source or  Field
+    # this is preferred
+    if(is.Source(this_dataset))  all_datasets <- append(all_datasets, this_dataset@name)
+    # this is deprecated
+    else if(is.Field(this_dataset))  all_datasets <- append(all_datasets, this_dataset@source@name)
+    
   }
   
   # determine the simulation names

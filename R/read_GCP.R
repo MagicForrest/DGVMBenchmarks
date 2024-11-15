@@ -22,9 +22,9 @@
 #' 
 
 read_GCP <- function(data_file,
-                     sheet = "Global Carbon Budget",
-                     skip_rows = 20,
-                     nyears_GCP = 61,
+                     sheet,
+                     skip_rows,
+                     nyears_GCP,
                      land_sink_col_name = "land sink",
                      luc_col_name = "land-use change emissions",
                      imbalance_col_name = "budget imbalance") {
@@ -35,6 +35,7 @@ read_GCP <- function(data_file,
   if(missing(data_file)) {
     input_dir <- system.file("extdata", "GCP", package = "DGVMBenchmarks")
     GCP_file_name <- "Global_Carbon_Budget_2020v1.0.xlsx"
+    GCP_file_name <- "Global_Carbon_Budget_2024_v1.0.xlsx"
     data_file <- file.path(input_dir, GCP_file_name)
   }
   else {

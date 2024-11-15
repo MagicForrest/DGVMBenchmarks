@@ -1,30 +1,20 @@
 
 #' @export
 benchmark_GCP <- function(simulation_sources,
+                          this_benchmark,
                           settings,
-                          params,
                           tables_list){
   
-  
-  
   ### Read the data and calculate the annual mean over the whole period
-  GCP_full_Field <- read_GCP()
+  GCP_full_Field <- read_GCP(skip_rows = this_benchmark@custom$skip_rows,
+                             nyears_GCP = this_benchmark@custom$nyears_GCP,
+                             sheet = this_benchmark@custom$sheet)
+  this_benchmark@datasets <- list(GCP_full_Field@source) # needed for building the metrics table
   GCP_full_Field_ymean  <- suppressWarnings(aggregateYears(GCP_full_Field, "mean"))
   
-  this_benchmark <- new("Benchmark",
-                        id = "GCP_NBP",
-                        name = "GCP NBP",
-                        description = "Global NBP",
-                        simulation = "tellus",
-                        guess_var = "cflux",
-                        guess_layers = "NBP",
-                        unit = "kg m^-2^ y^-1^",
-                        agg.unit = "PgC y^-1^",
-                        datasets = list(GCP_full_Field),
-                        first.year = GCP_full_Field@first.year,
-                        last.year = GCP_full_Field@last.year,
-                        metrics = c("r2"))
-  
+  # Get first year from the data
+  this_benchmark@first.year <- GCP_full_Field@first.year
+  this_benchmark@last.year <- GCP_full_Field@last.year
   
   # make a list of all Fields to be compared  (this will also include whatever model runs are available)
   all_NBP_Fields_list <- list()
@@ -72,7 +62,7 @@ benchmark_GCP <- function(simulation_sources,
       this_simulation_NBP_agg <- aggregateSpatial(this_simulation_NBP, method = "w.sum", lon_centres = hd_lons, lat_centres = hd_lats)
       this_simulation_NBP_agg <- layerOp(x = this_simulation_NBP_agg, operator = "mulc", layers = layers(this_simulation_NBP_agg), new.layer = layers(this_simulation_NBP_agg), constant = -KG_TO_PG)
       all_NBP_labels_vector <- append(all_NBP_labels_vector, c(paste0(this_sim_Source@name, ": ", signif(aggregateYears(this_simulation_NBP_agg@data, "mean")[["NBP"]], 3), " PgC/year")))
-
+      
       
       
       # store the Field in the list of all Fields for plotting later
@@ -96,7 +86,7 @@ benchmark_GCP <- function(simulation_sources,
   global.numbers.df <- data.frame(x= rep(as.Date(paste(this_benchmark@first.year), "%Y")),
                                   y = c(7, 6.5, 6),
                                   label = all_NBP_labels_vector)
-
+  
   NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 8, hjust = 0, col = "black")
   print(NBP_plot)
   
@@ -105,11 +95,11 @@ benchmark_GCP <- function(simulation_sources,
                                                          all_ts = all_NBP_Fields_list, 
                                                          new_model = settings$new_name,
                                                          old_model = settings$old_name) 
-  
+ 
   tables_list[["metrics"]] <- rbind(tables_list[["metrics"]], 
-                             makeMetricTable(benchmark = this_benchmark, 
-                                        all_comparisons_list = all_NBP_temporal_comparisons, 
-                                        simulation_sources = simulation_sources))
+                                    makeMetricTable(benchmark = this_benchmark, 
+                                                    all_comparisons_list = all_NBP_temporal_comparisons, 
+                                                    simulation_sources = simulation_sources))
   
   ## tables_list[["metrics"]] <-  metric_table
   
@@ -130,7 +120,6 @@ benchmark_GCP <- function(simulation_sources,
     # supressWarnings is just to stops warnings that there is no spatial or temporal data in the resulting Field
     # (all averaged away to give a single number)
     this_NBP_ymean <- suppressWarnings(aggregateYears(selectYears(this_NBP_agg, first = this_benchmark@first.year, last = this_benchmark@last.year), "mean"))
-    
     # make a text label for putting the yearly mean on th plot and aa it to the label vector of labels
     all_NBP_labels_vector <- append(all_NBP_labels_vector, paste0(this_NBP_ymean@source@name, 
                                                                   ": ", 
@@ -146,8 +135,8 @@ benchmark_GCP <- function(simulation_sources,
   
   # Calculate area sum based on subset, if the spatial_extent is not NULL
   if(!is.null(settings$spatial_extent)) {
-    
-    for(this_sim_Source in settings$all_simulation_Sources_list) {
+
+      for(this_sim_Source in settings$all_simulation_Sources_list) {
       
       # subset and aggregate the already read data
       # if the provided spatial yields a valid extent, use the crop function

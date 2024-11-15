@@ -75,14 +75,14 @@ parseConfigFile <- function(yml_file) {
   settings <- input$Settings
   
   
-  #### MODELS ####
-  # For models we loop over Models and create Source objects
-  models <- list()
-  for(this_model_id in names(input$Models)){
-    models[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Models[[this_model_id]])
+  #### Simulations ####
+  # For models we loop over Simulations and create Source objects
+  simulations <- list()
+  for(this_model_id in names(input$Simulations)){
+    simulations[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Simulations[[this_model_id]])
   }
-  # get rid of this double of Models
-  settings$simulation_sources <- models
+  # get rid of this double of Simulations
+  settings$simulation_sources <- simulations
   
   
   #### BENCHMARKS ####
@@ -97,7 +97,7 @@ parseConfigFile <- function(yml_file) {
   #### RETURN ####
   return(
     list(settings = settings,
-         models = models,
+         simulations = simulations,
          benchmarks = benchmarks)
   )
   

@@ -5,6 +5,7 @@
 #'
 #' This class encapsulates all the specific details benchmark comparison.
 #' 
+#' @slot run_benchmark Logical, run this benchmark or not
 #' @slot id Simple character string to gave an uniquely identify this Benchmark
 #' @slot name More complex character string to describe this Benchmark
 #' @slot description An even more complex string to describe the Benchmark, probably redundant
@@ -27,7 +28,8 @@
 #' @exportClass Benchmark
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}
 setClass("Benchmark", 
-         slots = c(id = "character",
+         slots = c(run_benchmark = "logical",
+                   id = "character",
                    name = "character",
                    description = "character",
                    simulation = "character",
