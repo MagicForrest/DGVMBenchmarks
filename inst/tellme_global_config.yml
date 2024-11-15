@@ -64,7 +64,7 @@ Benchmarks:
   # Global Carbon Project benchmark
   GCP_NBP:
     # Standard required benchmark settings
-    run_benchmark: TRUE
+    run_benchmark: FALSE
     name: "GCP NBP"
     description: "Global Carbon Project Net Biome Productivity"
     simulation: "tellus"
@@ -79,23 +79,28 @@ Benchmarks:
     skip_rows: 21
     nyears_GCP: 65
     
-  # # PNV Biomes
-  # PNV_Biomes:
-  #   # Standard required benchmark settings
-  #   run_benchmark: TRUE
-  #   name: "Global biomes"
-  #   description: "Smith et al 2014 biomes vs PNV from Haxeltine and Prentince 1992"
-  #   simulation: "tellus"
-  #   guess_var: "cflux"
-  #   guess_layers: "NBP"
-  #   unit: "kg m^-2^ y^-1^"
-  #   agg.unit: "PgC y^-1^"
-  #   metrics: "r2"
-  #   # NOTE: Special case here, no dataset provide as DGVMTools::Source object because the benchmark reads raw GCP Excel file 
-  #   # Custom: For reading from the GCP Clobal Carbon Budget spreadsheet, these can/will change with a newer version
-  #   sheet: "Global Carbon Budget"
-  #   skip_rows: 21
-  #   nyears_GCP: 65
+  # PNV Biomes
+  PNV_Biomes:
+    # Standard required benchmark settings
+    run_benchmark: TRUE
+    name: "Global biomes"
+    description: "Smith et al 2014 biomes vs PNV from Haxeltine and Prentince 1992"
+    simulation: [ "global", "tellus" ]
+    guess_var: "lai"
+    guess_layers: "Smith2014" # not strictly speaking a layer, but the function interprets this as the classification and the name of the data file
+    first.year: 1960
+    last.year: 1990
+    year.aggregate.method: "mean"
+    unit: ""
+    agg.unit: ""
+    metrics: ""
+    datasets:
+      HandP_biomes:
+        name: "HandP_biomes"
+        format: "NetCDF"
+        dir: "biomes/HandP_biomes"
+   
+   
 
   # FLUXNET benchmark
   FLUXNET:
