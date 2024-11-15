@@ -1,5 +1,39 @@
 
-
+parseBenchmarkDefinition <- function(bmk_id, bmk_def, base_dir){
+  
+  # YAML fields that correspond directly to slots of the Benchmark class
+  direct_args <- slotNames("Benchmark")[!slotNames("Benchmark") %in% c("datasets", "custom")]
+  
+  # lists etc to be build for then making the benchmark
+  datasets_list <- list()
+  bmk_custom <- list()
+  benckmark_args <- list(Class = "Benchmark", id = bmk_id)
+  
+    # for each YAML entry add it it the the lists
+  for(this_entry in names(bmk_def)) {
+    
+    # if it is a direct argument it will be passed straight to the benchmark object (via do.call)
+    if(this_entry %in% direct_args)  benckmark_args[[this_entry]] <- bmk_def[[this_entry]]
+    # if it the 'datasets' argument it will be processed into DGVMTools:Source objects
+    else if(this_entry == "datasets") {
+      for(this_dataset in names(bmk_def[[this_entry]])){
+        datasets_list[[this_dataset]] <- parseSourceDefinition(this_dataset, bmk_def[[this_entry]][[this_dataset]], base_dir)
+      }
+    }
+    # if it is anything else it will be put into the fully flexible 'custom' part 
+    else {
+      bmk_custom[[this_entry]] <- bmk_def[[this_entry]]
+    }
+    
+  }
+  
+  # use the lists to build the final argument list and call "new" to make the Benchmark object and return it
+  benckmark_args[["datasets"]] <- datasets_list
+  benckmark_args[["custom"]] <- bmk_custom
+  final_benchmark <- do.call(what = "new", args = benckmark_args)
+  return(final_benchmark)
+  
+}
 
 
 parseSourceDefinition <- function(src_id, src_def, base_dir){
@@ -22,7 +56,7 @@ parseSourceDefinition <- function(src_id, src_def, base_dir){
   # use base_dir if necessary
   if(!missing(base_dir)) src_args[["dir"]] <- file.path(base_dir, src_args[["dir"]])
   
-   # make Source and return it
+  # make Source and return it
   this_src <- do.call(what = "defineSource", args = src_args)
   return(this_src)
   
@@ -33,10 +67,11 @@ parseSourceDefinition <- function(src_id, src_def, base_dir){
 
 parseConfigFile <- function(yml_file) {
   
+  # read the YAML file
   input <- yaml::yaml.load_file(yml_file)
   
-  # Global settings are easy
-  config <- input$Config
+  #### SETTINGS ####
+  # Global settings are easy - there are just read directly into one big list (of lists)
   settings <- input$Settings
   
   
@@ -46,53 +81,22 @@ parseConfigFile <- function(yml_file) {
   for(this_model_id in names(input$Models)){
     models[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Models[[this_model_id]])
   }
+  # get rid of this double of Models
   settings$simulation_sources <- models
   
   
   #### BENCHMARKS ####
-  
-  # YAML fields that correspond directly to slots of the Benchmark class
-  direct_args <- slotNames("Benchmark")[!slotNames("Benchmark") %in% c("datasets", "custom")]
-  
+  # For models we loop over Benchmarks and create Benchmark objects
   benchmarks <- list()
   # for each benchmark
   for(this_benchmark_id in names(input$Benchmarks)) {
-    
-    
-    # TODOD - consider factorising out
-    this_bmk <- input$Benchmarks[[this_benchmark_id]]
-    datasets_list <- list()
-    bmk_custom <- list()
-    benckmark_args <- list(Class = "Benchmark", id = this_benchmark_id)
-    
-    # for each YAML entry
-    for(this_entry in names(this_bmk)) {
-      
-      # if it is a direct argument it will be passed straight to the benchmark object (via do.call)
-      if(this_entry %in% direct_args)  benckmark_args[[this_entry]] <- this_bmk[[this_entry]]
-      # if it the 'datasets' argument it will be processed into DGVMTools:Source objects
-      else if(this_entry == "datasets") {
-        for(this_dataset in names(this_bmk[[this_entry]])){
-          datasets_list[[this_dataset]] <- parseSourceDefinition(this_dataset, this_bmk[[this_entry]][[this_dataset]], config$data_directory)
-        }
-      }
-      # if it is anything else it will be put into the fully flexible 'custom' part 
-      else {
-        bmk_custom[[this_entry]] <- this_bmk[[this_entry]]
-      }
-      
-    }
-    benckmark_args[["datasets"]] <- datasets_list
-    benckmark_args[["custom"]] <- bmk_custom
-    benchmarks[[this_benchmark_id]] <- do.call(what = "new", args = benckmark_args)
-    
+    benchmarks[[this_benchmark_id]] <- parseBenchmarkDefinition(this_benchmark_id, input$Benchmarks[[this_benchmark_id]], settings$data_directory)
   } # for each benchmark
   
   
   #### RETURN ####
   return(
-    list(config = config,
-         settings = settings,
+    list(settings = settings,
          models = models,
          benchmarks = benchmarks)
   )

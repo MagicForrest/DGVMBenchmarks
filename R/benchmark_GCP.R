@@ -103,8 +103,8 @@ benchmark_GCP <- function(simulation_sources,
   # calculate R^2 on this data
   all_NBP_temporal_comparisons <- fullTemporalComparison(benchmark = this_benchmark, 
                                                          all_ts = all_NBP_Fields_list, 
-                                                         new_model = params$new_name,
-                                                         old_model = params$old_name) 
+                                                         new_model = settings$new_name,
+                                                         old_model = settings$old_name) 
   
   tables_list[["metrics"]] <- rbind(tables_list[["metrics"]], 
                              makeMetricTable(benchmark = this_benchmark, 
