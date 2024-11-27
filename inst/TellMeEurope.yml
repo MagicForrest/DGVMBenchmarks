@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_paper_240924\\Ageinit\\run_240809_sim4_age_probharv_satdist07\\"
-  Sim1_id: "Probabilistic Harvest"
+  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_paper_240924\\Ageinit\\run_240809_sim5_age_probharv_satdist07_inclcc\\"
+  Sim1_id: "LPJ-GUESS"
   Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data\\"
-  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_paper_240924\\Ageinit\\run_240809_sim2_age_satdist07\\"
-  Sim2_id: "No Thinning"
+  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_intermodel\\EFISCEN"
+  Sim2_id: "EFISCEN-Space"
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -14,7 +14,7 @@ Directory:
 Switches:
   do_plots: T
   do_forest_fraction: F
-  do_harvest: F
+  do_harvest: T
   do_agpp: F
   do_cmass: F
   do_stem_density: F
@@ -28,10 +28,10 @@ Switches:
   do_profound: F
   do_cmass_pft: F
   do_cmass_pft1: F
-  do_ICOS_GPP: T
-  do_ICOS_NEE: T
-  do_ICOS_Reco: T
-  do_ICOS_ET: T
+  do_ICOS_GPP: F
+  do_ICOS_NEE: F
+  do_ICOS_Reco: F
+  do_ICOS_ET: F
   do_FLUXNET_GPP: F
   do_FLUXNET_NEE: F
   do_FLUXNET_Reco: F
@@ -522,7 +522,7 @@ cpool:
   Id: "Soil carbon"
   Name: "cpool"
   Description: "cpool"  
-  Layer: ["VegC","SoilC", "LitterC"]
+  Layer: 
   Data:
     Datasets: ["european_applications"]
     File_name: ["cpool"]
@@ -546,9 +546,9 @@ cpool:
       data.cleaning: 
       qc.threshold: 
   Simulations:
-    Simulation: ["european_applications"]
-    File_name: ["cpool"]
-    Format: ["GUESS"]
+    Simulation: ["european_applications", "WUR_netcdfs_5year-avg"]
+    File_name: ["cpool", "tot_biomass"]
+    Format: ["GUESS", "NetCDF"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "none"
@@ -655,11 +655,11 @@ NAI:
   Id: "Net annual increment"
   Name: "NAI"
   Description: "Net Annual Increment"  
-  Layer: ["tot_NAI"]
+  Layer: 
   Simulations:
-    Simulation: ["european_applications"]
-    File_name: ["forest_cflux_veg"]
-    Format: ["GUESS"]
+    Simulation: ["european_applications", "WUR_netcdfs_5year-avg"]
+    File_name: ["forest_cflux_veg", "tot_NAI"]
+    Format: ["GUESS", "NetCDF"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "none"
@@ -669,14 +669,14 @@ NAI:
   
 Harvest:
   Unit: "kg/m2/y"
-  Id: "Net annual increment"
+  Id: "Harvest"
   Name: "Harvest"
   Description: "Harvest"  
-  Layer: ["Total"]
+  Layer: 
   Simulations:
-    Simulation: ["european_applications"]
-    File_name: ["cmass_harv_killed_sts"]
-    Format: ["GUESS"]
+    Simulation: ["european_applications", "WUR_netcdfs_5year-avg"]
+    File_name: ["cmass_harv_killed_sts", "tot_harvest"]
+    Format: ["GUESS", "NetCDF"]
     First_year: NULL
     Last_year: NULL
     year.aggregate.method: "none"
@@ -1489,7 +1489,7 @@ FLUXNET_GPP1:
   Description: "Daily Gross Primary Production"  
   Layer: "GPP"
   Data:
-    Datasets: ["FLUXNET"]
+    Datasets: ["data"]
     File_name: ["GPP"]
     Format: ["FLUXNET"]
     First_year: NULL
@@ -1511,11 +1511,11 @@ FLUXNET_GPP1:
       data.cleaning: "TRUE"
       qc.threshold: 0.5
   Simulations:
-    Simulation: ["bias_corrected"]
+    Simulation: ["fluxnet_sims"]
     File_name: ["dgpp"]
     Format: ["GUESS"]
-    First_year: 
-    Last_year: 
+    First_year: 2003
+    Last_year: 2012
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
@@ -1553,7 +1553,7 @@ FLUXNET_NEE1:
   Description: "Daily Net Ecosystem Exchange"  
   Layer: "NEE"
   Data:
-    Datasets: ["FLUXNET"]
+    Datasets: ["data"]
     File_name: ["NEE"]
     Format: ["FLUXNET"]
     First_year: NULL
@@ -1575,11 +1575,11 @@ FLUXNET_NEE1:
       data.cleaning: "TRUE"
       qc.threshold: 0.5
   Simulations:
-    Simulation: ["bias_corrected"]
+    Simulation: ["fluxnet_sims"]
     File_name: ["dnee"]
     Format: ["GUESS"]
-    First_year: 2013
-    Last_year: 2021
+    First_year: 2003
+    Last_year: 2012
     year.aggregate.method: 
     spatial.aggregate.method: 
     Conversion_factor:
@@ -1617,7 +1617,7 @@ FLUXNET_Reco1:
   Description: "Daily Ecosystem Respiration"  
   Layer: "Reco"
   Data:
-    Datasets: ["FLUXNET"]
+    Datasets: ["data"]
     File_name: ["Reco"]
     Format: ["FLUXNET"]
     First_year: NULL
@@ -1639,7 +1639,7 @@ FLUXNET_Reco1:
       data.cleaning: "TRUE"
       qc.threshold: 0.5
   Simulations:
-    Simulation: ["bias_corrected"]
+    Simulation: ["fluxnet_sims"]
     File_name: ["dreco"]
     Format: ["GUESS"]
     First_year: 2013
