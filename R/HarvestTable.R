@@ -77,7 +77,7 @@ if (param == "Total Harvest"){
 # (1) multiplying the harvested cmass with the expansion factors, 
 # (2) multiplying with the area of the grid cell, and 
 # (3) summing up the grid cells in a country
-  if(this_sim@source@id == "EFISCEN"){
+  if(this_sim@source@id == "EFISCEN-Space"){
     wood_harv_processed_2013_2017 <- this_sim@data %>%
       left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
       left_join(cmass_to_m3 %>% select(Country, Mean_volume_expansion_factor),
@@ -149,7 +149,7 @@ if (param == "NAI"){
 
 
 
-if(this_sim@source@id == "EFISCEN"){
+if(this_sim@source@id == "EFISCEN-Space"){
   forest_cflux_veg_processed <- this_sim@data %>%
     left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>% # join to get country info for cells
     left_join(LC2010 %>% select(!year)) %>%

@@ -126,7 +126,7 @@ for (this_sim in all_sim_full){
   ## Above-ground biomass
   if (param == "AGB"){
     
-  if(this_sim@source@id == "EFISCEN"){
+  if(this_sim@source@id == "EFISCEN-Space"){
     AGB_2018_2022 <- this_sim@data %>%
       left_join(grid_countries, by = c(Lat = "lat05", Lon = "lon05")) %>%
       left_join(LC2010) %>%
