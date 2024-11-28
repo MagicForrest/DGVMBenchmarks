@@ -16,10 +16,10 @@ Switches:
   do_forest_fraction: F
   do_harvest: T
   do_agpp: F
-  do_cmass: F
-  do_stem_density: F
-  do_qdbh: F
-  do_woody_growth: F
+  do_cmass: T
+  do_stem_density: T
+  do_qdbh: T
+  do_woody_growth: T
   do_cpool: T
   do_Regrowth: F
   do_SIMFIRE: F
@@ -341,12 +341,12 @@ STEM_DENSITY1:
       data.cleaning: 
       qc.threshold: 
   Simulations:
-    Simulation: ["european_applications"]
-    File_name: ["dens_plus10cm_sts"]
-    Format: ["GUESS"]
-    First_year: 2010
-    Last_year: 2010
-    year.aggregate.method: "mean"
+    Simulation: ["european_applications","WUR_netcdfs_5year-avg"]
+    File_name: ["dens_plus10cm_sts", "tot_nr_per_ha"]
+    Format: ["GUESS","NetCDF"]
+    First_year: NULL
+    Last_year: NULL
+    year.aggregate.method: "none"
     spatial.aggregate.method: 
     Conversion_factor:
     Layer_to_convert:
@@ -388,12 +388,12 @@ QDBH1:
   Description: "QDBH"  
   Layer: "Forest_sum"
   Data:
-    Datasets: ["european_applications"]
-    File_name: ["diam_g_plus10cm_sts"]
-    Format: ["GUESS"]
+    Datasets: ["european_applications","WUR_netcdfs_5year-avg"]
+    File_name: ["diam_g_plus10cm_sts", "tot_QMD"]
+    Format: ["GUESS", "NetCDF"]
     First_year: NULL
     Last_year: NULL
-    year.aggregate.method: "mean"
+    year.aggregate.method: "none"
     spatial.aggregate.method:
     Conversion_factor:
     Layer_to_convert:
