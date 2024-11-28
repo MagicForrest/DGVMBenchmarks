@@ -1,7 +1,7 @@
 Directory:
   Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_paper_240924\\Ageinit\\run_240809_sim5_age_probharv_satdist07_inclcc\\"
   Sim1_id: "LPJ-GUESS"
-  Data: "C:\\Users\\Admin\\Documents\\tellus\\EUAPP_ICOS_050724\\For_benchmarking\\data\\"
+  Data: "C:\\Users\\Admin\\Documents\\tellus\\Data_240809"
   Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_intermodel\\EFISCEN"
   Sim2_id: "EFISCEN-Space"
   spatial_extent_id: "Full"
