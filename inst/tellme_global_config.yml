@@ -10,7 +10,7 @@ Settings:
 
 
   do_maps: TRUE
-  analysis_version: "tellus_v1.4"
+  analysis_version: "tellus_v1.5_dev"
   # quick read switch 
   quick_read: TRUE
   # do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
@@ -64,15 +64,17 @@ Benchmarks:
   # Global Carbon Project benchmark
   GCP_NBP:
     # Standard required benchmark settings
-    run_benchmark: FALSE
+    run_benchmark: TRUE
     name: "GCP NBP"
     description: "Global Carbon Project Net Biome Productivity"
+    first.year: 2004 # update when comparing to newer runs
+    last.year: 2015 # update when comparing to newer runs
     simulation: "tellus"
     guess_var: "cflux"
     guess_layers: "NBP"
     unit: "kg m^-2^ y^-1^"
     agg.unit: "PgC y^-1^"
-    metrics: "r2"
+    metrics: [ "r2", "RMSE" ]
     # NOTE: Special case here, no dataset provide as DGVMTools::Source object because the benchmark reads raw GCP Excel file 
     # Custom: For reading from the GCP Clobal Carbon Budget spreadsheet, these can/will change with a newer version
     sheet: "Global Carbon Budget"
@@ -82,7 +84,7 @@ Benchmarks:
   # PNV Biomes
   PNV_Biomes:
     # Standard required benchmark settings
-    run_benchmark: TRUE
+    run_benchmark: FALSE
     name: "Global biomes"
     description: "Smith et al 2014 biomes vs PNV from Haxeltine and Prentince 1992"
     simulation: [ "global", "tellus" ]
@@ -99,8 +101,6 @@ Benchmarks:
         name: "HandP_biomes"
         format: "NetCDF"
         dir: "biomes/HandP_biomes"
-   
-   
 
   # FLUXNET benchmark
   FLUXNET:

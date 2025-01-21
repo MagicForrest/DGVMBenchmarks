@@ -81,9 +81,8 @@ parseConfigFile <- function(yml_file) {
   for(this_model_id in names(input$Simulations)){
     simulations[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Simulations[[this_model_id]])
   }
-  # get rid of this double of Simulations
-  settings$simulation_sources <- simulations
-  
+ 
+  # TODO - might need some flexibility concerning the "spatial.extent" setting here to read, for example, gridlists or bounding boxes.
   
   #### BENCHMARKS ####
   # For models we loop over Benchmarks and create Benchmark objects
