@@ -9,7 +9,7 @@ parseBenchmarkDefinition <- function(bmk_id, bmk_def, base_dir){
   bmk_custom <- list()
   benckmark_args <- list(Class = "Benchmark", id = bmk_id)
   
-    # for each YAML entry add it it the the lists
+  # for each YAML entry add it it the the lists
   for(this_entry in names(bmk_def)) {
     
     # if it is a direct argument it will be passed straight to the benchmark object (via do.call)
@@ -65,7 +65,8 @@ parseSourceDefinition <- function(src_id, src_def, base_dir){
 
 #' @export
 
-parseConfigFile <- function(yml_file) {
+parseConfigFile <- function(yml_file, cli_args) {
+  
   
   # read the YAML file
   input <- yaml::yaml.load_file(yml_file)
@@ -74,14 +75,35 @@ parseConfigFile <- function(yml_file) {
   # Global settings are easy - there are just read directly into one big list (of lists)
   settings <- input$Settings
   
+  # override directoies from YAML is value is given on command line
+  if(!is.null(cli_args$data_directory)) settings$data_directory <- cli_args$data_directory
+  if(!is.null(cli_args$land_cover_file)) settings$land_cover_file <- cli_args$land_cover_file
   
-  #### Simulations ####
-  # For models we loop over Simulations and create Source objects
-  simulations <- list()
-  for(this_model_id in names(input$Simulations)){
-    simulations[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Simulations[[this_model_id]])
+  
+  #### SIMULATIONS ####
+  # If simulations specified on the command line
+  if(!is.null(cli_args$new_directory) && !is.null(cli_args$new_name) && !is.null(cli_args$old_directory) && !is.null(cli_args$old_name)){
+    simulations <- list()
+    simulations[[cli_args$new_name]] <- defineSource(
+      name =cli_args$new_name,
+      dir = cli_args$new_directory,
+      format = GUESS)
+    simulations[[cli_args$old_name]] <- defineSource(
+      name = cli_args$old_name,
+      dir = cli_args$old_directory,
+      format = GUESS)
   }
- 
+  # Else we loop over Simulations and create Source objects
+  else {
+    simulations <- list()
+    for(this_model_id in names(input$Simulations)){
+      simulations[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Simulations[[this_model_id]])
+    }
+  }
+  # also update the "old_run", "new_run" (actually both should be phased out) and baseline settings
+  if(!is.null(cli_args$new_name)) settings$new_name <- cli_args$new_name
+  if(!is.null(cli_args$old_name)) settings$reference_simulation <- settings$old_name <- cli_args$old_name
+  
   # TODO - might need some flexibility concerning the "spatial.extent" setting here to read, for example, gridlists or bounding boxes.
   
   #### BENCHMARKS ####

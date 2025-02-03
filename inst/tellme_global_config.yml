@@ -3,8 +3,9 @@
 # Note that the simulations to be evaluted and the benchmark specific settings are define in the blocks below this one.
 Settings:
 
-  new_name: "New run" # remove
-  old_name: "Old run" # change to "baseline"
+  new_name: "CRUJRA_v4.1.2" # remove
+  old_name: "CRUNCEP_v4.1" # change to "baseline"
+  reference_simulation: "CRUNCEP_v4.1"
   data_directory: "/data/shared/Tellus"
   land_cover_file: "/data/mforrest/LandUseLandCover/LUH2_GCP2019/lu_1549_2019_luh2_aggregate_sum2x2_midpoint_nourban_gcp2019_2019_10_22.txt"
 
@@ -46,14 +47,14 @@ Settings:
 # Here specify the simulations to benchmark  
 Simulations:
   # Indents at this level define a unique ID for this model
-  New_run: 
+  CRUNCEP_v4.1: 
     # Each of these three things *must* be defined for each model
-    name: "New run" 
-    dir: "/home/mforrest/GuessRuns/Tellus_dev/output11690tls-3"
+    name: "CRUNCEP_v4.1" 
+    dir: "/dmz/home/mforrest/GuessRuns/Tellus_dev/CRUNCEP_v4.1"
     format: "GUESS"
-  Old_run:
-    name: "Old run"
-    dir: "/home/mforrest/GuessRuns/Tellus_dev/trunk10115crg+monthly"
+  CRUJRA_v4.1.2:
+    name: "CRUJRA_v4.1.2"
+    dir: "/dmz/home/mforrest/GuessRuns/Tellus_dev/CRUJRA_v4.1.2"
     format: "GUESS"
 
 #### Benckmarks ####
@@ -64,11 +65,11 @@ Benchmarks:
   # Global Carbon Project benchmark
   GCP_NBP:
     # Standard required benchmark settings
-    run_benchmark: TRUE
+    run_benchmark: FALSE
     name: "GCP NBP"
     description: "Global Carbon Project Net Biome Productivity"
-    first.year: 2004 # update when comparing to newer runs
-    last.year: 2015 # update when comparing to newer runs
+    first.year: 2005 # update when comparing to newer runs
+    last.year: 2014 # update when comparing to newer runs
     simulation: "tellus"
     guess_var: "cflux"
     guess_layers: "NBP"

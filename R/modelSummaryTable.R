@@ -8,8 +8,6 @@ modelSummaryTable <- function(simulations,
                               settings,
                               var,
                               periods,
-                              new_sim,
-                              old_sim,
                               spatial_extent,
                               spatial_extent_id,
                               area_unit = "m^2",
@@ -46,7 +44,7 @@ modelSummaryTable <- function(simulations,
       )
     }
   }
- 
+  
   
   # loop over all periods and Fields to build the table
   this_complete_df <- data.frame()
@@ -64,24 +62,31 @@ modelSummaryTable <- function(simulations,
       source_names[[this_sim@source@name]] <- this_sim@source@name
       
     }
-
-    # if an old and new simualtion are specified calculate the absolute and precentage differences
-    if(!missing(old_sim) & !missing(new_sim) & !is.null(new_sim) & !is.null(old_sim)){
     
-      # absolute difference
-      difference_string <- paste0(source_names[[new_sim]], " - ", source_names[[old_sim]])
-      diff_row <- c(c("Source" = difference_string), signif(this_period_df[this_period_df$Source == new_sim, 2:ncol(this_period_df) ] - this_period_df[this_period_df$Source == old_sim, 2:ncol(this_period_df) ], sigfigs))
-      this_period_df <- rbind(this_period_df, diff_row)
-      
-      # percentage difference
-      perc_diff_string <-  paste0(source_names[[new_sim]], " - ", source_names[[old_sim]], " (% diff)")
-      perc_diff_row <- c(c("Source" = perc_diff_string), signif(100 * this_period_df[this_period_df$Source == difference_string, 2:ncol(this_period_df) ]/ this_period_df[this_period_df$Source == old_sim, 2:ncol(this_period_df) ], sigfigs ))
-      this_period_df <- rbind(this_period_df, perc_diff_row)
-      
-      # add Period column and bind
-      this_period_df <- cbind("Period" = c(paste0(this_period[1],"-", this_period[2]),  rep(NA, nrow(this_period_df)-1)),this_period_df )
-      
-    }
+    # if a reference simulation has been specified calculate the absolute and precentage differences
+    if(!is.null(settings$reference_simulation)){
+      # check the the reference simulation is in the sims list
+      if(settings$reference_simulation %in% source_names) {
+        # for each simulation that is not the reference simulation
+        for(new_sim in source_names) {
+          if(new_sim != settings$reference_simulation) {
+            
+            # absolute difference
+            difference_string <- paste0(source_names[[new_sim]], " - ", source_names[[settings$reference_simulation]])
+            diff_row <- c(c("Source" = difference_string), signif(this_period_df[this_period_df$Source == new_sim, 2:ncol(this_period_df) ] - this_period_df[this_period_df$Source == settings$reference_simulation, 2:ncol(this_period_df) ], sigfigs))
+            this_period_df <- rbind(this_period_df, diff_row)
+            
+            # percentage difference
+            perc_diff_string <-  paste0(source_names[[new_sim]], " - ", source_names[[settings$reference_simulation]], " (% diff)")
+            perc_diff_row <- c(c("Source" = perc_diff_string), signif(100 * this_period_df[this_period_df$Source == difference_string, 2:ncol(this_period_df) ]/ this_period_df[this_period_df$Source == settings$reference_simulation, 2:ncol(this_period_df) ], sigfigs ))
+            this_period_df <- rbind(this_period_df, perc_diff_row)
+            
+            # add Period column and bind
+            this_period_df <- cbind("Period" = c(paste0(this_period[1],"-", this_period[2]),  rep(NA, nrow(this_period_df)-1)),this_period_df )
+          } # if not reference simulations
+        } # for each simulationa
+      } # if reference simulations present
+    } # if reference simulation defined
     
     this_complete_df <- rbind(this_complete_df, this_period_df)
     
