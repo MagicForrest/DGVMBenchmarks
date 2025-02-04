@@ -25,7 +25,7 @@ calcLinearTrend <- function(field, signif_level = 0.05) {
   setnames(full_dt, old = field_names, new ="the_variable")
   if("Month" %in% getDimInfo(field)) full_dt[, Time := (Year*12) + Month]
   else if("Day" %in% getDimInfo(field)) full_dt[, Time := (Year*365) + Day]
-  else if("Year" %in% getDimInfo(field)) full_dt[, Year := Year]
+  else if("Year" %in% getDimInfo(field)) full_dt[, Time := Year]
   
   # calculate the trend (and p-value)
   trends_dt <- full_dt[, as.list(summary(lm(the_variable~Time))$coefficients[2,c(1,4)]), by = .(Lon, Lat)]
