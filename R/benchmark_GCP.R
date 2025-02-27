@@ -96,6 +96,8 @@ benchmark_GCP <- function(simulation_sources,
   print(NBP_plot)
   
   # calculate R^2 on this data
+  # dirty fix until all version catch up with renaming of NEE to NBP
+  this_benchmark@guess_layers <- "NBP"
   all_NBP_temporal_comparisons <- fullTemporalComparison(benchmark = this_benchmark, 
                                                          all_ts = all_NBP_Fields_restricted_list, 
                                                          new_model = settings$new_name,
