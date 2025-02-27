@@ -13,7 +13,9 @@ Settings:
   do_maps: TRUE
   analysis_version: "tellus_v1.5_dev"
   # quick read switch 
-  quick_read: TRUE
+  quick_read: FALSE
+  # quick read autodelete switch, if TRUE previous file will be deleted and recreated 
+  quick_read_autodelete: FALSE
   # do verbose reads - this makes a lot of printed output which will appear in the report, only enable for developing/debugging the reading code
   verbose_read: FALSE
   # do publication plots
@@ -65,7 +67,7 @@ Benchmarks:
   # Global Carbon Project benchmark
   GCP_NBP:
     # Standard required benchmark settings
-    run_benchmark: FALSE
+    run_benchmark: TRUE
     name: "GCP NBP"
     description: "Global Carbon Project Net Biome Productivity"
     first.year: 2005 # update when comparing to newer runs
@@ -85,7 +87,7 @@ Benchmarks:
   # PNV Biomes
   PNV_Biomes:
     # Standard required benchmark settings
-    run_benchmark: FALSE
+    run_benchmark: TRUE
     name: "Global biomes"
     description: "Smith et al 2014 biomes vs PNV from Haxeltine and Prentince 1992"
     simulation: [ "global", "tellus" ]

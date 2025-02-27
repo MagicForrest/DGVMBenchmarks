@@ -1,26 +1,30 @@
 #'   Produce a model summary table
 #' 
 #'   The table produced here compares multiple model versions for all layers of a single variable for an arbitrary selection of time periods.
-#'   Optionally it can be subset over a spatial extent.  
+#'   Optionally it can be subset over a spatial extent id selected in the YAML file
 #' 
 #' @export
 modelSummaryTable <- function(simulations,
                               settings,
                               var,
-                              periods,
-                              spatial_extent,
-                              spatial_extent_id,
+                              comparison_periods,
                               area_unit = "m^2",
                               unit_multiplier = 1,
                               sigfigs = 3,
                               version_label = character(0)){
   
-  
-  # read the files with the maximum needed data period
+  # sort comparison years argument and  determine the years needed 
+  if(missing(comparison_periods))  periods <- settings$summary_periods
+  else {
+    if(!is.list(comparison_periods)) periods <- list(comparison_periods)
+    else periods <-comparison_periods
+  }
   first_year_needed <- min(unlist(periods))
   last_year_needed <- max(unlist (periods))
-  simulation_Fields <- list()
+
   
+  # read the files with the maximum needed data period
+  simulation_Fields <- list()
   for(this_sim_Source in simulations) {
     
     # check if file is present (if not don't include this run)
@@ -39,8 +43,10 @@ modelSummaryTable <- function(simulations,
                                                                  last.year = last_year_needed,
                                                                  spatial.extent = settings$spatial_extent,
                                                                  spatial.extent.id = settings$spatial_extent_id,
-                                                                 quick.read = settings$quick_read,
-                                                                 quick.read.file = paste(var, settings$version_label, sep = "_"))
+                                                                 quick.read.autodelete = settings$quick_read_autodelete,
+                                                                 quick.read.file = switch(settings$quick_read+1,
+                                                                                          NULL,
+                                                                                          paste(var, settings$version_label, "ForSummaryTable", sep = "_")))
       )
     }
   }
@@ -81,13 +87,14 @@ modelSummaryTable <- function(simulations,
             perc_diff_row <- c(c("Source" = perc_diff_string), signif(100 * this_period_df[this_period_df$Source == difference_string, 2:ncol(this_period_df) ]/ this_period_df[this_period_df$Source == settings$reference_simulation, 2:ncol(this_period_df) ], sigfigs ))
             this_period_df <- rbind(this_period_df, perc_diff_row)
             
-            # add Period column and bind
-            this_period_df <- cbind("Period" = c(paste0(this_period[1],"-", this_period[2]),  rep(NA, nrow(this_period_df)-1)),this_period_df )
+            
           } # if not reference simulations
         } # for each simulationa
       } # if reference simulations present
     } # if reference simulation defined
     
+    # add Period column and bind
+    this_period_df <- cbind("Period" = c(paste0(this_period[1],"-", this_period[2]),  rep(NA, nrow(this_period_df)-1)),this_period_df )
     this_complete_df <- rbind(this_complete_df, this_period_df)
     
   }

@@ -81,9 +81,9 @@ parseConfigFile <- function(yml_file, cli_args) {
   
   
   #### SIMULATIONS ####
+  simulations <- list()
   # If simulations specified on the command line
   if(!is.null(cli_args$new_directory) && !is.null(cli_args$new_name) && !is.null(cli_args$old_directory) && !is.null(cli_args$old_name)){
-    simulations <- list()
     simulations[[cli_args$new_name]] <- defineSource(
       name =cli_args$new_name,
       dir = cli_args$new_directory,
@@ -92,10 +92,11 @@ parseConfigFile <- function(yml_file, cli_args) {
       name = cli_args$old_name,
       dir = cli_args$old_directory,
       format = GUESS)
+    # also override whatever the YAML says for "reference_simulation" with the command line argument
+    settings$reference_simulation <- cli_args$old_name
   }
   # Else we loop over Simulations and create Source objects
   else {
-    simulations <- list()
     for(this_model_id in names(input$Simulations)){
       simulations[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Simulations[[this_model_id]])
     }
