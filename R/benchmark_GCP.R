@@ -54,8 +54,10 @@ benchmark_GCP <- function(simulation_sources,
                                       this_benchmark@guess_var,
                                       first.year = GCP_first_year,
                                       verbose = settings$verbose_read,
-                                      quick.read = settings$quick_read,
-                                      quick.read.file = paste("cflux", version_label, sep = "_") 
+                                      quick.read.autodelete = settings$quick_read_autodelete,
+                                      quick.read.file = switch(settings$quick_read+1,
+                                                               NULL,
+                                                               paste(this_benchmark@guess_var, settings$analysis_version, "for_GCP", sep = "_"))
       )
       
       if("NEE" %in% names(this_simulation_NBP)) renameLayers(this_simulation_NBP, "NEE", "NBP")
@@ -100,16 +102,12 @@ benchmark_GCP <- function(simulation_sources,
   this_benchmark@guess_layers <- "NBP"
   all_NBP_temporal_comparisons <- fullTemporalComparison(benchmark = this_benchmark, 
                                                          all_ts = all_NBP_Fields_restricted_list, 
-                                                         new_model = settings$new_name,
-                                                         old_model = settings$old_name) 
+                                                         reference_simulation = settings$reference_simulation) 
   
   tables_list[["metrics"]] <- rbind(tables_list[["metrics"]], 
                                     makeMetricTable(benchmark = this_benchmark, 
                                                     all_comparisons_list = all_NBP_temporal_comparisons, 
                                                     simulation_sources = simulation_sources))
-  
-  ## tables_list[["metrics"]] <-  metric_table
-  
   
   
   #### CALCULATE SUMMARY TABLE LINE ###

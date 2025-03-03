@@ -5,7 +5,7 @@
 #' @param all_maps A list of all spatial values Fields to be compared (both data and simulations, which of these are data are identified from the benchmark argument)
 #' @param all_trends A list of all trend Fields to be compared (structure as above))
 #' @param all_seasonal A list of all seasonal Fields to be compared (structure as above))
-#' @param reference_simulation Characters strings defining the reference model run (for "new minus old" comparisons)
+#' @param reference_simulation Characters strings defining the reference model run (for "new minus reference" style comparisons)
 #' 
 #' @name fullSpatialComparison
 #' @rdname fullSpatialComparison
