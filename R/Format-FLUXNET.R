@@ -71,20 +71,24 @@ getField_FLUXNET <- function(source,
   
   if (length(CH4.files) != 0) {
     
+    # read the site info from the .csv file  (same for all sites so only need to do this once)
+    siteinfo.files <- list.files(path = source@dir) %>% stringr::str_subset("AA-Flx") %>%
+      stringr::str_subset("CH4")
+    siteinfo.data <- read.csv(file = file.path(source@dir, siteinfo.files))
+    
+    
     # loop over all FLUXNET-CH4 files
     for (i in 1:length(CH4.files)) {
-      
-      # read the daily data from the .csv file
-      site.data <- read.csv(file = file.path(source@dir, CH4.files[i]), na = c("-9999", "NA"))
-      
-      # read the site info from the .csv file
-      siteinfo.files <- list.files(path = source@dir) %>% stringr::str_subset("AA-Flx") %>%
-        stringr::str_subset("CH4")
-      siteinfo.data <- read.csv(file = file.path(source@dir, siteinfo.files))
       
       # determine site code
       site <- unlist(stringr::str_extract_all(string = CH4.files[i],
                                               pattern = "(?<=FLX_).+(?=_FLUXNET)"))
+      if(verbose) print(site)
+      
+      # read the daily data from the .csv file
+      site.data <- fread(file = file.path(source@dir, CH4.files[i]), na = c("-9999", "NA"))
+      
+    
       
       # determine the longitude and latitude
       # MF: Some sites have more than one location recorded in the site description file, due to reasons like the tower being moved
@@ -171,13 +175,13 @@ getField_FLUXNET <- function(source,
     # loop over all FLUXNET2015 files
     for (i in 1:length(FLUXNET2015.files)) {
       
-      # read the daily data from the .csv file
-      site.data <- read.csv(file = file.path(source@dir, FLUXNET2015.files[i]), na = c("-9999", "NA"))
-      
-       
       # determine site code
       site <- unlist(stringr::str_extract_all(string = FLUXNET2015.files[i],
                                               pattern = "(?<=FLX_).+(?=_FLUXNET)"))
+      if(verbose) print(site)
+      
+      # read the daily data from the .csv file
+      site.data <- fread(file = file.path(source@dir, FLUXNET2015.files[i]), na = c("-9999", "NA"))
       
       # determine the longitude and latitude
       # MF: Some sites have more than one location recorded in the site description file, due to reasons like the tower being moved
