@@ -88,6 +88,11 @@ getField_FLUXNET <- function(source,
       # read the daily data from the .csv file
       site.data <- fread(file = file.path(source@dir, CH4.files[i]), na = c("-9999", "NA"))
       
+     
+      # subset the site metadata for this site only, and then grab the elevenation and IGBP
+      this.siteinfo.data <- siteinfo.data[siteinfo.data$SITE_ID == site, ]
+      elevation <-  as.numeric(as.character(this.siteinfo.data$DATAVALUE[this.siteinfo.data$VARIABLE == "LOCATION_ELEV"]))
+      IGBP <- as.character(this.siteinfo.data$DATAVALUE[this.siteinfo.data$VARIABLE == "IGBP"][1])
     
       
       # determine the longitude and latitude
@@ -95,11 +100,10 @@ getField_FLUXNET <- function(source,
       # or the meteorogical instrumentation being set located slightly further away.
       #  The above applies to sites in the 2015 release, I have no idea how it applies to the CH4 community product.  
       # I have adopted the convention of just taking the first location in the file
-      lon <- as.numeric(as.character(siteinfo.data$LON[siteinfo.data$SITE_ID == site]))[1]
-      lat <- as.numeric(as.character(siteinfo.data$LAT[siteinfo.data$SITE_ID == site]))[1]
+      lon <- as.numeric(as.character(this.siteinfo.data$LON[this.siteinfo.data$SITE_ID == site]))[1]
+      lat <- as.numeric(as.character(this.siteinfo.data$LAT[this.siteinfo.data$SITE_ID == site]))[1]
       
-      # determine the full site name
-      site.name <- siteinfo.data$SITE_NAME[siteinfo.data$SITE_ID == site]
+     
       
       # declaring a new data table with metadata that will be used to append the daily fluxes to
       site.data.selected <- data.table(Code = site,
@@ -183,16 +187,21 @@ getField_FLUXNET <- function(source,
       # read the daily data from the .csv file
       site.data <- fread(file = file.path(source@dir, FLUXNET2015.files[i]), na = c("-9999", "NA"))
       
+      # subset the site metadata for this site only, and then grab the elevenation and IGBP
+      this.siteinfo.data <- siteinfo.data[siteinfo.data$SITE_ID == site, ]
+      elevation <-  as.numeric(as.character(this.siteinfo.data$DATAVALUE[this.siteinfo.data$VARIABLE == "LOCATION_ELEV"]))
+      IGBP <- as.character(this.siteinfo.data$DATAVALUE[this.siteinfo.data$VARIABLE == "IGBP"][1])
+                                                 
+      
       # determine the longitude and latitude
       # MF: Some sites have more than one location recorded in the site description file, due to reasons like the tower being moved
       # or the meteorogical instrumentation being set located slightly further aaway
       # This currently affects: DE-Gri, DE-RuS, RU-Sam, US-MyB, US-Tw3, US-TwT
       # I have adopted the convention of just taking the first location in the file
-      lon <- as.numeric(as.character(siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LONG" &
-                                                               siteinfo.data$SITE_ID == site]))[1]
-      lat <- as.numeric(as.character(siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "LOCATION_LAT" &
-                                                               siteinfo.data$SITE_ID == site]))[1]
+      lon <- as.numeric(as.character(this.siteinfo.data$DATAVALUE[this.siteinfo.data$VARIABLE == "LOCATION_LONG"]))[1]
+      lat <- as.numeric(as.character(this.siteinfo.data$DATAVALUE[this.siteinfo.data$VARIABLE == "LOCATION_LAT"]))[1]
       
+     
       # determine the full site name
       site.name <- siteinfo.data$DATAVALUE[siteinfo.data$VARIABLE == "SITE_NAME" &
                                              siteinfo.data$SITE_ID == site]
@@ -210,7 +219,9 @@ getField_FLUXNET <- function(source,
       all.site.data[[site]] <- data.table(Lon = as.numeric(lon),
                                        Lat = as.numeric(lat),
                                        Code = site,
-                                       Name = site.name)
+                                       Name = site.name,
+                                       IGBP = IGBP,
+                                       Elevation = elevation)
 
       # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
       # divides by a 1000 to convert gC/m^2 to kgC/m^2
