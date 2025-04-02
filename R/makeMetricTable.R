@@ -47,7 +47,7 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
       this_line <- copy(metric_table_line_template)
       this_line$Dataset <- dataset_name
       this_line$Metric <- this_metric
-      metric_table <- rbind(metric_table, data.frame(this_line))
+      metric_table <- rbind(metric_table, data.frame(this_line, check.names = FALSE))
     }
   }
   
@@ -67,8 +67,8 @@ makeMetricTable <- function(benchmark, all_comparisons_list, simulation_sources,
     
     for(this_sim_Source in simulation_sources) {
       for(this_metric in benchmark@metrics){
-       
-        metric_table[which(metric_table$Metric == this_metric), gsub(pattern = " ", replacement = ".", x = this_sim_Source@name)] <- signif(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", dataset_name)]]@stats[[this_metric]],3)
+        # Can use unsanitised source@name because we used check.names = FALSE above.
+        metric_table[which(metric_table$Metric == this_metric), this_sim_Source@name] <- signif(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", dataset_name)]]@stats[[this_metric]],3)
         common_sta <- commonSTAInfo(list(all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", dataset_name)]]@sta.info1,
                                          all_comparisons_list[["Values"]][[paste(this_sim_Source@name, "-", dataset_name)]]@sta.info2))
         metric_table[which(metric_table$Metric == this_metric), "Period"] <- paste(common_sta@first.year, common_sta@last.year, sep = "-")
