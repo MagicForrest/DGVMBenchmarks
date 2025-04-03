@@ -83,17 +83,17 @@ parseConfigFile <- function(yml_file, cli_args) {
   #### SIMULATIONS ####
   simulations <- list()
   # If simulations specified on the command line
-  if(!is.null(cli_args$new_directory) && !is.null(cli_args$new_name) && !is.null(cli_args$old_directory) && !is.null(cli_args$old_name)){
-    simulations[[cli_args$new_name]] <- defineSource(
-      name =cli_args$new_name,
-      dir = cli_args$new_directory,
+  if(!is.null(cli_args$sim_directory) && !is.null(cli_args$sim_name) && !is.null(cli_args$reference_sim_directory) && !is.null(cli_args$reference_sim_name)){
+    simulations[[cli_args$sim_name]] <- defineSource(
+      name =cli_args$sim_name,
+      dir = cli_args$sim_directory,
       format = GUESS)
-    simulations[[cli_args$old_name]] <- defineSource(
-      name = cli_args$old_name,
-      dir = cli_args$old_directory,
+    simulations[[cli_args$reference_sim_name]] <- defineSource(
+      name = cli_args$reference_sim_name,
+      dir = cli_args$reference_sim_directory,
       format = GUESS)
-    # also override whatever the YAML says for "reference_simulation" with the command line argument
-    settings$reference_simulation <- cli_args$old_name
+    # also override whatever the YAML says for "reference_sim_name" with the command line argument
+    settings$reference_sim_name <- cli_args$reference_sim_name
   }
   # Else we loop over Simulations and create Source objects
   else {
@@ -101,9 +101,9 @@ parseConfigFile <- function(yml_file, cli_args) {
       simulations[[this_model_id]] <- parseSourceDefinition(this_model_id, input$Simulations[[this_model_id]])
     }
   }
-  # also update the "old_run", "new_run" (actually both should be phased out) and baseline settings
-  if(!is.null(cli_args$new_name)) settings$new_name <- cli_args$new_name
-  if(!is.null(cli_args$old_name)) settings$reference_simulation <- settings$old_name <- cli_args$old_name
+  # also update the "sim_name" and "reference_sim_name"
+  if(!is.null(cli_args$sim_name)) settings$sim_name <- cli_args$sim_name
+  if(!is.null(cli_args$reference_sim_name)) settings$reference_sim_name <- cli_args$reference_sim_name
   
   # TODO - might need some flexibility concerning the "spatial.extent" setting here to read, for example, gridlists or bounding boxes.
   

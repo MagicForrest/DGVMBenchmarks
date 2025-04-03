@@ -1,11 +1,24 @@
+#### SIMULATIONS ####
+# Here specify the simulations to benchmark  
+# If run with command line arguments (i.e. as part of the LPJ-GUESS benchmark suite) these will be potentially overwritten
+Simulations:
+  # Indents at this level define a unique ID for this model
+  CRUNCEP_v4.1: 
+    # Each of these three things *must* be defined for each model
+    name: "CRUNCEP_v4.1" 
+    dir: "/dmz/home/mforrest/GuessRuns/Tellus_dev/CRUNCEP_v4.1"
+    format: "GUESS"
+  CRUJRA_v4.1.2:
+    name: "CRUJRA_v4.1.2"
+    dir: "/dmz/home/mforrest/GuessRuns/Tellus_dev/CRUJRA_v4.1.2"
+    format: "GUESS"
 
-#### General run settings ####
-# Note that the simulations to be evaluted and the benchmark specific settings are define in the blocks below this one.
+
+#### SETTINGS ####
+# Note that the benchmark specific settings are defined in the blocks below this one.
 Settings:
 
-  new_name: "CRUJRA_v4.1.2" # remove
-  old_name: "CRUNCEP_v4.1" # change to "baseline"
-  reference_simulation: "CRUNCEP_v4.1"
+  reference_sim_name: "CRUNCEP_v4.1"  # which of the above defined simulations should be taken as the reference simulations
   data_directory: "/data/shared/Tellus"
   land_cover_file: "/data/mforrest/LandUseLandCover/LUH2_GCP2019/lu_1549_2019_luh2_aggregate_sum2x2_midpoint_nourban_gcp2019_2019_10_22.txt"
 
@@ -45,21 +58,8 @@ Settings:
   map_text_multiplier: 2.5
   map_annotation_text_size: 7
 
-#### Simulations ####
-# Here specify the simulations to benchmark  
-Simulations:
-  # Indents at this level define a unique ID for this model
-  CRUNCEP_v4.1: 
-    # Each of these three things *must* be defined for each model
-    name: "CRUNCEP_v4.1" 
-    dir: "/dmz/home/mforrest/GuessRuns/Tellus_dev/CRUNCEP_v4.1"
-    format: "GUESS"
-  CRUJRA_v4.1.2:
-    name: "CRUJRA_v4.1.2"
-    dir: "/dmz/home/mforrest/GuessRuns/Tellus_dev/CRUJRA_v4.1.2"
-    format: "GUESS"
 
-#### Benckmarks ####
+#### BENCHMARKS ####
 # Here specify the details of each benchmark
 Benchmarks:
   
@@ -90,7 +90,7 @@ Benchmarks:
     run_benchmark: TRUE
     name: "Global biomes"
     description: "Smith et al 2014 biomes vs PNV from Haxeltine and Prentince 1992"
-    simulation: [ "global", "tellus" ]
+    simulation: [ "global" ]
     guess_var: "lai"
     guess_layers: "Smith2014" # not strictly speaking a layer, but the function interprets this as the classification and the name of the data file
     first.year: 1960
