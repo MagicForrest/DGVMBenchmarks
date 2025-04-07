@@ -19,7 +19,7 @@ Simulations:
 Settings:
 
   reference_sim_name: "CRUNCEP_v4.1"  # which of the above defined simulations should be taken as the reference simulations
-  data_directory: "/data/shared/Tellus"
+  data_directory: "/dmz/home/mforrest/Tellus_data"
   land_cover_file: "/data/mforrest/LandUseLandCover/LUH2_GCP2019/lu_1549_2019_luh2_aggregate_sum2x2_midpoint_nourban_gcp2019_2019_10_22.txt"
 
 
