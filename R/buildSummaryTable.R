@@ -25,7 +25,7 @@ buildSummaryTable <- function(benchmark = this_benchmark, all_sim_full, summary_
   summary_line$Unit <- benchmark@agg.unit
   
   
-  if(length(benchmark@datasets[[1]]) != 0){
+  if(length(benchmark@datasets) != 0){
     full_Field_ymean <- aggregateSpatial(unlist(benchmark@datasets[[1]]))
     
     summary_line$Data <- signif(full_Field_ymean@data[[benchmark@guess_layers]], 3)
