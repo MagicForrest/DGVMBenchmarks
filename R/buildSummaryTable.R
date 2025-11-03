@@ -13,12 +13,12 @@ buildSummaryTable <- function(benchmark = this_benchmark, all_sim_full, summary_
   
   summary_line <- as.list(rep("-", length(summary_col_names)))
   names(summary_line) <- summary_col_names
-  if(length(benchmark@datasets[[1]]) != 0){
+  if(length(benchmark@datasets) != 0){
     for(this_dataset in benchmark@datasets) {
       if(summary_line$Dataset == "-"){summary_line$Dataset <- this_dataset@source@name}
     }}
   
-  if(length(benchmark@datasets[[1]]) == 0){
+  if(length(benchmark@datasets) == 0){
       if(summary_line$Dataset == "-"){summary_line$Dataset <- "NA"}
     }
   summary_line$Quantity <- benchmark@description
@@ -31,7 +31,7 @@ buildSummaryTable <- function(benchmark = this_benchmark, all_sim_full, summary_
     summary_line$Data <- signif(full_Field_ymean@data[[benchmark@guess_layers]], 3)
     summary_line$`Dataset ref.` <- benchmark@dataset_source}
   
-  if(length(benchmark@datasets[[1]]) == 0){
+  if(length(benchmark@datasets) == 0){
     summary_line$Data <- "NA"
     summary_line$`Dataset ref.` <- "NA"}
   
