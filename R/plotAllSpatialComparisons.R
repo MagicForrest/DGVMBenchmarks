@@ -23,10 +23,10 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
     DGVMTools::plotSpatialComparison(this_comparison, type = type)
   
     #Get the Max, Min, Mean difference of Model - Observed data
-    max_dif<-round(max(this_comparison@data[[5]]),2)
-    mean_dif<-round(mean(this_comparison@data[[5]]),2)
-    min_dif<-round(min(this_comparison@data[[5]]),2)
-    mean_obs<-round(mean(this_comparison@data[[4]]),2)
+    max_dif<-round(max(this_comparison@data[[5]],na.rm=T),2)
+    mean_dif<-round(mean(this_comparison@data[[5]],na.rm=T),2)
+    min_dif<-round(min(this_comparison@data[[5]],na.rm=T),2)
+    mean_obs<-round(mean(this_comparison@data[[4]],na.rm=T),2)
     # Plotting difference maps
     limits = range(this_comparison@data[[5]]) 
     breaks = pretty(range(this_comparison@data[[5]]))
@@ -241,9 +241,9 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                  limits = limits,
                                  breaks = breaks)+
             labs(title = paste(this_comparison@name),
-             subtitle = paste("Max:", round(max(percentage_difference),2),
-                              "Mean:", round(mean(percentage_difference),2),
-                              "Min:", round(min(percentage_difference),2)))+
+             subtitle = paste("Max:", round(max(percentage_difference, na.rm = T),2),
+                              "Mean:", round(mean(percentage_difference, na.rm = T),2),
+                              "Min:", round(min(percentage_difference, na.rm = T),2)))+
             theme(plot.title = element_text(size = 30),
                   plot.subtitle = element_text(size = 20),
                   axis.title.x = element_text(size = 25),
