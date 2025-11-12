@@ -64,8 +64,8 @@ plotICOSFields <- function(Benchmark = this_benchmark, all_Fields_list = all_Fie
     for (i in seq_along(all_comparisons[[1]])) {
       this_comparison <- all_comparisons[[1]][[i]]
       ICOS_grid <- read.table(file.path(system.file("extdata/ICOS/ICOS_grid.txt", package = "DGVMBenchmarks")))  
-      ICOS_grid$Lon <- ICOS_grid$GUESS_Lon
-      ICOS_grid$Lat <- ICOS_grid$GUESS_Lat
+      ICOS_grid$Lon <- ICOS_grid$ICOS_Lon
+      ICOS_grid$Lat <- ICOS_grid$ICOS_Lat
       # stations <- read.csv(file.path(system.file("extdata/ICOS/ICOS_stations_info.csv", package = "DGVMBenchmarks")), header = T,sep = ";")      
       # stations$Lon <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 1))
       # stations$Lat <- as.numeric(sapply(strsplit(stations$Position, " "), `[`, 2))
