@@ -34,8 +34,8 @@ for (i in seq_along(all_comparisons[[1]])) {
                                      by = c("Name"), 
                                      all = TRUE)
   # Round Lon and Lat columns in stations
-  stations$Lon <- as.numeric(stations$GUESS_Lon)
-  stations$Lat <- as.numeric(stations$GUESS_Lat)
+  stations$Lon <- as.numeric(stations$ICOS_Lon)
+  stations$Lat <- as.numeric(stations$ICOS_Lat)
   merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"))
   
   #stations <- stations[, -which(names(stations) == "Position")]
@@ -178,8 +178,8 @@ for (i in seq_along(all_comparisons[[1]])) {
                       by = c("Name"), 
                       all = TRUE)
     # Round Lon and Lat columns in stations
-    stations$Lon <- as.numeric(stations$GUESS_Lon)
-    stations$Lat <- as.numeric(stations$GUESS_Lat)
+    stations$Lon <- as.numeric(stations$ICOS_Lon)
+    stations$Lat <- as.numeric(stations$ICOS_Lat)
     merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"))
     
     
@@ -311,8 +311,8 @@ for (i in seq_along(all_comparisons[[1]])) {
                       by = c("Name"), 
                       all = TRUE)
     # Round Lon and Lat columns in stations
-    stations$Lon <- as.numeric(stations$GUESS_Lon)
-    stations$Lat <- as.numeric(stations$GUESS_Lat)
+    stations$Lon <- as.numeric(stations$ICOS_Lon)
+    stations$Lat <- as.numeric(stations$ICOS_Lat)
     merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone", "Country")], by = c("Lon", "Lat"))
     
     # Merge based on matching latitude and longitude coordinates
@@ -438,8 +438,8 @@ for (i in seq_along(all_comparisons[[1]])) {
                       by = c("Name"), 
                       all = TRUE)
     # Round Lon and Lat columns in stations
-    stations$Lon <- as.numeric(stations$GUESS_Lon)
-    stations$Lat <- as.numeric(stations$GUESS_Lat)
+    stations$Lon <- as.numeric(stations$ICOS_Lon)
+    stations$Lat <- as.numeric(stations$ICOS_Lat)
     merged_data <- left_join(this_comparison@data, stations[, c("Lon", "Lat", "Site.type", "Name", "Climate.zone")], by = c("Lon", "Lat"))
     
     # Add the Site.type column to this_comparison@data
