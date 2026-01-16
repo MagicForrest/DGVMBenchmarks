@@ -6,12 +6,16 @@
 \usage{
 read_GCP(
   data_file,
-  sheet = "Global Carbon Budget",
-  skip_rows = 20,
-  nyears_GCP = 61,
+  sheet,
+  skip_rows,
+  nyears_GCP,
   land_sink_col_name = "land sink",
   luc_col_name = "land-use change emissions",
-  imbalance_col_name = "budget imbalance"
+  imbalance_col_name = "budget imbalance",
+  fossil_emissions_col_name = "fossil emissions excluding carbonation",
+  atmospheric_growth_col_name = "atmospheric growth",
+  ocean_sink_col_name = "ocean sink",
+  cement_sink_col_name = "cement carbonation sink"
 )
 }
 \arguments{
@@ -29,6 +33,15 @@ to the package will be used}
 \item{luc_col_name}{Optional, a character string giving the column name for the land use change column}
 
 \item{imbalance_col_name}{Optional, a character string giving the column name for the budget imbalance column}
+
+\item{fossil_emissions_col_name}{Optional, a character string giving the column name for the fossil
+emissions (excl. carbonation) column}
+
+\item{atmospheric_growth_col_name}{Optional, a character string giving the column name for the atmospheric growth column}
+
+\item{ocean_sink_col_name}{Optional, a character string giving the column name for the ocean sink column}
+
+\item{cement_sink_col_name}{Optional, a character string giving the column name for the cement carbonation sink column}
 }
 \value{
 A DGVMTools::Field object containing the GCP data

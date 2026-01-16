@@ -15,6 +15,8 @@ stored in the class needs to be used carefully and should not be too automated.
 \section{Slots}{
 
 \describe{
+\item{\code{run_benchmark}}{Logical, run this benchmark or not}
+
 \item{\code{id}}{Simple character string to gave an uniquely identify this Benchmark}
 
 \item{\code{name}}{More complex character string to describe this Benchmark}
@@ -32,7 +34,10 @@ will be tried in order}
 
 \item{\code{agg.unit}}{Character string for the aggregated units used for global summaries, will be evaluated as an expression.}
 
-\item{\code{datasets}}{A list of DGVMTools::Field objects that are used for comparison in this benchmark}
+\item{\code{datasets}}{A list of DGVMTools::Source objects that are used for comparison in this benchmark}
+
+\item{\code{custom}}{A list (of lists of lists...) defining custom parameters for this benchmark.  This gives the required flexibility to
+to handle whatever idiosyncrasies a benchmark has to complement the more defined slots above.}
 }}
 
 \author{

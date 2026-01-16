@@ -8,11 +8,7 @@ modelSummaryTable(
   simulations,
   settings,
   var,
-  periods,
-  new_sim,
-  old_sim,
-  spatial_extent,
-  spatial_extent_id,
+  comparison_periods,
   area_unit = "m^2",
   unit_multiplier = 1,
   sigfigs = 3,
@@ -21,5 +17,5 @@ modelSummaryTable(
 }
 \description{
 The table produced here compares multiple model versions for all layers of a single variable for an arbitrary selection of time periods.
-Optionally it can be subset over a spatial extent.
+Optionally it can be subset over a spatial extent id selected in the YAML file
 }

@@ -11,8 +11,7 @@ fullSpatialComparison(
   all_maps,
   all_trends = NULL,
   all_seasonal = NULL,
-  new_model = NULL,
-  old_model = NULL
+  reference_simulation = NULL
 )
 
 fullTemporalComparison(
@@ -20,8 +19,7 @@ fullTemporalComparison(
   all_ts,
   all_trends = NULL,
   all_seasonal = NULL,
-  new_model = NULL,
-  old_model = NULL
+  reference_simulation = NULL
 )
 }
 \arguments{
@@ -33,7 +31,7 @@ fullTemporalComparison(
 
 \item{all_seasonal}{A list of all seasonal Fields to be compared (structure as above))}
 
-\item{new_model, old_model}{Characters strings defiinng the new and old model runs from a "new minus old" comparisons)}
+\item{reference_simulation}{Characters strings defining the reference model run (for "new minus reference" style comparisons)}
 
 \item{all_ts}{A list of all spatial values Fields to be compared (both data and simulations, which of these are data are identified from the benchmark argument)}
 }

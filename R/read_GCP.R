@@ -10,6 +10,11 @@
 #' @param land_sink_col_name Optional, a character string giving the column name for the land sink
 #' @param luc_col_name Optional, a character string giving the column name for the land use change column
 #' @param imbalance_col_name Optional, a character string giving the column name for the budget imbalance column
+#' @param fossil_emissions_col_name Optional, a character string giving the column name for the fossil 
+#' emissions (excl. carbonation) column
+#' @param atmospheric_growth_col_name Optional, a character string giving the column name for the atmospheric growth column
+#' @param ocean_sink_col_name Optional, a character string giving the column name for the ocean sink column
+#' @param cement_sink_col_name Optional, a character string giving the column name for the cement carbonation sink column
 #' 
 #' @name read_GCP
 #' @rdname read_GCP
@@ -27,15 +32,20 @@ read_GCP <- function(data_file,
                      nyears_GCP,
                      land_sink_col_name = "land sink",
                      luc_col_name = "land-use change emissions",
-                     imbalance_col_name = "budget imbalance") {
+                     imbalance_col_name = "budget imbalance",
+                     fossil_emissions_col_name = "fossil emissions excluding carbonation",
+                     atmospheric_growth_col_name = "atmospheric growth",
+                     ocean_sink_col_name = "ocean sink",
+                     cement_sink_col_name = "cement carbonation sink") {
   
   #### READ THE BENCHMARKING DATA ####
   
   # location of input data
   if(missing(data_file)) {
     input_dir <- system.file("extdata", "GCP", package = "DGVMBenchmarks")
-    GCP_file_name <- "Global_Carbon_Budget_2020v1.0.xlsx"
-    GCP_file_name <- "Global_Carbon_Budget_2024_v1.0.xlsx"
+    #GCP_file_name <- "Global_Carbon_Budget_2020v1.0.xlsx"
+    #GCP_file_name <- "Global_Carbon_Budget_2024_v1.0.xlsx"
+    GCP_file_name <- "Global_Carbon_Budget_2025_v0.6.xlsx"
     data_file <- file.path(input_dir, GCP_file_name)
   }
   else {
@@ -59,9 +69,8 @@ read_GCP <- function(data_file,
                              format = GUESS)
   
   # calculate the residual 
-  #GCP_full_dt[, NBP := `fossil emissions excluding carbonation` - `atmospheric growth` - `ocean sink` - `cement carbonation sink`]
-  GCP_full_dt[, NBP := get(land_sink_col_name) + get(imbalance_col_name) - get(luc_col_name)]
-  
+  GCP_full_dt[, NBP := get(fossil_emissions_col_name)  - get(atmospheric_growth_col_name) - get(ocean_sink_col_name) - get(cement_sink_col_name)]
+ 
  
   # hack this into a DGVMTools::Field object
   # note that this is not the preferred method get getting Fields with LPJ-GUESS (that would be a call to getField())

@@ -15,6 +15,7 @@
 
 calcLinearTrend <- function(field, signif_level = 0.05) {
   
+  Time = Year = Month = Day = lm = p.value = Trend = NULL
   
   # check  layers (there should be only one)
   field_names <- layers(field)

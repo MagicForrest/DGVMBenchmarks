@@ -82,12 +82,12 @@ Benchmarks:
     # Custom: For reading from the GCP Clobal Carbon Budget spreadsheet, these can/will change with a newer version
     sheet: "Global Carbon Budget"
     skip_rows: 21
-    nyears_GCP: 65
+    nyears_GCP: 66
     
   # PNV Biomes
   PNV_Biomes:
     # Standard required benchmark settings
-    run_benchmark: TRUE
+    run_benchmark: FALSE
     name: "Global biomes"
     description: "Smith et al 2014 biomes vs PNV from Haxeltine and Prentince 1992"
     simulation: [ "global" ]

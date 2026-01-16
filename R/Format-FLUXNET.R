@@ -48,6 +48,8 @@ getField_FLUXNET <- function(source,
                               qc.threshold = 0.5,
                               ...) {
   
+  Year = Day = Lat = Lat = NULL
+  
   ### CHECK ARGUEMENTS
   if(!missing(first.year) & !missing(last.year) ) {
     if(first.year > last.year) stop("first.year cannot be greater than last.year!")
