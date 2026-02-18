@@ -27,6 +27,8 @@
 #' @import stringr
 #' @import dplyr
 #' @import lubridate
+#' @importFrom utils read.csv
+#' @importFrom methods new
 #' @return A list containing firstly the data.table containing the data, and secondly the STA.info 
 #' @author Margot Knapen \email{margot.knapen@@nateko.lu.se}
 #' @keywords internal
@@ -48,6 +50,8 @@ getField_ICOS <- function(source,
                           data.cleaning = TRUE,
                           qc.threshold = 0.5,
                           ...) {
+  
+  Year = Day = Lat = Lon = NULL
   
   ### CHECK ARGUEMENTS
   if(!missing(first.year) & !missing(last.year) ) {

@@ -27,6 +27,8 @@
 #' @import dplyr
 #' @import lubridate
 #' @import readxl
+#' @importFrom utils read.csv
+#' @importFrom methods new
 #' @return A list containing firstly the data.table containing the data, and secondly the STA.info 
 #' @author Margot Knapen \email{margot.knapen@@nateko.lu.se}
 #' @keywords internal
@@ -48,7 +50,7 @@ getField_FLUXNET <- function(source,
                               qc.threshold = 0.5,
                               ...) {
   
-  Year = Day = Lat = Lat = NULL
+  Year = Day = Lat = Lon = NULL
   
   ### CHECK ARGUEMENTS
   if(!missing(first.year) & !missing(last.year) ) {
@@ -88,7 +90,7 @@ getField_FLUXNET <- function(source,
       if(verbose) print(site)
       
       # read the daily data from the .csv file
-      site.data <- fread(file = file.path(source@dir, CH4.files[i]), na = c("-9999", "NA"))
+      site.data <- fread(file = file.path(source@dir, CH4.files[i]), na.strings = c("-9999", "NA"))
       
       # Determine the longitude, latitude, elevation and IGBP classification
       # NOTE: Some sites have more than one location recorded in the site description file, due to reasons like the tower being moved
@@ -185,7 +187,7 @@ getField_FLUXNET <- function(source,
       if(verbose) print(site)
       
       # read the daily data from the .csv file
-      site.data <- fread(file = file.path(source@dir, FLUXNET2015.files[i]), na = c("-9999", "NA"))
+      site.data <- fread(file = file.path(source@dir, FLUXNET2015.files[i]), na.strings = c("-9999", "NA"))
     
       # Determine the longitude, latitude, elevation and IGBP classification
       # NOTE: Some sites have more than one location recorded in the site description file, due to reasons like the tower being moved

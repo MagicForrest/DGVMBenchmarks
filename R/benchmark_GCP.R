@@ -6,6 +6,10 @@ benchmark_GCP <- function(simulation_sources,
                           tables_list,
                           summary_col_names){
   
+  hd_lons = hd_lats = x = y = NULL
+  
+ 
+  
   ### Read the data and calculate the annual mean over the whole period
   GCP_full_Field <- read_GCP(skip_rows = this_benchmark@custom$skip_rows,
                              nyears_GCP = this_benchmark@custom$nyears_GCP,
@@ -94,7 +98,7 @@ benchmark_GCP <- function(simulation_sources,
                                   y = seq(from =7, length.out = length(all_NBP_Fields_list)+1, by = -0.5),
                                   label = all_NBP_labels_vector)
   
-  NBP_plot <-  NBP_plot + geom_text(data = global.numbers.df,  mapping = aes(x = x, y = y, label = label), size = 8, hjust = 0, col = "black")
+  NBP_plot <-  NBP_plot + ggplot2::geom_text(data = global.numbers.df,  mapping = ggplot2::aes(x = x, y = y, label = label), size = 8, hjust = 0, col = "black")
   print(NBP_plot)
   
   # calculate R^2 on this data

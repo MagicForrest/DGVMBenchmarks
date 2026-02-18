@@ -1,16 +1,20 @@
 Package: DGVMBenchmarks
-Title: Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
+Title: Benchmarking functionality for DGVMs/LSMs built on DGVMTools
 Version: 0.0.0.9000
 Authors@R: 
     c(person("Matthew", "Forrest", email = "matthew.forrest@senckenberg.de", role = c("aut", "cre"), comment = c(ORCID = "YOUR-ORCID-ID")),
     person("Margot", "Knapen", email = "margot.knapen@nateko.lu.se", role = c("aut"), comment = c(ORCID = "YOUR-ORCID-ID")))
-Description: Benchmarking functionality for DGVMs/LSMs built on DGVMTools
+Description: Benchmarking functionality for DGVMs/LSMs built on DGVMTools.
 Imports: DGVMTools (>= 1.1),
          data.table,
          readxl,
          stringr,
          dplyr,
-         lubridate
+         lubridate,
+         yaml,
+         methods,
+         raster,
+         ggplot2
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8

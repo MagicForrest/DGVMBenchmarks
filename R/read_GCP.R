@@ -38,6 +38,8 @@ read_GCP <- function(data_file,
                      ocean_sink_col_name = "ocean sink",
                      cement_sink_col_name = "cement carbonation sink") {
   
+  NBP = NULL
+  
   #### READ THE BENCHMARKING DATA ####
   
   # location of input data
@@ -49,8 +51,7 @@ read_GCP <- function(data_file,
     data_file <- file.path(input_dir, GCP_file_name)
   }
   else {
-    input_dir <- strsplt(data_file, "/")
-    input_dir <- "cheese"
+     input_dir <- "cheese"
   }
   
   # read the .xlxs file (nothing to do with DGVMTools here)

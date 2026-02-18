@@ -1,8 +1,9 @@
-
+# @importFrom methods new
+# @importFrom methods slotNames
 parseBenchmarkDefinition <- function(bmk_id, bmk_def, base_dir){
   
   # YAML fields that correspond directly to slots of the Benchmark class
-  direct_args <- slotNames("Benchmark")[!slotNames("Benchmark") %in% c("datasets", "custom")]
+  direct_args <- methods::slotNames("Benchmark")[!methods::slotNames("Benchmark") %in% c("datasets", "custom")]
   
   # lists etc to be build for then making the benchmark
   datasets_list <- list()
@@ -35,12 +36,12 @@ parseBenchmarkDefinition <- function(bmk_id, bmk_def, base_dir){
   
 }
 
-
+# @importFrom methods slotNames
 parseSourceDefinition <- function(src_id, src_def, base_dir){
   
   # YAML fields that correspond directly to slots of the Source class
   # (i.e. everything except format, but note we also manipulate 'dir' below)
-  direct_args <- slotNames("Source")[!slotNames("Source") %in% c("format")]
+  direct_args <- methods::slotNames("Source")[!methods::slotNames("Source") %in% c("format")]
   
   # build a list of args for each YAML entry
   src_args <- list(Class = "Source", id = src_id)
