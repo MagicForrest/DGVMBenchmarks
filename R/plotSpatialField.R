@@ -21,8 +21,8 @@ plotSpatialField <- function(Benchmark, all_Fields_list = all_Fields_list) {
                              #limits = unlist(Benchmark@limits),
                              #breaks = unlist(Benchmark@breaks))+
         labs(title = paste(this_field@source@name))+
-        theme(plot.title = element_text(size = 30), plot.subtitle = element_text(size = 20), axis.title.x = element_text(size = 25),
-              axis.title.y = element_text(size = 25),legend.text = element_text(size = 17),legend.title = element_text(size = 19), panel.border = element_rect(color = "black", fill = NA, size = 1))
+        theme(plot.title = element_text(size = 30), plot.subtitle = element_text(size = 20), axis.title.x = element_blank(),
+              axis.title.y = element_blank(),legend.text = element_text(size = 17),legend.title = element_text(size = 19), panel.border = element_rect(color = "black", fill = NA, size = 1))
         
       plot(p1)
     }
