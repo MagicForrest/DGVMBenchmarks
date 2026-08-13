@@ -12,7 +12,15 @@
 #' @return A ggplot2 scale object.
 #' @keywords internal
 whiteBandFill <- function(limits, breaks = NULL, white_frac = 0.05, na.value = "black") {
+  if (anyNA(limits) || length(limits) != 2) {
+    stop("whiteBandFill: `limits` must be a numeric vector of length 2 with no NAs (got: ",
+         paste(limits, collapse = ", "), ")")
+  }
   range_width <- diff(range(limits))
+  if (range_width == 0) {
+    stop("whiteBandFill: `limits` must have non-zero width, both bounds are ", limits[1],
+         " (check Difference_Limits in the yml for this benchmark)")
+  }
   white_band <- white_frac * range_width
 
   zero_low <- max(limits[1], -white_band)
