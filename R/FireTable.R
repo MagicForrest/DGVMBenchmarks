@@ -2,14 +2,15 @@
 
 #' FireTable
 #'
-#' @param param 
-#' @param benchmark 
-#' @param all_sim_full 
+#' @param param What metrics to produce, either "BurntFr"  or "Fire".
+#' @param benchmark The current benchmark.
+#' @param all_sim_full List holding simulations.
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#' @author Karl Piltz (karl.piltz@@nateko.lu.se), Susanne Suvanto (susanne.suvanto@@luke.fi)
 FireTable <- function(param = NULL, benchmark = this_benchmark, all_sim_full = all_sim_full){
   
   
