@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Susanne Suvanto (susanne.suvanto@@luke.fi)
-FireTable <- function(param = NULL, benchmark = this_benchmark, all_sim_full = all_sim_full){
+FireTable <- function(param = NULL, benchmark = this_benchmark, all_sim_full){
   
   
   Dataset <- benchmark@datasets[[1]]@data
