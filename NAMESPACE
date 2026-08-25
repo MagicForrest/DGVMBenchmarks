@@ -2,6 +2,7 @@
 
 export(CpoolTable)
 export(FLUXNET)
+export(FireTable)
 export(ForestFraction)
 export(HarvestTable)
 export(ICOS)
