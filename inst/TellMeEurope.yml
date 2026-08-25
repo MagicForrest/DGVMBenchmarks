@@ -1,9 +1,9 @@
 Directory:
-  Sim1: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_paper_240924\\Ageinit\\run_240809_sim5_age_probharv_satdist07_inclcc\\"
-  Sim1_id: "LPJ-GUESS"
-  Data: "C:\\Users\\Admin\\Documents\\tellus\\Data_240809"
-  Sim2: "C:\\Users\\Admin\\Documents\\tellus\\Runs_for_intermodel\\EFISCEN"
-  Sim2_id: "EFISCEN-Space"
+  Sim1: "/Volumes/Transcend/European_applications/dist_EFDA"
+  Sim1_id: "LPJ-GUESS v4.1"
+  Data: "/Users/pughtam/Documents/LPJ-GUESS/European_applications_paper/TellMe_Europe_Data_240809"
+  Sim2: "/Volumes/Transcend/European_applications/dist_EFDA"
+  Sim2_id: "LPJ-GUESS"
   spatial_extent_id: "Full"
   custom_xmax: 
   custom_xmin:
@@ -107,7 +107,7 @@ GROWSTOCK:
 ## Spatial difference mapping
 
 AGPP1: 
-  Unit: "kg/m2/y" # The unit of the Benchmark
+  Unit: "kg m-² yr-¹" # The unit of the Benchmark
   Id: "AGPP" # The ID used for tabular output
   Name: "AGPP" # Used in plotting
   Description: "Annual GPP" # Used in tabular output
@@ -175,7 +175,7 @@ AGPP1:
     r2_eff: F
     
 CMASS1:
-  Unit: "kg/m2"
+  Unit: "kg m-²"
   Id: "Cmass"
   Name: "Cmass"
   Description: "Cmass"  
@@ -244,7 +244,7 @@ CMASS1:
     
 
 W_GROWTH1:
-  Unit: "kg/m2/y"
+  Unit: "kg m-² yr-¹"
   Id: "W_growth"
   Name: "W_growth"
   Description: "W_growth"  
@@ -313,7 +313,7 @@ W_GROWTH1:
     
 
 STEM_DENSITY1:
-  Unit: "indiv/ha"
+  Unit: "indiv ha-¹"
   Id: "stem density"
   Name: "stem density"
   Description: "stem density"  
@@ -452,7 +452,7 @@ QDBH1:
 ## PFT Benchmarks    
 
 CMASS_pft1:
-  Unit: "kg/m2"
+  Unit: "kg m-²"
   Id: "Cmass PFT"
   Name: "Cmass PFT"
   Description: "Cmass PFT"  
@@ -518,7 +518,7 @@ CMASS_pft1:
 ## Forest fraction benchmarks
     
 cpool:
-  Unit: "kg/m2/y"
+  Unit: "kg m-² yr-¹"
   Id: "Soil carbon"
   Name: "cpool"
   Description: "cpool"  
@@ -585,7 +585,7 @@ cpool:
 
     
 REGROWTH:
-  Unit: "kg/m2"
+  Unit: "kg m-²"
   Id: "Regrowth"
   Name: "Regrowth"
   Description: "Growback"  
@@ -651,7 +651,7 @@ REGROWTH:
 ## Harvest benchmarks
 
 NAI:
-  Unit: "kg/m2/y"
+  Unit: "kg m-² yr-¹"
   Id: "Net annual increment"
   Name: "NAI"
   Description: "Net Annual Increment"  
@@ -668,7 +668,7 @@ NAI:
     Layer_to_convert:
   
 Harvest:
-  Unit: "kg/m2/y"
+  Unit: "kg m-² yr-¹"
   Id: "Harvest"
   Name: "Harvest"
   Description: "Harvest"  
@@ -891,7 +891,7 @@ BLAZE:
 ## Profound benchmarks
   
 Profound_csv1:
-  Unit: "m2^m2"
+  Unit: "m² m-²"
   Id: "lai"
   Name: "lai"
   Description: ""  
@@ -956,7 +956,7 @@ Profound_csv1:
     
   
 Profound_cmass1:
-  Unit: "kg/m2"
+  Unit: "kg m-²"
   Id: "cmass"
   Name: "cmass"
   Description: ""  
@@ -1021,7 +1021,7 @@ Profound_cmass1:
     
 
 Profound_dens1:
-  Unit: "indiv/ha"
+  Unit: "indiv ha-¹"
   Id: "dens"
   Name: "dens"
   Description: ""  
@@ -1216,7 +1216,7 @@ Profound_diam_plus10cm_sts_ext_st_mean1:
     
 
 ICOS_GPP1:
-  Unit: "kgC/m2/day"
+  Unit: "kgC m-² day-¹"
   Id: "GPP"
   Name: "GPP"
   Description: "Daily GPP"  
@@ -1283,7 +1283,7 @@ ICOS_GPP1:
     
 
 ICOS_NEE1:
-  Unit: "kgC/m2/day"
+  Unit: "kgC m-² day-¹"
   Id: "NEE"
   Name: "NEE"
   Description: "Daily NEE"  
@@ -1350,7 +1350,7 @@ ICOS_NEE1:
     
 
 ICOS_Reco1:
-  Unit: "kgC/m2/day"
+  Unit: "kgC m-² day-¹"
   Id: "Reco"
   Name: "Reco"
   Description: "Daily Reco"  
@@ -1416,7 +1416,7 @@ ICOS_Reco1:
     r2_eff: F
 
 ICOS_ET1:
-  Unit: "mm/day"
+  Unit: "mm day-¹"
   Id: "ET"
   Name: "ET"
   Description: "Daily Evapotranspiration"  
@@ -1483,7 +1483,7 @@ ICOS_ET1:
     
   
 FLUXNET_GPP1:
-  Unit: "kgC/m2/day"
+  Unit: "kgC m-² day-¹"
   Id: "GPP"
   Name: "GPP"
   Description: "Daily Gross Primary Production"  
@@ -1547,7 +1547,7 @@ FLUXNET_GPP1:
     r2_eff: F
     
 FLUXNET_NEE1:
-  Unit: "kgC/m2/day"
+  Unit: "kgC m-² day-¹"
   Id: "NEE"
   Name: "NEE"
   Description: "Daily Net Ecosystem Exchange"  
@@ -1611,7 +1611,7 @@ FLUXNET_NEE1:
     r2_eff: F
     
 FLUXNET_Reco1:
-  Unit: "kgC/m2/day"
+  Unit: "kgC m-² day-¹"
   Id: "Reco"
   Name: "Reco"
   Description: "Daily Ecosystem Respiration"  

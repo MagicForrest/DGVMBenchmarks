@@ -32,12 +32,12 @@ regrowth_file <- file.path(input_dir, "benchmark_regrowth_19092024.csv")
 regrowth <- read.csv(file =regrowth_file)
 regrowth_full_dt <- data.table(regrowth)[, list(bin, Year, AGcwood_kgCm2_med, AGcwood_kgCm2_10, AGcwood_kgCm2_90, Biome)]
 regrowth_full_dt[, bin_centres := as.factor(Year)]
-regrowth_full_dt$Source <- "Data"
+regrowth_full_dt$Source <- "Observations"
 }else{regrowth_file <- file.path(opt.dataset)
 regrowth <- read.csv(file =regrowth_file)
 regrowth_full_dt <- data.table(regrowth)[, list(bin, Year, AGcwood_kgCm2_med, AGcwood_kgCm2_10, AGcwood_kgCm2_90, Biome)]
 regrowth_full_dt[, bin_centres := as.factor(Year)]
-regrowth_full_dt$Source <- "Data"}
+regrowth_full_dt$Source <- "Observations"}
 # read the model output
 # loop through model runs to be processed
 for(this_simulation_regrowth in all_sim_full) {
@@ -69,14 +69,14 @@ for(this_simulation_regrowth in all_sim_full) {
 
 # set bin centres
 regrowth_full_dt[, bin_centres := as.numeric(as.character(bin_centres))]
-# For Temperate Biome with Source = "Data"
+# For Temperate Biome with Source = "Observations"
 regrowth_full_dt <- regrowth_full_dt[!(
-  Source == paste(this_simulation_regrowth@source@name) & 
-    ( 
-      (Biome == "Temperate" & 
-         bin_centres > regrowth_full_dt[Biome == "Temperate" & Source == "Data", max(bin_centres)]) |
-        (Biome == "Boreal" & 
-           bin_centres > regrowth_full_dt[Biome == "Boreal" & Source == "Data", max(bin_centres)])))]
+  Source == paste(this_simulation_regrowth@source@name) &
+    (
+      (Biome == "Temperate" &
+         bin_centres > regrowth_full_dt[Biome == "Temperate" & Source == "Observations", max(bin_centres)]) |
+        (Biome == "Boreal" &
+           bin_centres > regrowth_full_dt[Biome == "Boreal" & Source == "Observations", max(bin_centres)])))]
 # and finally plot
 regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y = AGcwood_kgCm2_med,
                                                                                col = Source)) +
@@ -85,13 +85,14 @@ regrowth_plot <- ggplot(regrowth_full_dt, aes(x=bin_centres)) + geom_point(aes(y
   labs(x= "Years after disturbance", y = expression(AG~wood~kgC~m^{"-2"})) +
   theme_bw() + # Set white background theme
   theme(
-    axis.title.x = element_text(size = 18),  # Increase x-axis title size
-    axis.title.y = element_text(size = 18),  # Increase y-axis title size
+    axis.title.x = element_text(size = 14),  # Increase x-axis title size
+    axis.title.y = element_text(size = 14),  # Increase y-axis title size
     axis.text.x = element_text(size = 14),    # Increase x-axis text size
     axis.text.y = element_text(size = 14),    # Increase y-axis text size
-    legend.title = element_text(size = 16),    # Increase legend title size
+    legend.title = element_blank(),    # Increase legend title size
     legend.text = element_text(size = 14),      # Increase legend text size
-    strip.text = element_text(size = 16)        # Increase facet label size
+    strip.text = element_text(size = 14),       # Increase facet label size
+    aspect.ratio = 1                            # Make each facet panel square
   )
 
 plot(regrowth_plot)

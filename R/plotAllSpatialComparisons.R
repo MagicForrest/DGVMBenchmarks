@@ -41,24 +41,18 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                            type = type,
                                            map.overlay = "world",
                                            panel.bg.col = "gray", legend.title = Benchmark@unit)+
-      scale_fill_gradient2(low = "red",
-                           high = "blue",
-                           mid = "white",
-                           midpoint = 0,
-                           na.value = "black",
-                           limits = limits,
-                           breaks = breaks)+
+      whiteBandFill(limits = limits, breaks = breaks)+
       labs(title = paste(this_comparison@name),
            subtitle = paste("Max:", max_dif,
                             "Mean:", mean_dif,
                             "Min:", min_dif,
                             "Data Mean:", mean_obs))+
-      theme(plot.title = element_text(size = 30),
-            plot.subtitle = element_text(size = 20),
-            axis.title.x = element_text(size = 25),
-            axis.title.y = element_text(size = 25),
-            legend.text = element_text(size = 17),
-            legend.title = element_text(size = 19),
+      theme(plot.title = element_text(size = 16),
+            plot.subtitle = element_text(size = 14),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            legend.text = element_text(size = 15),
+            legend.title = element_text(size = 15),
             panel.border = element_rect(color = "black",
                                         fill = NA,
                                         size = 1))
@@ -86,23 +80,17 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                              type = type,
                                              map.overlay = "world",
                                              panel.bg.col = "gray", legend.title = Benchmark@unit)+
-        scale_fill_gradient2(low = "red",
-                             high = "blue",
-                             mid = "white",
-                             midpoint = 0,
-                             na.value = "black",
-                             limits = limits,
-                             breaks = breaks)+
+        whiteBandFill(limits = limits, breaks = breaks)+
         labs(title = paste(this_comparison@name),
              subtitle = paste("Max:", max_dif,
                               "Mean:", mean_dif,
                               "Min:", min_dif))+
-        theme(plot.title = element_text(size = 30),
-              plot.subtitle = element_text(size = 20),
-              axis.title.x = element_text(size = 25),
-              axis.title.y = element_text(size = 25),
-              legend.text = element_text(size = 17),
-              legend.title = element_text(size = 19),
+        theme(plot.title = element_text(size = 16),
+              plot.subtitle = element_text(size = 14),
+              axis.title.x = element_blank(),
+              axis.title.y = element_blank(),
+              legend.text = element_text(size = 15),
+              legend.title = element_text(size = 15),
               panel.border = element_rect(color = "black",
                                           fill = NA,
                                           size = 1))
@@ -120,12 +108,12 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                             mid = "white",
                             midpoint = 0,
                             na.value = "black")+
-      theme(plot.title = element_text(size = 30),
-            plot.subtitle = element_text(size = 20),
-            axis.title.x = element_text(size = 25),
-            axis.title.y = element_text(size = 25),
-            legend.text = element_text(size = 17),
-            legend.title = element_text(size = 19),
+      theme(plot.title = element_text(size = 16),
+            plot.subtitle = element_text(size = 14),
+            axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+            legend.text = element_text(size = 15),
+            legend.title = element_text(size = 15),
             panel.border = element_rect(colour = "black",
             linewidth = 0.5),
         strip.background = element_rect(fill = "white",
@@ -175,23 +163,17 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                                  type = type,
                                                  map.overlay = "world",
                                                  panel.bg.col = "gray")+
-            scale_fill_gradient2(low = "red",
-                                 high = "blue",
-                                 mid = "white",
-                                 midpoint = 0,
-                                 na.value = "black",
-                                 limits = limits,
-                                 breaks = breaks)+
+            whiteBandFill(limits = limits, breaks = breaks)+
             labs(title = paste(this_comparison@name),
             subtitle = paste("Max:", round(max(percentage_difference),2),
                              "Mean:", round(mean(percentage_difference),2),
                              "Min:", round(min(percentage_difference),2)))+
-            theme(plot.title = element_text(size = 30),
-                  plot.subtitle = element_text(size = 20),
-                  axis.title.x = element_text(size = 25),
-                  axis.title.y = element_text(size = 25),
-                  legend.text = element_text(size = 17),
-                  legend.title = element_text(size = 19),
+            theme(plot.title = element_text(size = 16),
+                  plot.subtitle = element_text(size = 14),
+                  axis.title.x = element_blank(),
+                  axis.title.y = element_blank(),
+                  legend.text = element_text(size = 15),
+                  legend.title = element_text(size = 15),
                   panel.border = element_rect(color = "black",
                                               fill = NA,
                                               size = 1))
@@ -233,23 +215,17 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                                  type = type,
                                                  map.overlay = "world",
                                                  panel.bg.col = "gray")+
-            scale_fill_gradient2(low = "red",
-                                 high = "blue",
-                                 mid = "white",
-                                 midpoint = 0,
-                                 na.value = "black",
-                                 limits = limits,
-                                 breaks = breaks)+
+            whiteBandFill(limits = limits, breaks = breaks)+
             labs(title = paste(this_comparison@name),
              subtitle = paste("Max:", round(max(percentage_difference, na.rm = T),2),
                               "Mean:", round(mean(percentage_difference, na.rm = T),2),
                               "Min:", round(min(percentage_difference, na.rm = T),2)))+
-            theme(plot.title = element_text(size = 30),
-                  plot.subtitle = element_text(size = 20),
-                  axis.title.x = element_text(size = 25),
-                  axis.title.y = element_text(size = 25),
-                  legend.text = element_text(size = 17),
-                  legend.title = element_text(size = 19),
+            theme(plot.title = element_text(size = 16),
+                  plot.subtitle = element_text(size = 14),
+                  axis.title.x = element_blank(),
+                  axis.title.y = element_blank(),
+                  legend.text = element_text(size = 15),
+                  legend.title = element_text(size = 15),
                   panel.border = element_rect(color = "black",
                                               fill = NA,
                                               size = 1))
@@ -267,12 +243,12 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                              mid = "white",
                              midpoint = 0,
                              na.value = "black")+
-        theme(plot.title = element_text(size = 30),
-              plot.subtitle = element_text(size = 20),
-              axis.title.x = element_text(size = 25),
-              axis.title.y = element_text(size = 25),
-              legend.text = element_text(size = 17),
-              legend.title = element_text(size = 19),
+        theme(plot.title = element_text(size = 16),
+              plot.subtitle = element_text(size = 14),
+              axis.title.x = element_blank(),
+              axis.title.y = element_blank(),
+              legend.text = element_text(size = 15),
+              legend.title = element_text(size = 15),
               panel.border = element_rect(colour = "black",
               linewidth = 0.5),
               strip.background = element_rect(fill = "white",
@@ -310,31 +286,25 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                                  type = type,
                                                  map.overlay = "world",
                                                  panel.bg.col = "gray")+
-            scale_fill_gradient2(low = "red",
-                                 high = "blue",
-                                 mid = "white",
-                                 midpoint = 0,
-                                 na.value = "black",
-                                 limits = limits,
-                                 breaks = breaks)+
+            whiteBandFill(limits = limits, breaks = breaks)+
             labs(title = paste(this_comparison@name))+
-            theme(plot.title = element_text(size = 30),
-                  plot.subtitle = element_text(size = 20),
-                  axis.title.x = element_text(size = 25),
-                  axis.title.y = element_text(size = 25),
-                  legend.text = element_text(size = 17),
-                  legend.title = element_text(size = 19),
+            theme(plot.title = element_text(size = 16),
+                  plot.subtitle = element_text(size = 14),
+                  axis.title.x = element_blank(),
+                  axis.title.y = element_blank(),
+                  legend.text = element_text(size = 15),
+                  legend.title = element_text(size = 15),
                   panel.border = element_rect(color = "black",
                                               fill = NA,
                                               size = 1))
           plot(p1)
         }
         else{
-          
+
           combined_range <- range(this_comparison@data[[3]], this_comparison@data[[4]])  # Get the combined range of both columns
           limits <- combined_range             # Limits are simply the combined range
-          
-          breaks <- pretty(combined_range) 
+
+          breaks <- pretty(combined_range)
           if (!is.null(Benchmark@values_limits[[1]]) && length(Benchmark@values_limits[[1]]) != 0){
             limits = unlist(Benchmark@values_limits)
           }
@@ -346,20 +316,14 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                                                  type = type,
                                                  map.overlay = "world",
                                                  panel.bg.col = "gray")+
-            scale_fill_gradient2(low = "red",
-                                 high = "blue",
-                                 mid = "white",
-                                 midpoint = 0,
-                                 na.value = "black",
-                                 limits = limits,
-                                 breaks = breaks)+
+            whiteBandFill(limits = limits, breaks = breaks)+
             labs(title = paste(this_comparison@name))+
-            theme(plot.title = element_text(size = 30),
-                  plot.subtitle = element_text(size = 20),
-                  axis.title.x = element_text(size = 25),
-                  axis.title.y = element_text(size = 25),
-                  legend.text = element_text(size = 17),
-                  legend.title = element_text(size = 19),
+            theme(plot.title = element_text(size = 16),
+                  plot.subtitle = element_text(size = 14),
+                  axis.title.x = element_blank(),
+                  axis.title.y = element_blank(),
+                  legend.text = element_text(size = 15),
+                  legend.title = element_text(size = 15),
                   panel.border = element_rect(color = "black",
                                               fill = NA,
                                               size = 1))
@@ -377,12 +341,12 @@ plotAllSpatialComparisons <- function(Benchmark, all_comparisons, type = "differ
                              mid = "white",
                              midpoint = 0,
                              na.value = "black")+
-        theme(plot.title = element_text(size = 30),
-              plot.subtitle = element_text(size = 20),
-              axis.title.x = element_text(size = 25),
-              axis.title.y = element_text(size = 25),
-              legend.text = element_text(size = 17),
-              legend.title = element_text(size = 19),
+        theme(plot.title = element_text(size = 16),
+              plot.subtitle = element_text(size = 14),
+              axis.title.x = element_blank(),
+              axis.title.y = element_blank(),
+              legend.text = element_text(size = 15),
+              legend.title = element_text(size = 15),
               panel.border = element_rect(colour = "black",
                                           linewidth = 0.5),
               strip.background = element_rect(fill = "white",
