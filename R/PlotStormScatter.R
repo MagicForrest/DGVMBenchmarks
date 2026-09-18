@@ -194,11 +194,13 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
                       size = 6, max.overlaps = 10,
                       box.padding = 0.4,
                       segment.color = "grey50") +  # Repel labels
-      geom_abline(slope = slope,
-                  intercept = 0,
-                  linetype = "dotted",
-                  color = "darkred",
-                  size = 1.2) +  # Prominent regression line
+      geom_abline(
+        slope = 1 / slope,
+        intercept = 0,
+        linetype = "dotted",
+        color = "darkred",
+        linewidth = 1.2
+      ) +  # Prominent regression line
       labs(
         x = expression("Total Reported Damage (Milj m"^3*")"),
         y = expression("Total Modelled Damage (Milj m"^3*")"),
