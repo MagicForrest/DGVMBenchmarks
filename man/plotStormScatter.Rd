@@ -9,7 +9,8 @@ plotStormScatter(
   all_sim_full,
   do_plots = do_plots,
   anno.hjust = 0,
-  anno.vjust = 0
+  anno.vjust = 0,
+  LC = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ plotStormScatter(
 \item{anno.hjust}{Horizontal adjustment of equation annotation.}
 
 \item{anno.vjust}{Vertical adjustment of equation annotation.}
+
+\item{LC}{Landcover file loaded from YML}
 }
 \value{
 Scatterplot of modelled and observed damage

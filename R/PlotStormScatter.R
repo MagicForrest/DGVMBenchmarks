@@ -5,20 +5,21 @@
 #' @param do_plots External argument TRUE or FALSE if plot is to be rendered or not.
 #' @param anno.hjust Horizontal adjustment of equation annotation. 
 #' @param anno.vjust Vertical adjustment of equation annotation. 
+#' @param LC Landcover file loaded from YML
 #' @return Scatterplot of modelled and observed damage
 #' @export
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
-plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots = do_plots, anno.hjust = 0, anno.vjust = 0){
+plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots = do_plots, anno.hjust = 0, anno.vjust = 0, LC = NULL){
   # Define paths
   areapath <- file.path(system.file("extdata", "Storm", "GridcellFractionsEMEP", package = "DGVMBenchmarks"))
   
   input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
-  LC_file <- file.path(input_dir, "LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")
   
   
-  lulist <- fread(LC_file)  # Assuming lumap.csv contains long, lat, and land use data
+  
+  lulist <- as.data.table(LC)  # Assuming LC is .txt and contains long, lat, and land use data
   lulist$Year <- lulist$year 
   # Assuming lulist is already loaded as a data.table and Lon, Lat adjusted
   lulist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]

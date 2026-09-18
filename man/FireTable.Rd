@@ -4,7 +4,13 @@
 \alias{FireTable}
 \title{FireTable}
 \usage{
-FireTable(param = NULL, benchmark = this_benchmark, all_sim_full)
+FireTable(
+  param = NULL,
+  benchmark = this_benchmark,
+  all_sim_full,
+  new_model,
+  old_model
+)
 }
 \arguments{
 \item{param}{What metrics to produce, either "BurntFr"  or "Fire".}
