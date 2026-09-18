@@ -2,22 +2,22 @@
 #'
 #' @param benchmark The current benchmark.
 #' @param all_sim_full List holding simulations.
-#'
+#' @param LC Landcover file read as txt
 #' @return
 #' @export
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
-plotStormMap <- function(benchmark = this_benchmark, all_sim_full){
+plotStormMap <- function(benchmark = this_benchmark, all_sim_full, LC = NULL){
 
 # Path to forest fraction per country
 areapath <- file.path(system.file("extdata", "Storm", "GridcellFractionsEMEP", package = "DGVMBenchmarks"))
 
 # Land cover Pucher.
 input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
-LC_file <- file.path(input_dir, "LC_europe_nat_for_1801_2010_Pucher_noNatural.txt")
 
-lulist <- fread(LC_file)  # contains long, lat, and land use data
+
+lulist <- as.data.table(LC)  # contains long, lat, and land use data
 lulist$Year <- lulist$year 
 # loaded as a data.table and Lon, Lat adjusted
 lulist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
