@@ -4,12 +4,14 @@
 \alias{plotStormMap}
 \title{plotStormMap}
 \usage{
-plotStormMap(benchmark = this_benchmark, all_sim_full)
+plotStormMap(benchmark = this_benchmark, all_sim_full, LC = NULL)
 }
 \arguments{
 \item{benchmark}{The current benchmark.}
 
 \item{all_sim_full}{List holding simulations.}
+
+\item{LC}{Landcover file read as txt}
 }
 \description{
 plotStormMap
