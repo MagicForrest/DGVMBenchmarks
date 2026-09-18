@@ -177,13 +177,13 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     
     # Common range for x and y axes
     x_range <- range(country_table$Reported_Damage, na.rm = TRUE)
-    y_range <- range(country_table$Modelled_Damage_Before_Calibration, na.rm = TRUE)
+    y_range <- range(country_table$Modelled_Damage_After_Calibration, na.rm = TRUE)
     common_range <- c(min(c(x_range[1], y_range[1])), max(c(x_range[2], y_range[2])))
     
     # Define the plot
     storm_scatter <- ggplot(country_table,
                             aes(x = Reported_Damage,
-                                y = Modelled_Damage_Before_Calibration)) +
+                                y = Modelled_Damage_After_Calibration)) +
       geom_point(size = 3.5,
                  shape = 21,
                  fill = "#56B4E9",
