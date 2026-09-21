@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
-plotStormMap <- function(benchmark = this_benchmark, all_sim_full, LC = NULL){
+plotStormMap <- function(benchmark = this_benchmark, all_sim_full, LC = NULL, WDPP = NULL){
 
 # Path to forest fraction per country
 areapath <- file.path(system.file("extdata", "Storm", "GridcellFractionsEMEP", package = "DGVMBenchmarks"))
@@ -43,11 +43,14 @@ lulist_2010 <- lulist[year == 2010, .(Lon, Lat, NATURAL, FOREST, BARREN, FOREST_
 
 # Reading wind damage probability data
 # Load the data
-input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
-wind_dist_file <- file.path(input_dir, "wdp_05deg_from01deg_colinear.txt")
-wdplist <- fread(wind_dist_file, sep = "\t", header = TRUE)
-# Adjust coordinates (shift from center to SW corner)
-wdplist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
+if (!is.null(WDPP)){
+  input_dir <- file.path(system.file("extdata", "Storm", package = "DGVMBenchmarks"))
+  wind_dist_file <- file.path(input_dir, "wdp_05deg_from01deg_colinear.txt")
+  wdplist <- fread(wind_dist_file, sep = "\t", header = TRUE)
+  
+  # Adjust coordinates (shift from center to SW corner)
+  wdplist[, `:=`(Lon = Lon - 0.25, Lat = Lat - 0.25)]
+}
 
 for(this_sim in all_sim_full){
   
@@ -65,12 +68,21 @@ for(this_sim in all_sim_full){
                            .(DamWoodC_mean = mean(get(benchmark@guess_layers), na.rm = TRUE)), 
                            by = .(Lon, Lat)]
   
-  
-  stormWDP <- merge(storm_means,wdplist, by = c("Lon", "Lat"), all = F)
-  
-  final_merge <- merge(stormWDP, lulist_2010, by = c("Lon", "Lat"), all = F)
-  # Create the uncalibrated damage map
-  final_merge$expected_uncall <- final_merge$DamWoodC_mean * final_merge$WDP
+  ## Run with Wind Disturbance Potential
+  if (!is.null(WDPP)){
+    stormWDP <- merge(storm_means,wdplist, by = c("Lon", "Lat"), all = F)
+    
+    final_merge <- merge(stormWDP, lulist_2010, by = c("Lon", "Lat"), all = F)
+    # Create the uncalibrated damage map
+    final_merge$damagemap_uncall <- final_merge$DamWoodC_mean * final_merge$WDP
+  } 
+  else {
+    stormWDP <- merge(storm_means,wdplist, by = c("Lon", "Lat"), all = F)
+    
+    final_merge <- merge(storm_means, lulist_2010, by = c("Lon", "Lat"), all = F)
+    # Create the uncalibrated damage map
+    final_merge$damagemap_uncall <- final_merge$DamWoodC_mean
+  }
   
   # Calibration
   # Define conversion factors
@@ -108,7 +120,9 @@ for(this_sim in all_sim_full){
     country_data[, Area := calc_cell_area(Lat) * Fraction / 25]
     
     # Calculate total damage using direct column operations
-    country_data[, totdam := DamWoodC_mean * cmtovol * 35 * WDP * Area * FOREST]
+    if (!is.null(WDPP)){ country_data[, totdam := DamWoodC_mean * cmtovol * 35 * WDP * Area * FOREST] 
+    }
+    else {country_data[, totdam := DamWoodC_mean * cmtovol * 35 * Area * FOREST]}
     
     # Summarize results
     mod_totdam <- sum(country_data$totdam, na.rm = TRUE)
