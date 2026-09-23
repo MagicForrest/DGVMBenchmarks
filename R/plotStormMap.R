@@ -74,14 +74,13 @@ for(this_sim in all_sim_full){
     
     final_merge <- merge(stormWDP, lulist_2010, by = c("Lon", "Lat"), all = F)
     # Create the uncalibrated damage map
-    final_merge$damagemap_uncall <- final_merge$DamWoodC_mean * final_merge$WDP
+    final_merge$expected_uncall <- final_merge$DamWoodC_mean * final_merge$WDP
   } 
   else {
-    stormWDP <- merge(storm_means,wdplist, by = c("Lon", "Lat"), all = F)
     
     final_merge <- merge(storm_means, lulist_2010, by = c("Lon", "Lat"), all = F)
     # Create the uncalibrated damage map
-    final_merge$damagemap_uncall <- final_merge$DamWoodC_mean
+    final_merge$expected_uncall <- final_merge$DamWoodC_mean
   }
   
   # Calibration
@@ -122,14 +121,16 @@ for(this_sim in all_sim_full){
     # Calculate total damage using direct column operations
     if (!is.null(WDPP)){ country_data[, totdam := DamWoodC_mean * cmtovol * 35 * WDP * Area * FOREST] 
     }
-    else {country_data[, totdam := DamWoodC_mean * cmtovol * 35 * Area * FOREST]}
+    else {
+      country_data[, totdam := DamWoodC_mean * cmtovol * 35 * Area * FOREST]
+      }
     
     # Summarize results
     mod_totdam <- sum(country_data$totdam, na.rm = TRUE)
     forest_area <- sum(country_data$Area * country_data$FOREST, na.rm = TRUE)
     
     # Store results in the results data.table
-    results[i, `:=`(mod_totdam_uncall = mod_totdam, forestarea = forest_area)]
+    results[, `:=`(mod_totdam_uncall = mod_totdam, forestarea = forest_area)]
   }
   
   # Define the data
@@ -178,7 +179,8 @@ for(this_sim in all_sim_full){
  this_sim@data <- final_merge
  
  # Define custom labels
- custom_labels <- c("stormmap_call" = "Mean Wind Damage",
+ if (!is.null(WDPP)){
+   custom_labels <- c("stormmap_call" = "Mean Wind Damage",
                     "expected_call" = "Expected Annual Damage")
  units <- c("stormmap_call" = "kg C / m²", "expected_call" = "kg C / m² / yr")
  
@@ -209,9 +211,11 @@ for(this_sim in all_sim_full){
        panel.border = element_rect(color = "black", fill = NA, size = 1),
        legend.position = "right"
      )
+ 
    
    return(p)
  })
+ 
  
  # Combine the plots using patchwork
  combined_plot <- plots[[1]] + plots[[2]] + 
@@ -219,5 +223,38 @@ for(this_sim in all_sim_full){
    plot_annotation(title = paste(this_sim@source@id),
                    theme = theme(plot.title = element_text(size = 25, hjust = 0.5)))
  plot(combined_plot)
+ }
+ else{
+   
+     p <- DGVMTools::plotSpatial(this_sim,
+                                 layers = "stormmap_call",  # Plot one layer at a time
+                                 map.overlay = "world",
+                                 panel.bg.col = "gray") +
+       scale_fill_gradient2(
+         low = "red",
+         high = "blue",
+         mid = "white",
+         midpoint = 0,
+         na.value = "black"
+       ) +
+       labs(
+         title = "Mean Wind Damage", # Use custom labels for titles
+         fill = "kg C / m²",
+         subtitle = paste0(this_sim@first.year, "-", this_sim@last.year)
+       ) +
+       theme(
+         plot.title = element_text(size = 20, hjust = 0.5),
+         axis.title.x = element_text(size = 14),
+         axis.title.y = element_text(size = 14),
+         legend.text = element_text(size = 12),
+         legend.title = element_text(size = 14),
+         panel.border = element_rect(color = "black", fill = NA, size = 1),
+         legend.position = "right"
+       )
+     
+     
+     return(p)
+ }
+ 
 }
 }
