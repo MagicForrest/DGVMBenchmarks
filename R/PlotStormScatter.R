@@ -80,7 +80,6 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     final_merge$damagemap_uncall <- final_merge$DamWoodC_mean * final_merge$WDP
     } 
     else {
-      stormWDP <- merge(storm_means,wdplist, by = c("Lon", "Lat"), all = F)
       
       final_merge <- merge(storm_means, lulist_2010, by = c("Lon", "Lat"), all = F)
       # Create the uncalibrated damage map
