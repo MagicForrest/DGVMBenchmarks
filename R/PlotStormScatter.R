@@ -133,8 +133,8 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
       results[i, `:=`(mod_totdam_uncall = mod_totdam, forestarea = forest_area)]
     }
     
-    DFDEpath <- file.path(system.file("extdata", "Storm", "annual_SDI_Patacca_etal_22_GCB", package = "DGVMBenchmarks"))
-    DFDE <-  read_excel("inst/extdata/Storm/annual_SDI_Patacca_etal_22_GCB.xlsx",sheet = 2)
+    DFDEpath <- file.path(system.file("extdata", "Storm", "annual_SDI_Patacca_etal_22_GCB.xlsx", package = "DGVMBenchmarks"))
+    DFDE <-  read_excel(DFDEpath,sheet = 2)
     DFDE <- DFDE %>% dplyr::filter(country %in% c('Spain','France','Belgium','Netherlands','Switzerland','Sweden','Czechia','Germany','Poland','Finland')) %>%
       dplyr::filter(disturbance_driver == 'Wind') %>%
       dplyr::filter(Year >= 2011) %>%
