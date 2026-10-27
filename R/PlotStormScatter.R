@@ -174,7 +174,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     )
     
     # Calculate total DFDE damage 1986-2020 by country (m3)
-    DFDEdam <- DFDE2011_2019 * results$forestarea + DFDE2020 * 1000000
+    DFDEdam <- DFDE2011_2019$DFDE1986_2019 * results$forestarea + DFDE2020 * 1000000
     
     # Perform linear regression through the origin
     xdata <- results$mod_totdam_uncall / 1000000  # Modelled total damage (milj m3)
