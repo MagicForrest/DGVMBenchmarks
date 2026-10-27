@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' @author Karl Piltz (karl.piltz@@nateko.lu.se), Fredrik Lagergren (fredrik.lagergren@@nateko.lu.se)
-plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots = do_plots, anno.hjust = 0, anno.vjust = 0, LC = NULL, WDPP = NULL){
+plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots = do_plots, anno.hjust = 0, anno.vjust = 0, LC = NULL, WDPP = NULL, start = 1950){
   # Define paths
   areapath <- file.path(system.file("extdata", "Storm", "GridcellFractionsEMEP", package = "DGVMBenchmarks"))
   
@@ -137,7 +137,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     DFDE <-  read_excel(DFDEpath,sheet = 2)
     DFDE <- DFDE %>% dplyr::filter(country %in% c('Spain','France','Belgium','Netherlands','Switzerland','Sweden','Czechia','Germany','Poland','Finland')) %>%
       dplyr::filter(disturbance_driver == 'Wind') %>%
-      dplyr::filter(Year >= 2011) %>%
+      dplyr::filter(Year >= start) %>%
       group_by(country) %>%
       mutate(DFDE1986_2019 = sum(SDI_expert_gapfilled)) %>%
       ungroup() %>%
