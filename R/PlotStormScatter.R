@@ -133,32 +133,45 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
       results[i, `:=`(mod_totdam_uncall = mod_totdam, forestarea = forest_area)]
     }
     
-    DFDEpath <- file.path(system.file("extdata", "Storm", "annual_SDI_Patacca_etal_22_GCB.xlsx", package = "DGVMBenchmarks"))
-    DFDE <-  read_excel(DFDEpath,sheet = 2)
-    DFDE <- DFDE %>% dplyr::filter(country %in% c('Spain','France','Belgium','Netherlands','Switzerland','Sweden','Czechia','Germany','Poland','Finland')) %>%
-      dplyr::filter(disturbance_driver == 'Wind') %>%
-      dplyr::filter(Year >= start) %>%
-      group_by(country) %>%
-      mutate(DFDE1986_2019 = sum(SDI_expert_gapfilled)) %>%
-      ungroup() %>%
-      dplyr::select(country,DFDE1986_2019)
+    # DFDEpath <- file.path(system.file("extdata", "Storm", "annual_SDI_Patacca_etal_22_GCB.xlsx", package = "DGVMBenchmarks"))
+    # DFDE <-  read_excel(DFDEpath,sheet = 2)
+    # DFDE <- DFDE %>% dplyr::filter(country %in% c('Spain','France','Belgium','Netherlands','Switzerland','Sweden','Czechia','Germany','Poland','Finland')) %>%
+    #   dplyr::filter(disturbance_driver == 'Wind') %>%
+    #   dplyr::filter(Year >= 2011) %>%
+    #   group_by(country) %>%
+    #   mutate(DFDE1986_2019 = sum(SDI_expert_gapfilled)) %>%
+    #   ungroup() %>%
+    #   dplyr::select(country,DFDE1986_2019)
+    # 
+    # DFDE1986_2019 <- distinct(DFDE)
     
-    DFDE2011_2019 <- distinct(DFDE)
-    
+    if (start == 2011){
+    DFDE1986_2019 <- c(
+      0,  # Spain
+      0.0123,  # France
+      0.0101,  # Belgium
+      0,   # Netherlands
+      1.92,  # Switzerland
+      1.05,  # Sweden
+      10.4 ,  # Czech Republic
+      2.23,  # Germany
+      3.81,  # Poland
+      0.668    # Finland
+    )}
 
-    # Define the data
-    # DFDE1986_2019 <- c(
-    #   0.311712469,  # Spain
-    #   15.92983022,  # France
-    #   8.624930994,  # Belgium
-    #   1.83575288,   # Netherlands
-    #   18.95101885,  # Switzerland
-    #   5.811679096,  # Sweden
-    #   38.41414753,  # Czech Republic
-    #   17.37980347,  # Germany
-    #   6.684530283,  # Poland
-    #   1.54078413    # Finland
-    # )
+    if (start == 1986){# Define the data
+     DFDE1986_2019 <- c(
+       0.311712469,  # Spain
+       15.92983022,  # France
+       8.624930994,  # Belgium
+      1.83575288,   # Netherlands
+       18.95101885,  # Switzerland
+       5.811679096,  # Sweden
+       38.41414753,  # Czech Republic
+       17.37980347,  # Germany
+       6.684530283,  # Poland
+       1.54078413    # Finland
+     )}
     
     DFDE2020 <- c(
       0.0000, # Spain
@@ -174,7 +187,7 @@ plotStormScatter <- function(benchmark = this_benchmark, all_sim_full, do_plots 
     )
     
     # Calculate total DFDE damage 1986-2020 by country (m3)
-    DFDEdam <- DFDE2011_2019$DFDE1986_2019 * results$forestarea + DFDE2020 * 1000000
+    DFDEdam <- DFDE1986_2019 * results$forestarea + DFDE2020 * 1000000
     
     # Perform linear regression through the origin
     xdata <- results$mod_totdam_uncall / 1000000  # Modelled total damage (milj m3)
