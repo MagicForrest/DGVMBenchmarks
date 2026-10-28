@@ -4,7 +4,7 @@
 \alias{plotStormMap}
 \title{plotStormMap}
 \usage{
-plotStormMap(benchmark = this_benchmark, all_sim_full, LC = NULL)
+plotStormMap(benchmark = this_benchmark, all_sim_full, LC = NULL, WDPP = NULL)
 }
 \arguments{
 \item{benchmark}{The current benchmark.}

@@ -10,7 +10,9 @@ plotStormScatter(
   do_plots = do_plots,
   anno.hjust = 0,
   anno.vjust = 0,
-  LC = NULL
+  LC = NULL,
+  WDPP = NULL,
+  start = 1950
 )
 }
 \arguments{
