@@ -226,19 +226,10 @@ getField_FLUXNET <- function(source,
 
       # selecting the required columns (GPP, NEE, Reco) of the daily fluxes file
       # divides by a 1000 to convert gC/m^2 to kgC/m^2
-      if (quant@name == "NEE" & day.night.method == "NT") {
-        day.night.method <- "NIGHT"
-      } else if (quant@name == "NEE" & day.night.method == "DT") {
-        day.night.method <- "DAY"
-      }
-      
+      # NEE is measured, not partitioned: same column for NT and DT
       if (quant@name == "NEE") {
-        to.cbind <- select(site.data, contains(UT.threshold)) %>%
-          select(contains(quant@name)) %>%
-          select(contains(partition.method)) %>%
-          select(ends_with(day.night.method)) %>%
-          rowSums() / 1000
-        
+        nee.col  <- paste("NEE", UT.threshold, partition.method, sep = "_")   # NEE_VUT_REF
+        to.cbind <- site.data[[nee.col]] / 1000
       } else {
         to.cbind <- select(site.data, contains(UT.threshold)) %>%
           select(contains(quant@name)) %>%
@@ -277,18 +268,14 @@ getField_FLUXNET <- function(source,
     
 
         # set values with NEE QC below threshold as NA
-        if (is.null(qc.threshold) == FALSE) {
-          if (day.night.method == "NT" | day.night.method == "NIGHT") {
-            day.night.method.NEE <- "NIGHT"
-          } else if (day.night.method == "DT" | day.night.method == "DAY") {
-            day.night.method.NEE <- "DAY"
+        if (!is.null(qc.threshold)) {
+          qc.col <- if (quant@name == "NEE") {
+            paste("NEE", UT.threshold, partition.method, "QC", sep = "_")       # NEE_VUT_REF_QC
+          } else {
+            paste("NEE", UT.threshold, partition.method,
+                  if (day.night.method == "NT") "NIGHT" else "DAY", "QC", sep = "_")
           }
-          
-          nee.qc.data <- select(site.data, contains(UT.threshold)) %>%
-            select(contains("NEE")) %>% select(contains(partition.method)) %>%
-            select(contains(day.night.method.NEE)) %>% select(ends_with("QC"))
-          
-          to.cbind[which(nee.qc.data < qc.threshold)] <- NA
+          to.cbind[which(site.data[[qc.col]] < qc.threshold)] <- NA
         }
         
       }
